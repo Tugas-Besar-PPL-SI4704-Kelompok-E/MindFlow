@@ -25,8 +25,8 @@ Kerjakan fitur (Controller, Model, View, Migration) sesuai dengan pembagian PBI 
 *4. Simpan dan Commit (WAJIB CANTUMKAN ID JIRA)*
 Meskipun pengerjaan disatukan dalam satu branch, *pesan commit harus tetap dipisah per pekerjaan* agar terdeteksi oleh Jira.
 git add .
-git commit -m "[TPBSKE-X] feat: membuat antarmuka dashboard admin"
-(Ganti TPBSKE-X dengan ID tiket Jira yang sedang dikerjakan. Contoh: TPD-19) Ini dicek di jira yah
+git commit -m "[TBPSKE-X] feat: membuat antarmuka dashboard admin"
+(Ganti TBPSKE-X dengan ID tiket Jira yang sedang dikerjakan. Contoh: TPD-19) Ini dicek di jira yah
 
 *5. Push ke Branch Sendiri*
 git push origin NamaKamu_TubesPPL
