@@ -14,7 +14,7 @@ git pull origin main
 *2. Pindah/Buat Branch Perorangan*
 Gunakan branch dengan nama masing-masing. Jika branch belum ada, gunakan perintah ini:
 git checkout -b NamaKamu_TubesPPL
-(Contoh: Langgeng_TubesPPL, Wisnu_TubesPPL)
+(Contoh: Yuha_TubesPPL, Dara_TubesPPL)
 
 Jika branch sudah pernah dibuat sebelumnya, cukup ketik:
 git checkout NamaKamu_TubesPPL
@@ -25,8 +25,8 @@ Kerjakan fitur (Controller, Model, View, Migration) sesuai dengan pembagian PBI 
 *4. Simpan dan Commit (WAJIB CANTUMKAN ID JIRA)*
 Meskipun pengerjaan disatukan dalam satu branch, *pesan commit harus tetap dipisah per pekerjaan* agar terdeteksi oleh Jira.
 git add .
-git commit -m "[TPD-X] feat: membuat antarmuka dashboard admin"
-(Ganti TPD-X dengan ID tiket Jira yang sedang dikerjakan. Contoh: TPD-19) Ini dicek di jira yah
+git commit -m "[TPBSKE-X] feat: membuat antarmuka dashboard admin"
+(Ganti TPBSKE-X dengan ID tiket Jira yang sedang dikerjakan. Contoh: TPD-19) Ini dicek di jira yah
 
 *5. Push ke Branch Sendiri*
 git push origin NamaKamu_TubesPPL
