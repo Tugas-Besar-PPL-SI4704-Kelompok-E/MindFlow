@@ -51,4 +51,34 @@ class ThreadInteractionController extends Controller
 
         return back()->with('success', 'Balasan berhasil dikirim!');
     }
+
+    public function reportReply(Request $request, ThreadReply $reply)
+    {
+        $request->validate([
+            'reason' => 'required|string|max:255',
+        ]);
+
+        \App\Models\ReplyReport::create([
+            'thread_reply_id' => $reply->id,
+            'user_id' => Auth::id() ?? 1,
+            'reason' => $request->reason,
+        ]);
+
+        return back()->with('success', 'Laporan berhasil dikirim dan akan segera ditinjau oleh Admin.');
+    }
+
+    public function reportThread(Request $request, Thread $thread)
+    {
+        $request->validate([
+            'reason' => 'required|string|max:255',
+        ]);
+
+        \App\Models\ThreadReport::create([
+            'thread_id' => $thread->id,
+            'user_id' => Auth::id() ?? 1,
+            'reason' => $request->reason,
+        ]);
+
+        return back()->with('success', 'Laporan pos berhasil dikirim.');
+    }
 }

@@ -27,4 +27,9 @@ class ThreadReply extends Model
     {
         return $this->hasMany(ThreadReply::class, 'parent_id');
     }
+
+    public function reports()
+    {
+        return $this->hasMany(ReplyReport::class);
+    }
 }

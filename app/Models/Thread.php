@@ -36,6 +36,11 @@ class Thread extends Model
         return $this->hasMany(ThreadReply::class);
     }
 
+    public function reports()
+    {
+        return $this->hasMany(ThreadReport::class);
+    }
+
     public function isLikedBy($user)
     {
         if (!$user) return false;
