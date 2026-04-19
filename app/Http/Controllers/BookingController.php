@@ -18,7 +18,7 @@ class BookingController extends Controller
             'status' => 'pending'
         ]);
 
-        // PBI 30: Notifikasi sukses via session
+        // PBI 30: Sistem notifikasi reservasi sukses via session flash data
         return redirect()->back()->with('success', 'Reservasi berhasil dibuat! Menunggu konfirmasi.');
     }
 
