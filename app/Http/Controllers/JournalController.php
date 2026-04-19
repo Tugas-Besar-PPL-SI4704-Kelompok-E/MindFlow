@@ -139,3 +139,4 @@ class JournalController extends Controller
                          ->with('success', 'Jurnal berhasil dihapus.');
     }
 }
+
