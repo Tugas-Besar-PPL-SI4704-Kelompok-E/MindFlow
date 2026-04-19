@@ -10,7 +10,7 @@ class BookingController extends Controller
 {
     public function store(Request $request) 
     {
-        // PBI 29: Simpan pesanan ke database
+        // PBI 29: Simpan data pesanan sesi konseling ke database
         SesiKonseling::create([
             'user_id' => Auth::id(), // Mengambil ID user yang sedang login
             'profil_konselor_id' => $request->konselor_id,
