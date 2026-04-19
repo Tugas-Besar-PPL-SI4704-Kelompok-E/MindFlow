@@ -26,7 +26,7 @@ class BookingController extends Controller
     {
         $sesi = SesiKonseling::findOrFail($id);
         
-        // PBI 31: Update waktu sesi
+        // PBI 31: Logika alur pengajuan perubahan jadwal sesi konseling
         $sesi->update([
             'jadwal' => $request->jadwal_baru,
             'status' => 'rescheduled'
