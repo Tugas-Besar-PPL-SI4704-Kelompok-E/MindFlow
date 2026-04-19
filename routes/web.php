@@ -3,6 +3,7 @@
 use Illuminate\Support\Facades\Route;
 use App\Http\Controllers\BookingController;
 use App\Http\Controllers\CounselingController;
+use App\Http\Controllers\JournalController;
 
 // PBI 27 & 28
 Route::get('/konseling', [CounselingController::class, 'index'])->name('konseling.index');
@@ -13,12 +14,11 @@ Route::post('/booking/store', [BookingController::class, 'store'])->name('bookin
 
 // PBI 31
 Route::put('/booking/update/{id}', [BookingController::class, 'updateJadwal'])->name('booking.update');
-use App\Http\Controllers\JournalController;
 
 Route::get('/', function () {
-    return view('welcome');
+    // Mengalihkan halaman utama (/) ke halaman konseling
+    return redirect()->route('konseling.index');
 });
 
 // Route Resource untuk Jurnal Refleksi Mandiri
-// Middleware auth digunakan langsung di Controller (atau bisa juga ditambahkan di sini, tapi karena controller Anda sudah menggunakan $this->middleware('auth'), ini cukup)
 Route::resource('journals', JournalController::class);

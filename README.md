@@ -27,7 +27,6 @@ Meskipun pengerjaan disatukan dalam satu branch, *pesan commit harus tetap dipis
 git add .
 git commit -m "[TBPSKE-X] feat: membuat antarmuka dashboard admin"
 (Ganti TBPSKE-X dengan ID tiket Jira yang sedang dikerjakan. Contoh: TPD-19) Ini dicek di jira yah
-
 *5. Push ke Branch Sendiri*
 git push origin NamaKamu_TubesPPL
 
