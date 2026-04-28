@@ -32,4 +32,4 @@ git commit -m "[TBPSKE-X] feat: membuat antarmuka dashboard admin"
 git push origin NamaKamu_TubesPPL
 
 *6. Buat Pull Request (PR)*
-Jika progresmu udh kelar atau fitur sudah selesai, buka GitHub dan buat PR dari branch perorangan menuju main. Infokan ke grup untuk di-review oleh PM sblm di-Merge.
+Jika progresmu udh kelar atau fitur sudah selesai, buka GitHub dan buat PR dari branch perorangan menuju main. Infokan ke grup untuk di-review oleh PM sblm di Merge.
