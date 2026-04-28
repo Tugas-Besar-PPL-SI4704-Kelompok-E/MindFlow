@@ -2,11 +2,29 @@
 
 use Illuminate\Support\Facades\Route;
 use App\Http\Controllers\JournalController;
+use App\Http\Controllers\Auth\LoginController;
+use App\Http\Controllers\Auth\RegisterController;
 
+/*
+|--------------------------------------------------------------------------
+| Web Routes
+|--------------------------------------------------------------------------
+*/
+
+// Landing Page
 Route::get('/', function () {
-    return view('welcome');
+    return view('landing');
+})->name('home');
+
+// Authentication Routes
+Route::middleware('guest')->group(function () {
+    Route::get('/login', [LoginController::class, 'showLoginForm'])->name('login');
+    Route::post('/login', [LoginController::class, 'login']);
+    Route::get('/register', [RegisterController::class, 'showRegistrationForm'])->name('register');
+    Route::post('/register', [RegisterController::class, 'register']);
 });
 
+Route::post('/logout', [LoginController::class, 'logout'])->name('logout')->middleware('auth');
+
 // Route Resource untuk Jurnal Refleksi Mandiri
-// Middleware auth digunakan langsung di Controller (atau bisa juga ditambahkan di sini, tapi karena controller Anda sudah menggunakan $this->middleware('auth'), ini cukup)
 Route::resource('journals', JournalController::class);
