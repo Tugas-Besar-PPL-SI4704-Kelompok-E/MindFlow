@@ -6,6 +6,7 @@ use Illuminate\Database\Eloquent\Model;
 
 class ThreadReport extends Model
 {
+    // Fillable attributes for mass assignment
     protected $fillable = ['thread_id', 'user_id', 'reason', 'status'];
 
     public function thread()

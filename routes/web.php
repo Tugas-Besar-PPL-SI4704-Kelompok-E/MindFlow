@@ -7,6 +7,7 @@ Route::get('/', function () {
     return view('welcome');
 });
 
+// Forum resource routes
 Route::resource('forum', ForumController::class);
 
 use App\Http\Controllers\ThreadInteractionController;

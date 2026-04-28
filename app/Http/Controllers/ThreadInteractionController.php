@@ -82,3 +82,5 @@ class ThreadInteractionController extends Controller
         return back()->with('success', 'Laporan pos berhasil dikirim.');
     }
 }
+
+#SIBUK UTS

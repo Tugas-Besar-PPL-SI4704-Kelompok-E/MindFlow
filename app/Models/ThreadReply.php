@@ -6,6 +6,7 @@ use Illuminate\Database\Eloquent\Model;
 
 class ThreadReply extends Model
 {
+    // Fillable attributes for mass assignment
     protected $fillable = ['user_id', 'thread_id', 'parent_id', 'content'];
 
     public function user()
