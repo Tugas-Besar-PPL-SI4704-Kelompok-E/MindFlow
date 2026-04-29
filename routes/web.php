@@ -7,8 +7,22 @@ use App\Http\Controllers\CounselingController;
 use App\Http\Controllers\JournalController;
 use App\Http\Controllers\Auth\LoginController;
 use App\Http\Controllers\Auth\RegisterController;
+use App\Http\Controllers\AdminController;
 
-// PBI 27 & 28
+// ──────────────────── Landing Page ────────────────────
+Route::get('/', function () {
+    return view('landing');
+})->name('home');
+
+// ──────────────────── Auth Routes ────────────────────
+Route::get('/login', [LoginController::class, 'showLoginForm'])->name('login');
+Route::post('/login', [LoginController::class, 'login']);
+Route::post('/logout', [LoginController::class, 'logout'])->name('logout');
+
+Route::get('/register', [RegisterController::class, 'showRegistrationForm'])->name('register');
+Route::post('/register', [RegisterController::class, 'register']);
+
+// ──────────────────── Konseling Routes (PBI 27 & 28) ────────────────────
 Route::get('/konseling', [CounselingController::class, 'index'])->name('konseling.index');
 Route::get('/konseling/{id}', [CounselingController::class, 'show'])->name('konseling.show');
 
@@ -17,11 +31,6 @@ Route::post('/booking/store', [BookingController::class, 'store'])->name('bookin
 
 // PBI 31
 Route::put('/booking/update/{id}', [BookingController::class, 'updateJadwal'])->name('booking.update');
-
-Route::get('/', function () {
-    // Mengalihkan halaman utama (/) ke halaman konseling
-    return redirect()->route('konseling.index');
-});
 
 // ──────────────────── Mood Tracker Routes ────────────────────
 Route::get('/mood-tracker', [MoodTrackerController::class, 'index'])
@@ -44,9 +53,8 @@ Route::get('/mood-tracker/mendalam', [MoodTrackerController::class, 'mendalam'])
 
 Route::post('/mood-tracker/mendalam', [MoodTrackerController::class, 'mendalamStore'])
     ->name('mood-tracker.mendalam.store');
-use App\Http\Controllers\AdminController;
 
-// Grouping route admin agar tidak konflik
+// ──────────────────── Admin Routes ────────────────────
 Route::prefix('admin')->name('admin.')->group(function () {
     Route::get('/dashboard', [AdminController::class, 'index'])->name('dashboard');
     Route::get('/rekrutmen', [AdminController::class, 'rekrutmen'])->name('rekrutmen');
@@ -54,5 +62,6 @@ Route::prefix('admin')->name('admin.')->group(function () {
     Route::delete('/forum/{id}/delete', [AdminController::class, 'hapusPostingan'])->name('forum.delete');
     Route::get('/spesialisasi', [AdminController::class, 'spesialisasi'])->name('spesialisasi');
 });
-// Route Resource untuk Jurnal Refleksi Mandiri
+
+// ──────────────────── Journal Routes ────────────────────
 Route::resource('journals', JournalController::class);
