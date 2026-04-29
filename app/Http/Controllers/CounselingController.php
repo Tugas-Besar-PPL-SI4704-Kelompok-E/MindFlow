@@ -8,22 +8,20 @@ use Illuminate\Http\Request;
 class CounselingController extends Controller
 {
     public function index(Request $request)
-{
-    $query = ProfilKonselor::query();
+    {
+        $query = ProfilKonselor::with('user');
 
-    // PBI 27: Filter berdasarkan spesialisasi
-    if ($request->filled('spesialisasi')) {
-        $query->where('spesialisasi', $request->spesialisasi);
+        if ($request->has('spesialisasi') && $request->spesialisasi != '') {
+            $query->where('spesialisasi', 'like', '%' . $request->spesialisasi . '%');
+        }
+
+        $konselors = $query->get();
+        return view('konseling.index', compact('konselors'));
     }
 
-    $konselors = $query->get();
-    return view('konseling.index', compact('konselors'));
-}
-
-public function show($id)
-{
-    // PBI 28: Menampilkan detail biografi & keahlian
-    $konselor = ProfilKonselor::findOrFail($id);
-    return view('konseling.show', compact('konselor'));
-}
+    public function show($id)
+    {
+        $konselor = ProfilKonselor::with('user')->findOrFail($id);
+        return view('konseling.show', compact('konselor'));
+    }
 }
