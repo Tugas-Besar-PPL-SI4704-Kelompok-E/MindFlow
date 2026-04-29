@@ -119,11 +119,19 @@ class MoodTrackerController extends Controller
 
         $responses = $request->responses;
 
-        // Hitung skor menggunakan logika resmi DASS-21
+        // GUEST FLOW: Jika belum login, simpan di session → redirect ke register
+        if (!Auth::check()) {
+            $request->session()->put('guest_dass21_responses', $responses);
+
+            return redirect()->route('register')
+                ->with('info', 'Untuk melihat hasil pemeriksaan, silakan daftar akun terlebih dahulu.');
+        }
+
+        // AUTHENTICATED USER: Hitung dan simpan ke database
         $scores = HasilDass21::hitungSkor($responses);
 
         HasilDass21::create([
-            'user_id'            => Auth::id() ?? 1,
+            'user_id'            => Auth::id(),
             'skor_depresi'       => $scores['skor_depresi'],
             'skor_kecemasan'     => $scores['skor_kecemasan'],
             'skor_stres'         => $scores['skor_stres'],

@@ -47,29 +47,37 @@
                             </tr>
                         </thead>
                         <tbody class="divide-y divide-gray-100">
-                            @foreach($reports as $report)
+                            @forelse($reports as $report)
                             <tr class="hover:bg-gray-50 transition">
                                 <td class="px-8 py-6 w-1/2">
-                                    <div class="text-gray-400 text-xs mb-1 uppercase font-bold">Dilaporkan oleh: {{ $report->user->name }}</div>
-                                    <div class="text-lg italic text-gray-700">"{{ $report->forum->konten }}"</div>
+                                    <div class="text-gray-400 text-xs mb-1 uppercase font-bold">Dilaporkan oleh: {{ $report->pelapor->nama_samaran ?? 'Tidak diketahui' }}</div>
+                                    <div class="text-lg italic text-gray-700">"{{ $report->forum->konten ?? 'Postingan telah dihapus' }}"</div>
                                 </td>
                                 <td class="px-8 py-6">
                                     <span class="px-4 py-2 bg-red-100 text-red-700 rounded-lg text-sm font-black uppercase italic">
-                                        {{ $report->alasan }}
+                                        {{ $report->alasan_laporan }}
                                     </span>
                                 </td>
                                 <td class="px-8 py-6">
                                     <div class="flex justify-center">
-                                        <form action="{{ route('admin.forum.delete', $report->forum->id) }}" method="POST" onsubmit="return confirm('Hapus postingan ini secara PERMANEN?')">
+                                        @if($report->forum)
+                                        <form action="{{ route('admin.forum.delete', $report->forum->forum_id) }}" method="POST" onsubmit="return confirm('Hapus postingan ini secara PERMANEN?')">
                                             @csrf @method('DELETE')
                                             <button type="submit" class="p-4 bg-red-600 text-white rounded-2xl hover:bg-red-700 shadow-lg shadow-red-200 transition-all transform hover:scale-110">
                                                 <svg class="w-8 h-8" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-width="3" d="M19 7l-.867 12.142A2 2 0 0116.138 21H7.862a2 2 0 01-1.995-1.858L5 7m5 4v6m4-6v6m1-10V4a1 1 0 00-1-1h-4a1 1 0 00-1 1v3M4 7h16"></path></svg>
                                             </button>
                                         </form>
+                                        @else
+                                        <span class="text-gray-400 text-sm">Sudah dihapus</span>
+                                        @endif
                                     </div>
                                 </td>
                             </tr>
-                            @endforeach
+                            @empty
+                            <tr>
+                                <td colspan="3" class="px-8 py-12 text-center text-gray-400 text-lg">Tidak ada laporan pelanggaran. 🎉</td>
+                            </tr>
+                            @endforelse
                         </tbody>
                     </table>
                 </div>

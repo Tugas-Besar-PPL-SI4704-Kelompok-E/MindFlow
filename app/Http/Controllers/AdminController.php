@@ -2,64 +2,54 @@
 
 namespace App\Http\Controllers;
 
+use App\Models\Forum;
+use App\Models\LaporanForum;
+use App\Models\User;
 use Illuminate\Http\Request;
-use Carbon\Carbon;
 
 class AdminController extends Controller
 {
-    // PBI 42: Bar metrik dashboard menggunakan Dummy Data
+    /**
+     * PBI 42: Dashboard metrik — menggunakan data real dari database.
+     */
     public function index()
     {
         $data = [
-            'totalUsers' => 1240,       // Angka dummy
-            'totalArticles' => 86,      // Angka dummy
-            'totalApplicants' => 12,    // Angka dummy
-            'totalReports' => 5,        // Angka dummy
+            'totalUsers'      => User::where('role', 'user')->count(),
+            'totalArticles'   => 0, // Tabel artikels belum ada modelnya, dummy
+            'totalApplicants' => 0, // Tabel calon_konselors — dummy
+            'totalReports'    => LaporanForum::where('status_tindak_lanjut', 'pending')->count(),
         ];
 
         return view('admin.dashboard', $data);
     }
 
-    // PBI 38 & 40: Laporan pelanggaran menggunakan Dummy Data
+    /**
+     * PBI 38: Laporan pelanggaran — menggunakan data real dari database.
+     */
     public function laporan()
     {
-        // Membuat data palsu (dummy) yang strukturnya mirip dengan hasil database (Eloquent)
-        $reports = collect([
-            (object)[
-                'id' => 1,
-                'user' => (object)['name' => 'Budi Santoso'],
-                'forum' => (object)[
-                    'id' => 101, 
-                    'konten' => 'Dasar kalian semua orang gila, mending mati aja sana!'
-                ],
-                'alasan' => 'Ujaran Kebencian & Pelecehan',
-                'created_at' => Carbon::now()->subDays(2)
-            ],
-            (object)[
-                'id' => 2,
-                'user' => (object)['name' => 'Siti Aminah'],
-                'forum' => (object)[
-                    'id' => 102, 
-                    'konten' => 'Klik link ini untuk menang slot gacor terpercaya http://judi-online-fake.com'
-                ],
-                'alasan' => 'Spam / Promosi Ilegal',
-                'created_at' => Carbon::now()->subHours(5)
-            ]
-        ]);
+        $reports = LaporanForum::with(['forum', 'pelapor'])
+            ->orderBy('created_at', 'desc')
+            ->get();
 
         return view('admin.laporan', compact('reports'));
     }
 
-    // PBI 40: Eksekusi hapus (Simulasi)
+    /**
+     * PBI 40: Eksekusi hapus postingan forum secara permanen.
+     */
     public function hapusPostingan($id)
     {
-        // Karena kita tidak pakai database, kita buat simulasi berhasil saja
-        // Nantinya kode ini tinggal diganti dengan: Forum::findOrFail($id)->delete();
-        
-        return back()->with('success', "Simulasi: Postingan dengan ID Forum ($id) seolah-olah telah dihapus secara permanen dari sistem.");
+        $forum = Forum::findOrFail($id);
+        $forum->delete();
+
+        return back()->with('success', "Postingan \"{$forum->judul_thread}\" telah dihapus secara permanen.");
     }
 
-    // PBI 37: Page rekrutmen aplikan menggunakan Dummy Data
+    /**
+     * PBI 37: Page rekrutmen aplikan (masih dummy karena fitur apply belum diimplementasi).
+     */
     public function rekrutmen()
     {
         $applicants = collect([
@@ -84,8 +74,11 @@ class AdminController extends Controller
         return view('admin.rekrutmen', compact('applicants'));
     }
 
+    /**
+     * PBI 39: Pengelolaan kategori spesialisasi konselor.
+     */
     public function spesialisasi()
     {
-        return view('admin.spesialisasi'); // Pastikan kamu membuat file ini nanti
+        return view('admin.spesialisasi');
     }
 }
