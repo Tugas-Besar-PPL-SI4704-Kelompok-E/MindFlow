@@ -3,7 +3,16 @@
 use App\Http\Controllers\MoodTrackerController;
 use Illuminate\Support\Facades\Route;
 use App\Http\Controllers\JournalController;
+use App\Http\Controllers\Auth\LoginController;
+use App\Http\Controllers\Auth\RegisterController;
 
+/*
+|--------------------------------------------------------------------------
+| Web Routes
+|--------------------------------------------------------------------------
+*/
+
+// Landing Page
 Route::get('/', function () {
     return view('welcome');
 });
@@ -40,5 +49,4 @@ Route::prefix('admin')->name('admin.')->group(function () {
     Route::get('/spesialisasi', [AdminController::class, 'spesialisasi'])->name('spesialisasi');
 });
 // Route Resource untuk Jurnal Refleksi Mandiri
-// Middleware auth digunakan langsung di Controller (atau bisa juga ditambahkan di sini, tapi karena controller Anda sudah menggunakan $this->middleware('auth'), ini cukup)
 Route::resource('journals', JournalController::class);
