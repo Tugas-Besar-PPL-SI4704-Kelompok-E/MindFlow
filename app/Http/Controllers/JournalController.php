@@ -28,10 +28,22 @@ class JournalController extends Controller
 
         // Ambil jurnal milik user tersebut, urutkan dari terbaru
         $journals = Journal::where('user_id', $userId)
-            ->orderBy('created_at', 'desc')
+            ->orderBy('updated_at', 'desc')
             ->get();
 
-        return view('journals.index', compact('journals'));
+        // Data Kalender Mood (Dinamis & Dummy Placeholder)
+        $currentMonth = \Carbon\Carbon::now()->translatedFormat('F'); // Contoh: "April"
+        $daysInMonth = \Carbon\Carbon::now()->daysInMonth;
+        
+        // Dummy placeholder untuk status mood berdasarkan tanggal bulan ini
+        // Rencana: Hijau = Senang, Kuning = Biasa, Merah = Stres
+        $moodData = [
+            1 => 'senang',
+            2 => 'biasa',
+            3 => 'stres',
+        ];
+
+        return view('journals.index', compact('journals', 'currentMonth', 'daysInMonth', 'moodData'));
     }
 
     /**
@@ -127,3 +139,4 @@ class JournalController extends Controller
                          ->with('success', 'Jurnal berhasil dihapus.');
     }
 }
+
