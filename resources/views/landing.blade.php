@@ -1,4 +1,4 @@
-@extends('layouts.app')
+@extends('layouts.public')
 
 @section('title', 'MindFlow - Jaga Kesehatan Mental Anda')
 
@@ -727,6 +727,9 @@
                 <a href="{{ route('register') }}" class="btn-hero-primary">
                     Mulai Sekarang
                     <svg width="18" height="18" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.5" stroke-linecap="round" stroke-linejoin="round"><path d="m9 18 6-6-6-6"/></svg>
+                </a>
+                <a href="{{ route('mood-tracker.mendalam') }}" class="btn-hero-secondary" style="background: rgba(16,185,129,0.1); color: #059669; border-color: rgba(16,185,129,0.3);">
+                    🩺 Cek Kesehatan Mental Gratis
                 </a>
                 <a href="#features" class="btn-hero-secondary">
                     Pelajari Lebih Lanjut
