@@ -1,113 +1,108 @@
-@extends('layouts.dashboard')
-
-@section('title', 'Detail Thread - MindFlow Forum')
-
-@section('styles')
-<style>
-    .detail-card { background: #fff; border: 1px solid #E5E7EB; border-radius: 16px; padding: 28px; margin-bottom: 24px; }
-    .comment-card { background: #F9FAFB; border: 1px solid #F3F4F6; border-radius: 12px; padding: 16px; margin-bottom: 12px; }
-    .btn-primary { background: linear-gradient(135deg, #7C3AED, #5B21B6); color: white; padding: 10px 24px; border-radius: 10px; font-weight: 700; font-size: 14px; border: none; cursor: pointer; transition: all 0.2s; }
-    .btn-primary:hover { transform: translateY(-1px); box-shadow: 0 4px 15px rgba(91,33,182,0.3); }
-    .btn-outline { background: transparent; color: #DC2626; padding: 10px 24px; border-radius: 10px; font-weight: 700; font-size: 14px; border: 1.5px solid #FCA5A5; cursor: pointer; transition: all 0.2s; }
-    .btn-outline:hover { background: #FEF2F2; }
-    .form-textarea { width: 100%; padding: 14px; border: 1.5px solid #E5E7EB; border-radius: 12px; font-size: 14px; resize: none; outline: none; transition: border 0.2s; font-family: inherit; }
-    .form-textarea:focus { border-color: #7C3AED; box-shadow: 0 0 0 3px rgba(124,58,237,0.1); }
-    .toast { position: fixed; top: 32px; right: 32px; z-index: 2000; background: #111827; color: #FFF; padding: 16px 24px; border-radius: 14px; font-size: 14px; font-weight: 500; animation: toastIn 0.4s ease, toastOut 0.4s ease 3.6s forwards; }
-    @keyframes toastIn { from { opacity: 0; transform: translateX(40px); } to { opacity: 1; transform: translateX(0); } }
-    @keyframes toastOut { from { opacity: 1; } to { opacity: 0; } }
-</style>
-@endsection
+@extends('layouts.app')
 
 @section('content')
-<div style="max-width: 720px; margin: 0 auto;">
-    <!-- Back -->
-    <a href="{{ route('forum.index') }}" style="display: inline-flex; align-items: center; gap: 6px; font-size: 14px; font-weight: 600; color: #6B7280; margin-bottom: 20px; text-decoration: none;">
-        <svg width="18" height="18" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M10 19l-7-7m0 0l7-7m-7 7h18"/></svg>
-        Kembali ke Forum
-    </a>
 
-    <!-- Thread Detail -->
-    <div class="detail-card">
-        <div style="display: flex; align-items: center; gap: 12px; margin-bottom: 16px;">
-            <img src="https://ui-avatars.com/api/?name={{ urlencode($thread->user->nama_samaran ?? 'User') }}&background=E9D8FD&color=5B21B6&size=48" style="width:48px;height:48px;border-radius:50%;" alt="">
-            <div>
-                <div style="font-weight: 700; font-size: 15px; color: #111827;">{{ $thread->user->nama_samaran ?? 'Anonim' }}</div>
-                <div style="font-size: 13px; color: #6B7280;">{{ $thread->created_at->translatedFormat('d M Y, H:i') }}</div>
+<style>
+    .thread-show {
+        padding: 24px;
+        border-bottom: 1px solid var(--border-dark);
+    }
+
+    .thread-header {
+        display: flex;
+        align-items: center;
+        margin-bottom: 16px;
+    }
+
+    .thread-avatar {
+        width: 48px; height: 48px; border-radius: 50%; margin-right: 12px;
+        display: flex; align-items: center; justify-content: center; font-weight: bold; color: white;
+    }
+    .thread-avatar.anon { background-color: #9ca3af; }
+    .thread-avatar.real { background-color: #d1d5db; object-fit: cover; }
+
+    .author-name { font-weight: 700; font-size: 1.05rem; }
+    .post-time { font-size: 0.85rem; color: var(--text-muted); }
+    .badge { font-size: 0.65rem; padding: 2px 6px; border-radius: 4px; font-weight: 700; text-transform: uppercase; margin-left:8px; vertical-align: middle;}
+    .badge-admin { background-color: #fef08a; color: #854d0e; }
+    .badge-konselor { background-color: #bfdbfe; color: #1e40af; }
+    .badge-user { background-color: #e2e8f0; color: #475569; }
+
+    .thread-body { font-size: 1.1rem; line-height: 1.6; margin-bottom: 16px; white-space: pre-wrap; }
+
+    .reply-form { margin-top: 16px; display: flex; gap: 12px; }
+    .reply-input { flex: 1; padding: 12px 16px; border-radius: 8px; border: 1px solid var(--border-dark); font-family: inherit; font-size: 0.95rem; }
+    .btn-reply { background: var(--primary); color: white; border: none; padding: 0 20px; border-radius: 8px; font-weight: 600; cursor: pointer; }
+
+    .replies-section { padding-top: 12px; }
+</style>
+
+<div class="thread-show">
+    @php
+        $role = $thread->user->role ?? 'user';
+        $isAnon = $role === 'user';
+        $authorName = $isAnon ? 'User Anonim' : ($thread->user->nama_asli ?? 'User');
+        $initial = $isAnon ? '?' : strtoupper(substr($authorName, 0, 1));
+        
+        $badgeClass = '';
+        $badgeText = '';
+        if ($role === 'admin') { $badgeClass = 'badge-admin'; $badgeText = 'Admin'; } 
+        elseif ($role === 'konselor') { $badgeClass = 'badge-konselor'; $badgeText = 'Dokter'; }
+        else { $badgeClass = 'badge-user'; $badgeText = 'Anonim'; }
+    @endphp
+
+    <div class="thread-header" style="position: relative;">
+        <img src="https://ui-avatars.com/api/?name={{ urlencode($authorName) }}&background={{ $isAnon ? '9ca3af' : 'd1d5db' }}&color=1f2937" 
+                 alt="Avatar" class="thread-avatar {{ $isAnon ? 'anon' : 'real' }}">
+        <div>
+            <div class="author-name">{{ $authorName }} <span class="badge {{ $badgeClass }}">{{ $badgeText }}</span></div>
+            <div class="post-time">{{ $thread->created_at->format('h:i A · M d, Y') }}</div>
+        </div>
+
+        <div class="thread-menu" style="position:absolute; right:0; top:0;">
+            <button onclick="document.getElementById('dropdown-show-{{ $thread->id }}').style.display = document.getElementById('dropdown-show-{{ $thread->id }}').style.display === 'none' ? 'block' : 'none';" style="background:transparent; border:none; cursor:pointer; color:var(--text-muted);">
+                <svg width="24" height="24" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><circle cx="12" cy="12" r="1"/><circle cx="19" cy="12" r="1"/><circle cx="5" cy="12" r="1"/></svg>
+            </button>
+            
+            <!-- Dropdown Content -->
+            <div id="dropdown-show-{{ $thread->id }}" style="display:none; position:absolute; right:0; top:28px; background:white; border:1px solid var(--border-dark); border-radius:8px; box-shadow:0 4px 6px rgba(0,0,0,0.1); z-index:10; min-width:150px; padding:8px 0; font-family:inherit;">
+                @if($thread->user_id === (Auth::id() ?? 1))
+                    <form action="{{ route('forum.destroy', $thread->id) }}" method="POST" style="margin:0;" onsubmit="return confirm('Hapus post ini?');">
+                        @csrf
+                        @method('DELETE')
+                        <button type="submit" style="width:100%; text-align:left; background:none; border:none; padding:8px 16px; cursor:pointer; color:#ef4444; font-size:0.9rem;">Hapus Post</button>
+                    </form>
+                @else
+                    <button onclick="document.getElementById('report-post-show-{{ $thread->id }}').style.display='block'; document.getElementById('dropdown-show-{{ $thread->id }}').style.display='none';" style="width:100%; text-align:left; background:none; border:none; padding:8px 16px; cursor:pointer; color:var(--text-main); font-size:0.9rem;">Laporkan</button>
+                @endif
             </div>
-        </div>
-        <h2 style="font-size: 22px; font-weight: 800; color: #111827; margin-bottom: 12px;">{{ $thread->judul_thread }}</h2>
-        <p style="font-size: 15px; color: #374151; line-height: 1.7; white-space: pre-line;">{{ $thread->konten }}</p>
 
-        <!-- Report Button -->
-        @auth
-        <div style="margin-top: 20px; padding-top: 16px; border-top: 1px solid #F3F4F6;">
-            <details style="cursor: pointer;">
-                <summary style="font-size: 13px; font-weight: 600; color: #DC2626; display: inline-flex; align-items: center; gap: 6px;">
-                    <svg width="16" height="16" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M12 9v2m0 4h.01m-6.938 4h13.856c1.54 0 2.502-1.667 1.732-3L13.732 4c-.77-1.333-2.694-1.333-3.464 0L3.34 16c-.77 1.333.192 3 1.732 3z"/></svg>
-                    Laporkan Postingan
-                </summary>
-                <form action="{{ route('forum.report', $thread->forum_id) }}" method="POST" style="margin-top: 12px;">
-                    @csrf
-                    <select name="alasan_laporan" required style="width: 100%; padding: 10px 14px; border: 1.5px solid #E5E7EB; border-radius: 10px; font-size: 14px; margin-bottom: 10px; outline: none;">
-                        <option value="">-- Pilih Alasan --</option>
-                        <option value="Ujaran Kebencian & Pelecehan">Ujaran Kebencian & Pelecehan</option>
-                        <option value="Spam / Promosi Ilegal">Spam / Promosi Ilegal</option>
-                        <option value="Konten Tidak Pantas">Konten Tidak Pantas</option>
-                        <option value="Informasi Menyesatkan">Informasi Menyesatkan</option>
-                        <option value="Lainnya">Lainnya</option>
-                    </select>
-                    <button type="submit" class="btn-outline">Kirim Laporan</button>
-                </form>
-            </details>
-        </div>
-        @endauth
-    </div>
-
-    <!-- Komentar Section -->
-    <div style="margin-bottom: 20px;">
-        <h3 style="font-size: 17px; font-weight: 700; color: #111827; margin-bottom: 16px;">
-            💬 Komentar ({{ $thread->komentars->count() }})
-        </h3>
-
-        @forelse($thread->komentars as $komentar)
-        <div class="comment-card">
-            <div style="display: flex; align-items: center; gap: 10px; margin-bottom: 8px;">
-                <img src="https://ui-avatars.com/api/?name={{ urlencode($komentar->user->nama_samaran ?? 'User') }}&background=DBEAFE&color=1E40AF&size=32" style="width:32px;height:32px;border-radius:50%;" alt="">
-                <div>
-                    <span style="font-weight: 700; font-size: 13px; color: #111827;">{{ $komentar->user->nama_samaran ?? 'Anonim' }}</span>
-                    <span style="font-size: 12px; color: #9CA3AF; margin-left: 8px;">{{ $komentar->created_at->diffForHumans() }}</span>
+            <!-- Report Form -->
+            <form id="report-post-show-{{ $thread->id }}" action="{{ route('forum.report', $thread->id) }}" method="POST" style="display:none; position:absolute; right:0; top:28px; background:white; border:1px solid #ef4444; border-radius:8px; box-shadow:0 4px 6px rgba(0,0,0,0.1); z-index:11; padding:12px; width:240px; font-family:inherit;">
+                @csrf
+                <div style="font-weight:600; font-size:0.85rem; margin-bottom:8px; color:#ef4444;">Laporkan Postingan</div>
+                <input type="text" name="reason" placeholder="Contoh: Spam, Mengganggu..." style="width:100%; padding:6px 8px; border:1px solid var(--border-dark); border-radius:4px; margin-bottom:8px; font-size:0.85rem;" required>
+                <div style="display:flex; justify-content:flex-end; gap:8px;">
+                    <button type="button" onclick="document.getElementById('report-post-show-{{ $thread->id }}').style.display='none'" style="background:none; border:none; font-size:0.8rem; cursor:pointer; color:var(--text-muted); font-weight:600;">Batal</button>
+                    <button type="submit" style="background:#ef4444; color:white; border:none; padding:4px 12px; border-radius:4px; font-weight:600; font-size:0.8rem; cursor:pointer;">Kirim</button>
                 </div>
-            </div>
-            <p style="font-size: 14px; color: #374151; line-height: 1.6; padding-left: 42px;">{{ $komentar->konten_komentar }}</p>
+            </form>
         </div>
-        @empty
-        <div style="text-align: center; padding: 40px; background: #F9FAFB; border-radius: 12px; border: 1px solid #F3F4F6;">
-            <p style="font-size: 14px; color: #9CA3AF;">Belum ada komentar. Jadilah yang pertama!</p>
-        </div>
-        @endforelse
     </div>
 
-    <!-- Add Comment Form -->
-    @auth
-    <div class="detail-card">
-        <h4 style="font-size: 15px; font-weight: 700; color: #111827; margin-bottom: 12px;">Tulis Komentar</h4>
-        <form action="{{ route('forum.komentar', $thread->forum_id) }}" method="POST">
-            @csrf
-            <textarea name="konten_komentar" class="form-textarea" rows="3" placeholder="Tulis komentarmu di sini..." required></textarea>
-            <div style="display: flex; justify-content: flex-end; margin-top: 12px;">
-                <button type="submit" class="btn-primary">Kirim Komentar</button>
-            </div>
-        </form>
-    </div>
-    @else
-    <div style="text-align: center; padding: 24px; background: #FFF7ED; border: 1px solid #FED7AA; border-radius: 12px;">
-        <p style="font-size: 14px; color: #92400E;">Silakan <a href="{{ route('login') }}" style="font-weight: 700; color: #7C3AED;">login</a> untuk berkomentar.</p>
-    </div>
-    @endauth
+    <div class="thread-body">{{ $thread->content }}</div>
+
+    <form action="{{ route('forum.reply', $thread->id) }}" method="POST" class="reply-form">
+        @csrf
+        <input type="text" name="content" class="reply-input" placeholder="Balas luapan ini..." required>
+        <button type="submit" class="btn-reply">Balas</button>
+    </form>
 </div>
 
-@if(session('success'))
-<div class="toast" id="toast">✅ {{ session('success') }}</div>
-<script>setTimeout(() => document.getElementById('toast')?.remove(), 4200);</script>
-@endif
+<div class="replies-section">
+    @foreach($replies as $reply)
+        @include('forum.partials.reply', ['reply' => $reply, 'depth' => 0])
+    @endforeach
+</div>
+
 @endsection

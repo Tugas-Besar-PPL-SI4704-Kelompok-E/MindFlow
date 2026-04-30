@@ -1,157 +1,325 @@
-@extends('layouts.dashboard')
+@extends('layouts.app')
 
-@section('title', 'Forum Komunitas - MindFlow')
+@section('content')
 
-@section('styles')
 <style>
-    .thread-card {
-        background: #fff;
-        border: 1px solid #E5E7EB;
-        border-radius: 16px;
+    .editor-section {
         padding: 24px;
-        margin-bottom: 16px;
-        transition: all 0.2s;
+        border-bottom: 8px solid var(--border); /* Thick separator */
     }
-    .thread-card:hover {
-        box-shadow: 0 4px 20px rgba(0,0,0,0.06);
-        border-color: #D1D5DB;
+    
+    .editor-body {
+        display: flex;
+        gap: 16px;
     }
-    .thread-avatar {
-        width: 44px;
-        height: 44px;
+    
+    .editor-avatar {
+        width: 48px;
+        height: 48px;
         border-radius: 50%;
+        background-color: #d1d5db;
+        flex-shrink: 0;
         object-fit: cover;
     }
-    .thread-meta {
-        font-size: 13px;
-        color: #6B7280;
-    }
-    .thread-title {
-        font-size: 17px;
-        font-weight: 700;
-        color: #111827;
-        margin: 8px 0 6px;
-    }
-    .thread-content {
-        font-size: 15px;
-        color: #374151;
-        line-height: 1.6;
-    }
-    .thread-actions {
+
+    .editor-content {
+        flex: 1;
         display: flex;
-        gap: 20px;
-        margin-top: 14px;
-        padding-top: 12px;
-        border-top: 1px solid #F3F4F6;
+        flex-direction: column;
     }
-    .thread-action {
+
+    .editor-input {
+        width: 100%;
+        border: none;
+        outline: none;
+        font-size: 1.05rem;
+        color: var(--text-main);
+        resize: none;
+        padding-top: 12px;
+        font-family: inherit;
+        background: transparent;
+    }
+
+    .editor-input::placeholder {
+        color: #9ca3af;
+    }
+
+    .editor-footer {
+        display: flex;
+        justify-content: space-between;
+        align-items: center;
+        margin-top: 16px;
+    }
+
+    .editor-actions {
+        display: flex;
+        gap: 12px;
+        color: var(--primary);
+    }
+    
+    .editor-icon {
+        width: 20px;
+        height: 20px;
+        cursor: pointer;
+        stroke: currentColor;
+        stroke-width: 2;
+        fill: none;
+    }
+
+    .btn-posting {
+        background-color: var(--primary);
+        color: white;
+        padding: 8px 24px;
+        border-radius: 9999px;
+        font-weight: 600;
+        border: none;
+        cursor: pointer;
+        font-size: 0.9rem;
+    }
+
+    .thread-feed {
+        display: flex;
+        flex-direction: column;
+    }
+
+    .thread-item {
+        padding: 24px;
+        border-bottom: 1px solid var(--border-dark);
+        display: flex;
+        gap: 16px;
+        position: relative;
+    }
+
+    .thread-item:hover {
+        background-color: #f9fafb;
+    }
+
+    .thread-avatar {
+        width: 48px;
+        height: 48px;
+        border-radius: 50%;
+        flex-shrink: 0;
+        display: flex;
+        align-items: center;
+        justify-content: center;
+        font-weight: bold;
+        color: white;
+    }
+    
+    .thread-avatar.anon {
+        background-color: #9ca3af;
+    }
+    
+    .thread-avatar.real {
+        background-color: #d1d5db;
+    }
+
+    .thread-body {
+        flex: 1;
+        min-width: 0;
+    }
+
+    .thread-top {
+        display: flex;
+        align-items: center;
+        margin-bottom: 4px;
+    }
+
+    .thread-author {
+        font-weight: 700;
+        color: var(--text-main);
+        margin-right: 8px;
+        font-size: 0.95rem;
+    }
+
+    .thread-time {
+        color: var(--text-muted);
+        font-size: 0.85rem;
+    }
+
+    .thread-menu {
+        position: absolute;
+        right: 24px;
+        top: 24px;
+        color: var(--text-muted);
+        cursor: pointer;
+    }
+
+    .badge {
+        font-size: 0.65rem;
+        padding: 2px 6px;
+        border-radius: 4px;
+        font-weight: 700;
+        text-transform: uppercase;
+        margin-left: 8px;
+        vertical-align: middle;
+    }
+    .badge-admin { background-color: #fef08a; color: #854d0e; }
+    .badge-konselor { background-color: #bfdbfe; color: #1e40af; }
+
+    .thread-text {
+        font-size: 0.95rem;
+        line-height: 1.5;
+        color: var(--text-main);
+        white-space: pre-wrap;
+        margin-bottom: 16px;
+    }
+
+    .thread-stats {
+        display: flex;
+        gap: 24px;
+        color: var(--text-muted);
+        font-size: 0.85rem;
+    }
+
+    .stat-item {
         display: flex;
         align-items: center;
         gap: 6px;
-        font-size: 13px;
-        font-weight: 600;
-        color: #6B7280;
         cursor: pointer;
-        transition: color 0.2s;
     }
-    .thread-action:hover { color: var(--primary-purple); }
-    .thread-action svg { width: 18px; height: 18px; }
-    .btn-new-thread {
-        background: linear-gradient(135deg, #7C3AED, #5B21B6);
-        color: white;
-        padding: 12px 28px;
-        border-radius: 12px;
-        font-weight: 700;
-        font-size: 15px;
-        border: none;
-        cursor: pointer;
-        transition: all 0.2s;
-        box-shadow: 0 4px 15px rgba(91,33,182,0.25);
-        text-decoration: none;
-        display: inline-flex;
-        align-items: center;
-        gap: 8px;
+    
+    .stat-item:hover {
+        color: var(--primary);
     }
-    .btn-new-thread:hover {
-        transform: translateY(-1px);
-        box-shadow: 0 6px 25px rgba(91,33,182,0.35);
+
+    .stat-icon {
+        width: 18px;
+        height: 18px;
+        stroke: currentColor;
+        stroke-width: 1.5;
+        fill: none;
     }
-    .toast {
-        position: fixed;
-        top: 32px;
-        right: 32px;
-        z-index: 2000;
-        background: #111827;
-        color: #FFFFFF;
-        padding: 16px 24px;
-        border-radius: 14px;
-        font-size: 14px;
-        font-weight: 500;
-        box-shadow: 0 20px 25px -5px rgba(0,0,0,0.15);
-        display: flex;
-        align-items: center;
-        gap: 10px;
-        animation: toastIn 0.4s ease, toastOut 0.4s ease 3.6s forwards;
-    }
-    @keyframes toastIn { from { opacity: 0; transform: translateX(40px); } to { opacity: 1; transform: translateX(0); } }
-    @keyframes toastOut { from { opacity: 1; } to { opacity: 0; } }
 </style>
-@endsection
 
-@section('content')
-<div style="max-width: 720px; margin: 0 auto;">
-    <div style="display: flex; justify-content: space-between; align-items: center; margin-bottom: 28px;">
-        <div>
-            <h2 style="font-size: 24px; font-weight: 800; color: #111827;">Forum Komunitas</h2>
-            <p style="font-size: 14px; color: #6B7280; margin-top: 4px;">Berbagi cerita dan saling mendukung 💜</p>
-        </div>
-        <a href="{{ route('forum.create') }}" class="btn-new-thread">
-            <svg fill="none" stroke="currentColor" viewBox="0 0 24 24" width="18" height="18"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2.5" d="M12 4v16m8-8H4"/></svg>
-            Buat Thread
-        </a>
-    </div>
+<div class="editor-section">
+    <form action="{{ route('forum.store') }}" method="POST">
+        @csrf
+        <div class="editor-body">
+            @php
+                $currentUserRole = Auth::user()->role ?? 'user';
+                $isCurrentUserAnon = $currentUserRole === 'user';
+            @endphp
+            <img src="https://ui-avatars.com/api/?name={{ urlencode($isCurrentUserAnon ? 'User Anonim' : Auth::user()->nama_asli) }}&background={{ $isCurrentUserAnon ? '9ca3af' : 'd1d5db' }}&color=1f2937" 
+                 alt="Avatar" class="editor-avatar">
+            
+            <div class="editor-content">
+                <textarea name="content" class="editor-input" rows="2" placeholder="Ceritakan pengalamanmu!" required></textarea>
+                
+                @error('content')
+                    <div style="color: #ef4444; font-size: 0.8rem; margin-top: 4px;">{{ $message }}</div>
+                @enderror
 
-    @if($threads->isEmpty())
-        <div style="text-align: center; padding: 80px 20px; background: white; border-radius: 16px; border: 1px solid #E5E7EB;">
-            <div style="font-size: 48px; margin-bottom: 16px;">💬</div>
-            <p style="font-size: 16px; font-weight: 600; color: #6B7280;">Belum ada thread. Jadilah yang pertama berbagi!</p>
-        </div>
-    @else
-        @foreach($threads as $thread)
-        <div class="thread-card">
-            <div style="display: flex; align-items: center; gap: 12px;">
-                <img src="https://ui-avatars.com/api/?name={{ urlencode($thread->user->nama_samaran ?? 'User') }}&background=E9D8FD&color=5B21B6&size=44" class="thread-avatar" alt="">
-                <div>
-                    <div style="font-weight: 700; font-size: 14px; color: #111827;">{{ $thread->user->nama_samaran ?? 'Anonim' }}</div>
-                    <div class="thread-meta">{{ $thread->created_at->diffForHumans() }}</div>
+                <div class="editor-footer">
+                    <div class="editor-actions">
+                        <!-- Camera Icon -->
+                        <svg class="editor-icon" viewBox="0 0 24 24"><path d="M3 9a2 2 0 012-2h.93a2 2 0 001.664-.89l.812-1.22A2 2 0 0110.07 4h3.86a2 2 0 011.664.89l.812 1.22A2 2 0 0018.07 7H19a2 2 0 012 2v9a2 2 0 01-2 2H5a2 2 0 01-2-2V9z" stroke-linecap="round" stroke-linejoin="round"/><path d="M15 13a3 3 0 11-6 0 3 3 0 016 0z" stroke-linecap="round" stroke-linejoin="round"/></svg>
+                        <!-- Smile Icon -->
+                        <svg class="editor-icon" viewBox="0 0 24 24"><path d="M14.828 14.828a4 4 0 01-5.656 0M9 10h.01M15 10h.01M21 12a9 9 0 11-18 0 9 9 0 0118 0z" stroke-linecap="round" stroke-linejoin="round"/></svg>
+                    </div>
+                    <button type="submit" class="btn-posting">Posting</button>
                 </div>
             </div>
-            <a href="{{ route('forum.show', $thread->forum_id) }}" style="text-decoration: none;">
-                <div class="thread-title">{{ $thread->judul_thread }}</div>
-            </a>
-            <div class="thread-content">{{ Str::limit($thread->konten, 250) }}</div>
-            <div class="thread-actions">
-                <a href="{{ route('forum.show', $thread->forum_id) }}" class="thread-action">
-                    <svg fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M8 12h.01M12 12h.01M16 12h.01M21 12c0 4.418-4.03 8-9 8a9.863 9.863 0 01-4.255-.949L3 20l1.395-3.72C3.512 15.042 3 13.574 3 12c0-4.418 4.03-8 9-8s9 3.582 9 8z"/></svg>
-                    {{ $thread->komentars->count() }} Komentar
-                </a>
-                @if(Auth::check() && $thread->user_id === Auth::id())
-                <form action="{{ route('forum.destroy', $thread->forum_id) }}" method="POST" onsubmit="return confirm('Hapus postingan ini?')" style="display:inline;">
-                    @csrf @method('DELETE')
-                    <button type="submit" class="thread-action" style="background:none;border:none;cursor:pointer;">
-                        <svg fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M19 7l-.867 12.142A2 2 0 0116.138 21H7.862a2 2 0 01-1.995-1.858L5 7m5 4v6m4-6v6m1-10V4a1 1 0 00-1-1h-4a1 1 0 00-1 1v3M4 7h16"/></svg>
-                        Hapus
-                    </button>
-                </form>
-                @endif
-            </div>
         </div>
-        @endforeach
-    @endif
+    </form>
 </div>
 
-@if(session('success'))
-<div class="toast" id="toast">✅ {{ session('success') }}</div>
-<script>setTimeout(() => document.getElementById('toast')?.remove(), 4200);</script>
-@endif
+<div class="thread-feed">
+    @forelse($threads as $thread)
+        <div class="thread-item">
+            @php
+                $role = $thread->user->role ?? 'user';
+                $isAnon = $role === 'user';
+                $authorName = $isAnon ? 'User Anonim' : ($thread->user->nama_asli ?? 'User');
+                
+                $badgeClass = '';
+                $badgeText = '';
+                if ($role === 'admin') {
+                    $badgeClass = 'badge-admin';
+                    $badgeText = 'Admin';
+                } elseif ($role === 'konselor') {
+                    $badgeClass = 'badge-konselor';
+                    $badgeText = 'Dokter';
+                } else {
+                    $badgeClass = 'badge-user';
+                    $badgeText = 'Anonim';
+                }
+            @endphp
+
+            <img src="https://ui-avatars.com/api/?name={{ urlencode($authorName) }}&background={{ $isAnon ? '9ca3af' : 'd1d5db' }}&color=1f2937" 
+                 alt="Avatar" class="thread-avatar {{ $isAnon ? 'anon' : 'real' }}">
+            
+            <div class="thread-body">
+                <div class="thread-top">
+                    <span class="thread-author">
+                        {{ $authorName }}
+                        <span class="badge {{ $badgeClass }}">{{ $badgeText }}</span>
+                    </span>
+                    <span class="thread-time">{{ $thread->created_at->diffForHumans() }}</span>
+                </div>
+                
+                <div class="thread-text">{{ $thread->content }}</div>
+                
+                <div class="thread-stats">
+                    <a href="{{ route('forum.show', $thread->id) }}" class="stat-item" style="text-decoration: none; color: inherit;">
+                        <svg class="stat-icon" viewBox="0 0 24 24"><path d="M8 12h.01M12 12h.01M16 12h.01M21 12c0 4.418-4.03 8-9 8a9.863 9.863 0 01-4.255-.949L3 20l1.395-3.72C3.512 15.042 3 13.574 3 12c0-4.418 4.03-8 9-8s9 3.582 9 8z" stroke-linecap="round" stroke-linejoin="round"/></svg>
+                        <span>{{ $thread->replies_count }}</span>
+                    </a>
+                    
+                    <form action="{{ route('forum.like', $thread->id) }}" method="POST" style="margin:0;">
+                        @csrf
+                        <button type="submit" class="stat-item" style="background:none; border:none; color: {{ $thread->isLikedBy(Auth::id() ?? 1) ? '#ef4444' : 'inherit' }};">
+                            <svg class="stat-icon" viewBox="0 0 24 24" fill="{{ $thread->isLikedBy(Auth::id() ?? 1) ? '#ef4444' : 'none' }}"><path d="M4.318 6.318a4.5 4.5 0 000 6.364L12 20.364l7.682-7.682a4.5 4.5 0 00-6.364-6.364L12 7.636l-1.318-1.318a4.5 4.5 0 00-6.364 0z" stroke-linecap="round" stroke-linejoin="round"/></svg>
+                            <span>{{ $thread->likes_count }}</span>
+                        </button>
+                    </form>
+
+                    <form action="{{ route('forum.save', $thread->id) }}" method="POST" style="margin:0;">
+                        @csrf
+                        <button type="submit" class="stat-item" style="background:none; border:none; color: {{ $thread->isSavedBy(Auth::id() ?? 1) ? 'var(--primary)' : 'inherit' }};">
+                            <svg class="stat-icon" viewBox="0 0 24 24" fill="{{ $thread->isSavedBy(Auth::id() ?? 1) ? 'var(--primary)' : 'none' }}"><path d="M5 5a2 2 0 012-2h10a2 2 0 012 2v16l-7-3.5L5 21V5z" stroke-linecap="round" stroke-linejoin="round"/></svg>
+                            <span>{{ $thread->saves_count }}</span>
+                        </button>
+                    </form>
+                </div>
+            </div>
+
+            <div class="thread-menu">
+                <button onclick="document.getElementById('dropdown-{{ $thread->id }}').style.display = document.getElementById('dropdown-{{ $thread->id }}').style.display === 'none' ? 'block' : 'none';" style="background:transparent; border:none; cursor:pointer; color:var(--text-muted);">
+                    <svg width="24" height="24" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><circle cx="12" cy="12" r="1"/><circle cx="19" cy="12" r="1"/><circle cx="5" cy="12" r="1"/></svg>
+                </button>
+                
+                <!-- Dropdown Content -->
+                <div id="dropdown-{{ $thread->id }}" style="display:none; position:absolute; right:0; top:28px; background:white; border:1px solid var(--border-dark); border-radius:8px; box-shadow:0 4px 6px rgba(0,0,0,0.1); z-index:10; min-width:150px; padding:8px 0; font-family:inherit;">
+                    
+                    @if($thread->user_id === (Auth::id() ?? 1))
+                        <form action="{{ route('forum.destroy', $thread->id) }}" method="POST" style="margin:0;" onsubmit="return confirm('Hapus post ini?');">
+                            @csrf
+                            @method('DELETE')
+                            <button type="submit" style="width:100%; text-align:left; background:none; border:none; padding:8px 16px; cursor:pointer; color:#ef4444; font-size:0.9rem;">Hapus Post</button>
+                        </form>
+                    @else
+                        <button onclick="document.getElementById('report-post-{{ $thread->id }}').style.display='block'; document.getElementById('dropdown-{{ $thread->id }}').style.display='none';" style="width:100%; text-align:left; background:none; border:none; padding:8px 16px; cursor:pointer; color:var(--text-main); font-size:0.9rem;">Laporkan</button>
+                    @endif
+                </div>
+
+                <!-- Report Form -->
+                <form id="report-post-{{ $thread->id }}" action="{{ route('forum.report', $thread->id) }}" method="POST" style="display:none; position:absolute; right:0; top:28px; background:white; border:1px solid #ef4444; border-radius:8px; box-shadow:0 4px 6px rgba(0,0,0,0.1); z-index:11; padding:12px; width:240px; font-family:inherit;">
+                    @csrf
+                    <div style="font-weight:600; font-size:0.85rem; margin-bottom:8px; color:#ef4444;">Laporkan Postingan</div>
+                    <input type="text" name="reason" placeholder="Contoh: Spam, Mengganggu..." style="width:100%; padding:6px 8px; border:1px solid var(--border-dark); border-radius:4px; margin-bottom:8px; font-size:0.85rem;" required>
+                    <div style="display:flex; justify-content:flex-end; gap:8px;">
+                        <button type="button" onclick="document.getElementById('report-post-{{ $thread->id }}').style.display='none'" style="background:none; border:none; font-size:0.8rem; cursor:pointer; color:var(--text-muted); font-weight:600;">Batal</button>
+                        <button type="submit" style="background:#ef4444; color:white; border:none; padding:4px 12px; border-radius:4px; font-weight:600; font-size:0.8rem; cursor:pointer;">Kirim</button>
+                    </div>
+                </form>
+            </div>
+        </div>
+    @empty
+        <div style="text-align: center; padding: 40px; color: var(--text-muted);">
+            Belum ada pos di forum ini. Jadilah yang pertama untuk berbagi!
+        </div>
+    @endforelse
+</div>
+
 @endsection
