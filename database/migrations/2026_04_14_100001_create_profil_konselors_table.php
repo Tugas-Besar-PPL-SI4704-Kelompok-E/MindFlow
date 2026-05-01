@@ -14,8 +14,10 @@ return new class extends Migration
         Schema::create('profil_konselors', function (Blueprint $table) {
             $table->id('profil_konselor_id');
             $table->foreignId('user_id')->constrained('users')->onDelete('cascade');
+            $table->string('nama');
             $table->string('spesialisasi');
             $table->text('biografi');
+            $table->text('keahlian');
             $table->timestamps();
         });
     }
