@@ -5,6 +5,7 @@ use Illuminate\Support\Facades\Route;
 use App\Http\Controllers\BookingController;
 use App\Http\Controllers\CounselingController;
 use App\Http\Controllers\JournalController;
+use App\Http\Controllers\UserController;
 use App\Http\Controllers\ForumController;
 use App\Http\Controllers\Auth\LoginController;
 use App\Http\Controllers\Auth\RegisterController;
@@ -77,3 +78,12 @@ Route::prefix('admin')->name('admin.')->group(function () {
 
 // ──────────────────── Journal Routes (PBI 15, 16, 17) ────────────────────
 Route::resource('journals', JournalController::class);
+
+Route::middleware('auth')->group(function () {
+    Route::get('/settings', [UserController::class, 'edit'])->name('settings.edit');
+    Route::put('/settings', [UserController::class, 'update'])->name('settings.update');
+});
+
+Route::get('/faq', function () {
+    return view('faq');
+})->name('faq');
