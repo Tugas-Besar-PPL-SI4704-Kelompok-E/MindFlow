@@ -11,7 +11,7 @@ class ForumController extends Controller
     public function index()
     {
         // Add withCount for likes, saves, replies
-        $threads = Thread::with('user')->withCount(['likes', 'saves', 'replies'])->latest()->get();
+        $threads = Thread::query()->with('user')->withCount(['likes', 'saves', 'replies'])->latest()->get();
         return view('forum.index', compact('threads'));
     }
 
@@ -33,7 +33,7 @@ class ForumController extends Controller
             'content' => 'required|string|max:1000',
         ]);
 
-        Thread::create([
+        Thread::query()->create([
             'user_id' => Auth::id() ?? 1, // Fallback to 1 for dummy auth
             'content' => $request->content,
             'is_anonymous' => $request->has('is_anonymous'),
