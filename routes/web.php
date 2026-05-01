@@ -5,6 +5,7 @@ use Illuminate\Support\Facades\Route;
 use App\Http\Controllers\BookingController;
 use App\Http\Controllers\CounselingController;
 use App\Http\Controllers\JournalController;
+use App\Http\Controllers\UserController;
 use App\Http\Controllers\ForumController;
 use App\Http\Controllers\Auth\LoginController;
 use App\Http\Controllers\Auth\RegisterController;
@@ -84,3 +85,11 @@ Route::post('forum/{thread}/save', [ThreadInteractionController::class, 'toggleS
 Route::post('forum/{thread}/reply', [ThreadInteractionController::class, 'storeReply'])->name('forum.reply');
 Route::post('forum/{thread}/report', [ThreadInteractionController::class, 'reportThread'])->name('forum.report');
 Route::post('forum/reply/{reply}/report', [ThreadInteractionController::class, 'reportReply'])->name('forum.reply.report');
+Route::middleware('auth')->group(function () {
+    Route::get('/settings', [UserController::class, 'edit'])->name('settings.edit');
+    Route::put('/settings', [UserController::class, 'update'])->name('settings.update');
+});
+
+Route::get('/faq', function () {
+    return view('faq');
+})->name('faq');
