@@ -92,6 +92,16 @@
 
     <div class="thread-body">{{ $thread->content }}</div>
 
+    @php
+        $currentUserRole = Auth::user()->role ?? 'user';
+        $isCurrentUserAnon = $currentUserRole === 'user';
+        $currentName = $isCurrentUserAnon ? 'User Anonim' : (Auth::user()->nama_asli ?? 'User');
+        $currentUserBadgeClass = $currentUserRole === 'admin' ? 'badge-admin' : ($currentUserRole === 'konselor' ? 'badge-konselor' : 'badge-user');
+        $currentUserBadgeText = $currentUserRole === 'admin' ? 'Admin' : ($currentUserRole === 'konselor' ? 'Dokter' : 'Anonim');
+    @endphp
+    <div style="font-weight: 600; font-size: 0.95rem; margin-top: 16px; margin-bottom: -4px; color: var(--text-main);">
+        Membalas sebagai: {{ $currentName }} <span class="badge {{ $currentUserBadgeClass }}">{{ $currentUserBadgeText }}</span>
+    </div>
     <form action="{{ route('forum.reply', $thread->id) }}" method="POST" class="reply-form">
         @csrf
         <input type="text" name="content" class="reply-input" placeholder="Balas luapan ini..." required>

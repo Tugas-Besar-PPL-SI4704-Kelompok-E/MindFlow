@@ -9,6 +9,7 @@ use App\Http\Controllers\ForumController;
 use App\Http\Controllers\Auth\LoginController;
 use App\Http\Controllers\Auth\RegisterController;
 use App\Http\Controllers\AdminController;
+use App\Http\Controllers\CounselorController;
 
 // ──────────────────── Landing Page (Guest) ────────────────────
 Route::get('/', function () {
@@ -64,6 +65,11 @@ Route::prefix('admin')->name('admin.')->group(function () {
     Route::get('/laporan', [AdminController::class, 'laporan'])->name('laporan');
     Route::delete('/forum/{id}/delete', [AdminController::class, 'hapusPostingan'])->name('forum.delete');
     Route::get('/spesialisasi', [AdminController::class, 'spesialisasi'])->name('spesialisasi');
+});
+
+// ──────────────────── Konselor Routes ────────────────────
+Route::prefix('konselor')->name('konselor.')->group(function () {
+    Route::get('/dashboard', [CounselorController::class, 'index'])->name('dashboard');
 });
 
 // ──────────────────── Journal Routes (PBI 15, 16, 17) ────────────────────

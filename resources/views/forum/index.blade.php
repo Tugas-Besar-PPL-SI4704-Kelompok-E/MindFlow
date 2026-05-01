@@ -156,6 +156,7 @@
     }
     .badge-admin { background-color: #fef08a; color: #854d0e; }
     .badge-konselor { background-color: #bfdbfe; color: #1e40af; }
+    .badge-user { background-color: #e2e8f0; color: #475569; }
 
     .thread-text {
         font-size: 0.95rem;
@@ -204,6 +205,24 @@
                  alt="Avatar" class="editor-avatar">
             
             <div class="editor-content">
+                <div style="font-weight: 600; font-size: 0.95rem; margin-bottom: 8px; color: var(--text-main);">
+                    Posting sebagai: {{ $isCurrentUserAnon ? 'User Anonim' : Auth::user()->nama_asli }}
+                    @php
+                        $currentUserBadgeClass = '';
+                        $currentUserBadgeText = '';
+                        if ($currentUserRole === 'admin') {
+                            $currentUserBadgeClass = 'badge-admin';
+                            $currentUserBadgeText = 'Admin';
+                        } elseif ($currentUserRole === 'konselor') {
+                            $currentUserBadgeClass = 'badge-konselor';
+                            $currentUserBadgeText = 'Dokter';
+                        } else {
+                            $currentUserBadgeClass = 'badge-user';
+                            $currentUserBadgeText = 'Anonim';
+                        }
+                    @endphp
+                    <span class="badge {{ $currentUserBadgeClass }}">{{ $currentUserBadgeText }}</span>
+                </div>
                 <textarea name="content" class="editor-input" rows="2" placeholder="Ceritakan pengalamanmu!" required></textarea>
                 
                 @error('content')
