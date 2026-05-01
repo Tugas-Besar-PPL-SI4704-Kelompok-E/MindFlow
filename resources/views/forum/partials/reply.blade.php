@@ -40,11 +40,23 @@
                 </button>
             </div>
 
-            <form id="reply-form-{{ $reply->id }}" action="{{ route('forum.reply', $reply->thread_id) }}" method="POST" style="display:none; margin-top:12px; gap:8px;">
+            <form id="reply-form-{{ $reply->id }}" action="{{ route('forum.reply', $reply->thread_id) }}" method="POST" style="display:none; margin-top:12px; flex-direction: column; gap:8px;">
                 @csrf
                 <input type="hidden" name="parent_id" value="{{ $reply->id }}">
-                <input type="text" name="content" style="flex:1; padding:8px 12px; border-radius:6px; border:1px solid var(--border-dark); font-size:0.85rem;" placeholder="Balas ke {{ $authorName }}..." required>
-                <button type="submit" class="btn btn-primary" style="padding:4px 12px; font-size:0.8rem;">Kirim</button>
+                @php
+                    $currentUserRole = Auth::user()->role ?? 'user';
+                    $isCurrentUserAnon = $currentUserRole === 'user';
+                    $currentName = $isCurrentUserAnon ? 'User Anonim' : (Auth::user()->nama_asli ?? 'User');
+                    $currentUserBadgeClass = $currentUserRole === 'admin' ? 'badge-admin' : ($currentUserRole === 'konselor' ? 'badge-konselor' : 'badge-user');
+                    $currentUserBadgeText = $currentUserRole === 'admin' ? 'Admin' : ($currentUserRole === 'konselor' ? 'Dokter' : 'Anonim');
+                @endphp
+                <div style="font-size: 0.85rem; font-weight: 600; color: var(--text-main);">
+                    Membalas sebagai: {{ $currentName }} <span class="badge {{ $currentUserBadgeClass }}">{{ $currentUserBadgeText }}</span>
+                </div>
+                <div style="display: flex; gap: 8px;">
+                    <input type="text" name="content" style="flex:1; padding:8px 12px; border-radius:6px; border:1px solid var(--border-dark); font-size:0.85rem;" placeholder="Balas ke {{ $authorName }}..." required>
+                    <button type="submit" class="btn btn-primary" style="padding:4px 12px; font-size:0.8rem; background-color: var(--primary); color: white; border: none; border-radius: 6px;">Kirim</button>
+                </div>
             </form>
 
             <!-- Report Form -->

@@ -2,115 +2,81 @@
 
 namespace App\Http\Controllers;
 
-use App\Models\Forum;
-use App\Models\Komentar;
-use App\Models\LaporanForum;
+use App\Models\Thread;
 use Illuminate\Http\Request;
 use Illuminate\Support\Facades\Auth;
 
 class ForumController extends Controller
 {
-    /**
-     * PBI-18: Menampilkan semua thread forum (timeline ala Twitter).
-     */
     public function index()
     {
-        $threads = Forum::with(['user', 'komentars'])
-            ->orderBy('created_at', 'desc')
-            ->get();
-
+        // Add withCount for likes, saves, replies
+        $threads = Thread::query()->with('user')->withCount(['likes', 'saves', 'replies'])->latest()->get();
         return view('forum.index', compact('threads'));
     }
 
-    /**
-     * PBI-18: Form buat thread baru.
-     */
-    public function create()
+    public function show(Thread $forum)
     {
-        return view('forum.create');
+        $forum->load(['user', 'replies.user'])->loadCount(['likes', 'saves', 'replies']);
+        // Only load top-level replies (parent_id is null) for the initial render
+        $topReplies = $forum->replies()->whereNull('parent_id')->with('children.user')->withCount('children')->latest()->get();
+
+        return view('forum.show', [
+            'thread' => $forum,
+            'replies' => $topReplies
+        ]);
     }
 
-    /**
-     * PBI-18: Simpan thread baru.
-     */
     public function store(Request $request)
     {
         $request->validate([
-            'judul_thread' => 'required|string|max:255',
-            'konten' => 'required|string|min:3',
+            'content' => 'required|string|max:1000',
         ]);
 
-        Forum::create([
-            'user_id' => Auth::id(),
-            'judul_thread' => $request->judul_thread,
-            'konten' => $request->konten,
+        Thread::query()->create([
+            'user_id' => Auth::id() ?? 1, // Fallback to 1 for dummy auth
+            'content' => $request->content,
+            'is_anonymous' => $request->has('is_anonymous'),
         ]);
 
-        return redirect()->route('forum.index')
-            ->with('success', 'Thread berhasil dibuat!');
+        return redirect()->route('forum.index')->with('success', 'Thread berhasil dibuat!');
     }
 
-    /**
-     * PBI-18: Menampilkan detail thread + komentar.
-     */
-    public function show($id)
+    public function edit(Thread $forum)
     {
-        $thread = Forum::with(['user', 'komentars.user'])->findOrFail($id);
-        return view('forum.show', compact('thread'));
-    }
-
-    /**
-     * PBI-18: Hapus thread sendiri.
-     */
-    public function destroy($id)
-    {
-        $thread = Forum::findOrFail($id);
-
-        if ($thread->user_id !== Auth::id()) {
-            abort(403, 'Anda tidak berhak menghapus postingan ini.');
+        if ($forum->user_id !== (Auth::id() ?? 1)) {
+            abort(403, 'Unauthorized action.');
         }
 
-        $thread->delete();
-
-        return redirect()->route('forum.index')
-            ->with('success', 'Postingan berhasil dihapus.');
+        return view('forum.edit', ['thread' => $forum]);
     }
 
-    /**
-     * PBI-19: Tambah komentar ke thread.
-     */
-    public function storeKomentar(Request $request, $forumId)
+    public function update(Request $request, Thread $forum)
     {
+        if ($forum->user_id !== (Auth::id() ?? 1)) {
+            abort(403, 'Unauthorized action.');
+        }
+
         $request->validate([
-            'konten_komentar' => 'required|string|min:1',
+            'content' => 'required|string|max:1000',
         ]);
 
-        Komentar::create([
-            'forum_id' => $forumId,
-            'user_id' => Auth::id(),
-            'konten_komentar' => $request->konten_komentar,
+        $forum->update([
+            'content' => $request->content,
+            'is_anonymous' => $request->has('is_anonymous'),
         ]);
 
-        return redirect()->route('forum.show', $forumId)
-            ->with('success', 'Komentar berhasil ditambahkan.');
+        return redirect()->route('forum.index')->with('success', 'Thread berhasil diperbarui!');
     }
 
-    /**
-     * PBI-20: Report postingan forum.
-     */
-    public function report(Request $request, $forumId)
+    public function destroy(Thread $forum)
     {
-        $request->validate([
-            'alasan_laporan' => 'required|string|max:255',
-        ]);
+        if ($forum->user_id !== (Auth::id() ?? 1)) {
+            abort(403, 'Unauthorized action.');
+        }
 
-        LaporanForum::create([
-            'forum_id' => $forumId,
-            'pelapor_id' => Auth::id(),
-            'alasan_laporan' => $request->alasan_laporan,
-        ]);
+        $forum->delete();
 
-        return redirect()->route('forum.show', $forumId)
-            ->with('success', 'Laporan berhasil dikirim. Terima kasih atas laporanmu.');
+        return redirect()->route('forum.index')->with('success', 'Thread berhasil dihapus!');
     }
 }

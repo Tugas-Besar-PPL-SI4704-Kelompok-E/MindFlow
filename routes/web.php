@@ -10,6 +10,7 @@ use App\Http\Controllers\ForumController;
 use App\Http\Controllers\Auth\LoginController;
 use App\Http\Controllers\Auth\RegisterController;
 use App\Http\Controllers\AdminController;
+use App\Http\Controllers\CounselorController;
 
 // ──────────────────── Landing Page (Guest) ────────────────────
 Route::get('/', function () {
@@ -58,15 +59,6 @@ Route::get('/mood-tracker/open-question', [MoodTrackerController::class, 'openQu
 Route::post('/mood-tracker/open-question', [MoodTrackerController::class, 'openQuestionStore'])
     ->name('mood-tracker.open-question.store');
 
-// ──────────────────── Forum Routes (PBI 18, 19, 20) ────────────────────
-Route::get('/forum', [ForumController::class, 'index'])->name('forum.index');
-Route::get('/forum/create', [ForumController::class, 'create'])->name('forum.create');
-Route::post('/forum', [ForumController::class, 'store'])->name('forum.store');
-Route::get('/forum/{id}', [ForumController::class, 'show'])->name('forum.show');
-Route::delete('/forum/{id}', [ForumController::class, 'destroy'])->name('forum.destroy');
-Route::post('/forum/{id}/komentar', [ForumController::class, 'storeKomentar'])->name('forum.komentar');
-Route::post('/forum/{id}/report', [ForumController::class, 'report'])->name('forum.report');
-
 // ──────────────────── Admin Routes ────────────────────
 Route::prefix('admin')->name('admin.')->group(function () {
     Route::get('/dashboard', [AdminController::class, 'index'])->name('dashboard');
@@ -76,9 +68,23 @@ Route::prefix('admin')->name('admin.')->group(function () {
     Route::get('/spesialisasi', [AdminController::class, 'spesialisasi'])->name('spesialisasi');
 });
 
+// ──────────────────── Konselor Routes ────────────────────
+Route::prefix('konselor')->name('konselor.')->group(function () {
+    Route::get('/dashboard', [CounselorController::class, 'index'])->name('dashboard');
+});
+
 // ──────────────────── Journal Routes (PBI 15, 16, 17) ────────────────────
 Route::resource('journals', JournalController::class);
 
+// Forum resource routes
+Route::resource('forum', ForumController::class);
+
+use App\Http\Controllers\ThreadInteractionController;
+Route::post('forum/{thread}/like', [ThreadInteractionController::class, 'toggleLike'])->name('forum.like');
+Route::post('forum/{thread}/save', [ThreadInteractionController::class, 'toggleSave'])->name('forum.save');
+Route::post('forum/{thread}/reply', [ThreadInteractionController::class, 'storeReply'])->name('forum.reply');
+Route::post('forum/{thread}/report', [ThreadInteractionController::class, 'reportThread'])->name('forum.report');
+Route::post('forum/reply/{reply}/report', [ThreadInteractionController::class, 'reportReply'])->name('forum.reply.report');
 Route::middleware('auth')->group(function () {
     Route::get('/settings', [UserController::class, 'edit'])->name('settings.edit');
     Route::put('/settings', [UserController::class, 'update'])->name('settings.update');

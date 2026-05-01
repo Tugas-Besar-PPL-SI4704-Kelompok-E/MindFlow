@@ -18,7 +18,7 @@ class AdminController extends Controller
             'totalUsers'      => User::where('role', 'user')->count(),
             'totalArticles'   => 0, // Tabel artikels belum ada modelnya, dummy
             'totalApplicants' => 0, // Tabel calon_konselors — dummy
-            'totalReports'    => LaporanForum::where('status_tindak_lanjut', 'pending')->count(),
+            'totalReports'    => \App\Models\ThreadReport::count() + \App\Models\ReplyReport::count(),
         ];
 
         return view('admin.dashboard', $data);
@@ -29,9 +29,33 @@ class AdminController extends Controller
      */
     public function laporan()
     {
-        $reports = LaporanForum::with(['forum', 'pelapor'])
-            ->orderBy('created_at', 'desc')
-            ->get();
+        $threadReports = \App\Models\ThreadReport::with(['thread', 'user'])->get()->map(function($r) {
+            return (object)[
+                'type' => 'thread',
+                'id' => $r->id,
+                'target_id' => $r->thread_id,
+                'pelapor' => $r->user,
+                'konten' => $r->thread ? $r->thread->content : 'Postingan telah dihapus',
+                'alasan' => $r->reason,
+                'created_at' => $r->created_at,
+                'is_deleted' => !$r->thread
+            ];
+        });
+
+        $replyReports = \App\Models\ReplyReport::with(['reply', 'user'])->get()->map(function($r) {
+            return (object)[
+                'type' => 'reply',
+                'id' => $r->id,
+                'target_id' => $r->thread_reply_id,
+                'pelapor' => $r->user,
+                'konten' => $r->reply ? $r->reply->content : 'Balasan telah dihapus',
+                'alasan' => $r->reason,
+                'created_at' => $r->created_at,
+                'is_deleted' => !$r->reply
+            ];
+        });
+
+        $reports = $threadReports->concat($replyReports)->sortByDesc('created_at');
 
         return view('admin.laporan', compact('reports'));
     }
@@ -39,12 +63,19 @@ class AdminController extends Controller
     /**
      * PBI 40: Eksekusi hapus postingan forum secara permanen.
      */
-    public function hapusPostingan($id)
+    public function hapusPostingan(Request $request, $id)
     {
-        $forum = Forum::findOrFail($id);
-        $forum->delete();
-
-        return back()->with('success', "Postingan \"{$forum->judul_thread}\" telah dihapus secara permanen.");
+        $type = $request->query('type', 'thread');
+        
+        if ($type === 'reply') {
+            $reply = \App\Models\ThreadReply::findOrFail($id);
+            $reply->delete();
+            return back()->with('success', "Balasan telah dihapus secara permanen.");
+        } else {
+            $thread = \App\Models\Thread::findOrFail($id);
+            $thread->delete();
+            return back()->with('success', "Postingan telah dihapus secara permanen.");
+        }
     }
 
     /**
