@@ -42,6 +42,7 @@
                 <div class="hidden md:flex space-x-8 items-center">
                     <a href="#features" class="text-slate-600 hover:text-teal-600 font-medium transition">Features</a>
                     <a href="#about" class="text-slate-600 hover:text-teal-600 font-medium transition">About</a>
+                    <a href="{{ route('faq') }}" class="text-slate-600 hover:text-teal-600 font-medium transition">FAQ</a>
                     <a href="#contact" class="text-slate-600 hover:text-teal-600 font-medium transition">Contact</a>
                 </div>
 
@@ -49,7 +50,12 @@
                 <div class="hidden md:flex items-center space-x-4">
                     @if (Route::has('login'))
                         @auth
-                            <a href="{{ url('/dashboard') }}" class="text-slate-600 hover:text-teal-600 font-medium transition">Dashboard</a>
+                            <a href="{{ route('journals.index') }}" class="text-slate-600 hover:text-teal-600 font-medium transition">Dashboard</a>
+                            <a href="{{ route('settings.edit') }}" class="text-slate-600 hover:text-teal-600 font-medium transition">Settings</a>
+                            <form method="POST" action="{{ route('logout') }}" class="inline">
+                                @csrf
+                                <button type="submit" class="text-rose-600 hover:text-rose-700 font-medium transition">Log out</button>
+                            </form>
                         @else
                             <a href="{{ route('login') }}" class="text-slate-600 hover:text-teal-600 font-medium transition">Log in</a>
                             @if (Route::has('register'))
