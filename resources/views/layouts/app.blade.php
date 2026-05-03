@@ -6,7 +6,7 @@
     <title>MindFlow - Forum</title>
     <link rel="preconnect" href="https://fonts.googleapis.com">
     <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
-    <link href="https://fonts.googleapis.com/css2?family=Inter:wght@400;500;600;700&display=swap" rel="stylesheet">
+    <link href="https://fonts.googleapis.com/css2?family=Poppins:wght@400;500;600;700&display=swap" rel="stylesheet">
     <style>
         :root {
             --primary: #a881af; /* Purple accent */
@@ -25,28 +25,29 @@
             box-sizing: border-box;
             margin: 0;
             padding: 0;
+            font-family: 'Poppins', sans-serif;
         }
 
         body {
-            font-family: 'Inter', sans-serif;
             background-color: var(--bg-color);
             color: var(--text-main);
             line-height: 1.5;
             -webkit-font-smoothing: antialiased;
+            display: flex;
         }
 
         .layout {
             display: flex;
-            max-width: 1300px;
-            margin: 0 auto;
+            width: 100%;
             min-height: 100vh;
         }
 
         /* --- Left Sidebar --- */
         .sidebar-left {
-            width: var(--sidebar-left-w);
+            width: 280px;
+            background-color: #FFFFFF;
             border-right: 1px solid var(--border-dark);
-            padding: 24px 0;
+            padding: 40px 0;
             display: flex;
             flex-direction: column;
             position: sticky;
@@ -54,83 +55,92 @@
             height: 100vh;
         }
 
-        .logo {
+        .brand {
             display: flex;
             align-items: center;
-            gap: 12px;
-            padding: 0 24px;
-            margin-bottom: 32px;
-            font-size: 1.25rem;
+            padding: 0 30px;
+            margin-bottom: 50px;
+            font-size: 24px;
             font-weight: 700;
-            color: #1f2937;
+            color: #1A1A1A;
         }
-        
-        .logo-icon {
-            width: 32px;
-            height: 32px;
-            background: #1e1b4b;
+
+        .brand-icon {
+            width: 36px;
+            height: 36px;
+            background: #1A2542;
             border-radius: 50%;
+            margin-right: 12px;
             display: flex;
             align-items: center;
             justify-content: center;
-            color: white;
+            color: #FFF;
             position: relative;
             overflow: hidden;
         }
-        .logo-icon::after {
+
+        .brand-icon::after {
             content: '';
             position: absolute;
-            width: 16px;
-            height: 16px;
-            background: #a881af;
+            width: 20px;
+            height: 20px;
+            background: #8FA1D0;
             border-radius: 50%;
-            bottom: -4px;
-            right: -4px;
+            top: 10px;
+            left: 10px;
+        }
+
+        .brand span.flow {
+            color: #9B76D6;
         }
 
         .menu-title {
-            padding: 0 24px;
-            font-size: 1.1rem;
-            font-weight: 700;
-            margin-bottom: 16px;
-            margin-top: 10px;
+            padding: 0 30px;
+            font-size: 18px;
+            font-weight: 600;
+            margin-bottom: 20px;
         }
 
-        .nav-menu {
+        .menu-list {
             list-style: none;
             display: flex;
             flex-direction: column;
+            gap: 5px;
         }
 
-        .nav-item {
+        .menu-item {
             display: flex;
             align-items: center;
-            gap: 16px;
-            padding: 12px 24px;
-            color: var(--text-main);
+            padding: 16px 30px;
+            color: #1A1A1A;
             text-decoration: none;
             font-weight: 600;
-            font-size: 0.95rem;
+            font-size: 15px;
             transition: all 0.2s;
             border-left: 4px solid transparent;
         }
 
-        .nav-item:hover {
-            background-color: #f9fafb;
+        .menu-item:hover {
+            background-color: #F9F9F9;
         }
 
-        .nav-item.active {
-            background-color: var(--primary-light);
-            color: var(--primary);
-            border-left-color: var(--primary);
+        .menu-item.active {
+            background-color: #F4EEFB;
+            color: #9B76D6;
+            border-left-color: #9B76D6;
         }
 
-        .nav-icon {
+        .menu-item svg {
             width: 24px;
             height: 24px;
+            margin-right: 16px;
             stroke: currentColor;
             stroke-width: 2;
             fill: none;
+        }
+
+        .menu-item.active svg {
+            stroke: #9B76D6;
         }
 
         /* --- Main Content --- */
@@ -282,60 +292,66 @@
     <div class="layout">
         <!-- Sidebar Kiri -->
         <aside class="sidebar-left">
-            <div class="logo">
-                <div class="logo-icon"></div>
-                MindFlow
+            <div class="brand">
+                <img src="{{ asset('images/logo.png') }}" alt="Logo MindFlow" style="width: 36px; height: 36px; margin-right: 12px; object-fit: contain;">
+                <div>Mind<span class="flow">Flow</span></div>
             </div>
             
             <div class="menu-title">Menu</div>
             
-            <ul class="nav-menu">
+            <ul class="menu-list">
                 @if(Auth::check() && Auth::user()->role === 'admin')
                 <li>
-                    <a href="{{ route('admin.dashboard') }}" class="nav-item">
-                        <svg class="nav-icon" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" d="M3 12l2-2m0 0l7-7 7 7M5 10v10a1 1 0 001 1h3m10-11l2 2m-2-2v10a1 1 0 01-1 1h-3m-6 0a1 1 0 001-1v-4a1 1 0 011-1h2a1 1 0 011 1v4a1 1 0 001 1m-6 0h6"/></svg>
+                    <a href="{{ route('admin.dashboard') }}" class="menu-item {{ request()->is('admin*') ? 'active' : '' }}">
+                        <svg viewBox="0 0 24 24" stroke="currentColor" fill="none"><path stroke-linecap="round" stroke-linejoin="round" d="M3 12l2-2m0 0l7-7 7 7M5 10v10a1 1 0 001 1h3m10-11l2 2m-2-2v10a1 1 0 01-1 1h-3m-6 0a1 1 0 001-1v-4a1 1 0 011-1h2a1 1 0 011 1v4a1 1 0 001 1m-6 0h6"/></svg>
                         Dashboard Admin
                     </a>
                 </li>
                 @endif
                 @if(Auth::check() && Auth::user()->role === 'konselor')
                 <li>
-                    <a href="{{ route('konselor.dashboard') }}" class="nav-item">
-                        <svg class="nav-icon" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" d="M16 7a4 4 0 11-8 0 4 4 0 018 0zM12 14a7 7 0 00-7 7h14a7 7 0 00-7-7z"/></svg>
+                    <a href="{{ route('konselor.dashboard') }}" class="menu-item {{ request()->is('konselor*') ? 'active' : '' }}">
+                        <svg viewBox="0 0 24 24" stroke="currentColor" fill="none"><path stroke-linecap="round" stroke-linejoin="round" d="M16 7a4 4 0 11-8 0 4 4 0 018 0zM12 14a7 7 0 00-7 7h14a7 7 0 00-7-7z"/></svg>
                         Dashboard Konselor
                     </a>
                 </li>
                 @endif
                 @if(!Auth::check() || !in_array(Auth::user()->role, ['admin', 'konselor']))
                 <li>
-                    <a href="{{ route('homepage') }}" class="nav-item">
-                        <svg class="nav-icon" viewBox="0 0 24 24"><path d="M3 12l2-2m0 0l7-7 7 7M5 10v10a1 1 0 001 1h3m10-11l2 2m-2-2v10a1 1 0 01-1 1h-3m-6 0a1 1 0 001-1v-4a1 1 0 011-1h2a1 1 0 011 1v4a1 1 0 001 1m-6 0h6" stroke-linecap="round" stroke-linejoin="round"/></svg>
+                    <a href="{{ route('homepage') }}" class="menu-item {{ request()->is('home') ? 'active' : '' }}">
+                        <svg viewBox="0 0 24 24"><path d="M3 9l9-7 9 7v11a2 2 0 0 1-2 2H5a2 2 0 0 1-2-2z"></path><polyline points="9 22 9 12 15 12 15 22"></polyline></svg>
                         Homepage
                     </a>
                 </li>
                 <li>
-                    <a href="{{ route('konseling.index') }}" class="nav-item">
-                        <svg class="nav-icon" viewBox="0 0 24 24"><path d="M9 12h6m-6 4h6m2 5H7a2 2 0 01-2-2V5a2 2 0 012-2h5.586a1 1 0 01.707.293l5.414 5.414a1 1 0 01.293.707V19a2 2 0 01-2 2z" stroke-linecap="round" stroke-linejoin="round"/></svg>
+                    <a href="{{ route('konseling.index') }}" class="menu-item {{ request()->is('konseling*') ? 'active' : '' }}">
+                        <svg viewBox="0 0 24 24"><path d="M14 2H6a2 2 0 0 0-2 2v16a2 2 0 0 0 2 2h12a2 2 0 0 0 2-2V8z"></path><polyline points="14 2 14 8 20 8"></polyline><line x1="16" y1="13" x2="8" y2="13"></line><line x1="16" y1="17" x2="8" y2="17"></line><polyline points="10 9 9 9 8 9"></polyline></svg>
                         Konsultasi
+                    </a>
+                </li>
+                <li>
+                    <a href="{{ route('mood-tracker.index') }}" class="menu-item {{ request()->is('mood-tracker*') ? 'active' : '' }}">
+                        <svg viewBox="0 0 24 24"><circle cx="12" cy="12" r="10"></circle><path d="M8 14s1.5 2 4 2 4-2 4-2"></path><line x1="9" y1="9" x2="9.01" y2="9"></line><line x1="15" y1="9" x2="15.01" y2="9"></line></svg>
+                        Mood Tracker
                     </a>
                 </li>
                 @endif
                 <li>
-                    <a href="{{ route('forum.index') }}" class="nav-item active">
-                        <svg class="nav-icon" viewBox="0 0 24 24"><path d="M17 20h5v-2a3 3 0 00-5.356-1.857M17 20H7m10 0v-2c0-.656-.126-1.283-.356-1.857M7 20H2v-2a3 3 0 015.356-1.857M7 20v-2c0-.656.126-1.283.356-1.857m0 0a5.002 5.002 0 019.288 0M15 7a3 3 0 11-6 0 3 3 0 016 0zm6 3a2 2 0 11-4 0 2 2 0 014 0zM7 10a2 2 0 11-4 0 2 2 0 014 0z" stroke-linecap="round" stroke-linejoin="round"/></svg>
+                    <a href="{{ route('forum.index') }}" class="menu-item {{ request()->is('forum*') ? 'active' : '' }}">
+                        <svg viewBox="0 0 24 24"><path d="M17 21v-2a4 4 0 0 0-4-4H5a4 4 0 0 0-4 4v2"></path><circle cx="9" cy="7" r="4"></circle><path d="M23 21v-2a4 4 0 0 0-3-3.87"></path><path d="M16 3.13a4 4 0 0 1 0 7.75"></path></svg>
                         Forum
                     </a>
                 </li>
                 @if(!Auth::check() || !in_array(Auth::user()->role, ['admin', 'konselor']))
                 <li>
-                    <a href="{{ route('journals.index') }}" class="nav-item">
-                        <svg class="nav-icon" viewBox="0 0 24 24"><path d="M12 6.253v13m0-13C10.832 5.477 9.246 5 7.5 5S4.168 5.477 3 6.253v13C4.168 18.477 5.754 18 7.5 18s3.332.477 4.5 1.253m0-13C13.168 5.477 14.754 5 16.5 5c1.747 0 3.332.477 4.5 1.253v13C19.832 18.477 18.247 18 16.5 18c-1.746 0-3.332.477-4.5 1.253" stroke-linecap="round" stroke-linejoin="round"/></svg>
+                    <a href="{{ route('journals.index') }}" class="menu-item {{ request()->is('journals*') ? 'active' : '' }}">
+                        <svg viewBox="0 0 24 24"><path d="M4 19.5A2.5 2.5 0 0 1 6.5 17H20"></path><path d="M6.5 2H20v20H6.5A2.5 2.5 0 0 1 4 19.5v-15A2.5 2.5 0 0 1 6.5 2z"></path></svg>
                         Jurnal
                     </a>
                 </li>
                 <li>
-                    <a href="#" class="nav-item">
-                        <svg class="nav-icon" viewBox="0 0 24 24"><path d="M3 8l7.89 5.26a2 2 0 002.22 0L21 8M5 19h14a2 2 0 002-2V7a2 2 0 00-2-2H5a2 2 0 00-2 2v10a2 2 0 002 2z" stroke-linecap="round" stroke-linejoin="round"/></svg>
+                    <a href="#" class="menu-item {{ request()->is('artikel*') ? 'active' : '' }}">
+                        <svg viewBox="0 0 24 24"><path d="M4 4h16c1.1 0 2 .9 2 2v12c0 1.1-.9 2-2 2H4c-1.1 0-2-.9-2-2V6c0-1.1.9-2 2-2z"></path><polyline points="22,6 12,13 2,6"></polyline></svg>
                         Artikel
                     </a>
                 </li>
@@ -343,8 +359,8 @@
                 <li style="margin-top: 24px;">
                     <form action="{{ route('logout') }}" method="POST" style="margin: 0;">
                         @csrf
-                        <button type="submit" class="nav-item" style="width: 100%; background: none; border: none; cursor: pointer; color: #ef4444; text-align: left;">
-                            <svg class="nav-icon" viewBox="0 0 24 24" stroke="#ef4444"><path stroke-linecap="round" stroke-linejoin="round" d="M17 16l4-4m0 0l-4-4m4 4H7m6 4v1a3 3 0 01-3 3H6a3 3 0 01-3-3V7a3 3 0 013-3h4a3 3 0 013 3v1"/></svg>
+                        <button type="submit" class="menu-item" style="width: 100%; background: none; border: none; cursor: pointer; color: #ef4444; text-align: left;">
+                            <svg viewBox="0 0 24 24" stroke="#ef4444" fill="none"><path stroke-linecap="round" stroke-linejoin="round" d="M17 16l4-4m0 0l-4-4m4 4H7m6 4v1a3 3 0 01-3 3H6a3 3 0 01-3-3V7a3 3 0 013-3h4a3 3 0 013 3v1"/></svg>
                             Keluar
                         </button>
                     </form>

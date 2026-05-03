@@ -191,6 +191,25 @@
         stroke-width: 1.5;
         fill: none;
     }
+
+    .emoji-picker-container {
+        display: none;
+        position: absolute;
+        top: 100%;
+        left: 0;
+        margin-top: 8px;
+        z-index: 50;
+        box-shadow: 0 4px 12px rgba(0,0,0,0.15);
+        border-radius: 8px;
+    }
+
+    emoji-picker {
+        width: 320px;
+        height: 350px;
+        --background: #ffffff;
+        --border-color: var(--border-dark);
+        --input-border-color: var(--border-dark);
+    }
 </style>
 
 <div class="editor-section">
@@ -223,18 +242,24 @@
                     @endphp
                     <span class="badge {{ $currentUserBadgeClass }}">{{ $currentUserBadgeText }}</span>
                 </div>
-                <textarea name="content" class="editor-input" rows="2" placeholder="Ceritakan pengalamanmu!" required></textarea>
+                <textarea name="content" id="thread-content" class="editor-input" rows="2" placeholder="Ceritakan pengalamanmu!" required></textarea>
                 
                 @error('content')
                     <div style="color: #ef4444; font-size: 0.8rem; margin-top: 4px;">{{ $message }}</div>
                 @enderror
 
                 <div class="editor-footer">
-                    <div class="editor-actions">
+                    <div class="editor-actions" style="position: relative;">
                         <!-- Camera Icon -->
                         <svg class="editor-icon" viewBox="0 0 24 24"><path d="M3 9a2 2 0 012-2h.93a2 2 0 001.664-.89l.812-1.22A2 2 0 0110.07 4h3.86a2 2 0 011.664.89l.812 1.22A2 2 0 0018.07 7H19a2 2 0 012 2v9a2 2 0 01-2 2H5a2 2 0 01-2-2V9z" stroke-linecap="round" stroke-linejoin="round"/><path d="M15 13a3 3 0 11-6 0 3 3 0 016 0z" stroke-linecap="round" stroke-linejoin="round"/></svg>
+                        
                         <!-- Smile Icon -->
-                        <svg class="editor-icon" viewBox="0 0 24 24"><path d="M14.828 14.828a4 4 0 01-5.656 0M9 10h.01M15 10h.01M21 12a9 9 0 11-18 0 9 9 0 0118 0z" stroke-linecap="round" stroke-linejoin="round"/></svg>
+                        <svg id="emoji-button" class="editor-icon" viewBox="0 0 24 24"><path d="M14.828 14.828a4 4 0 01-5.656 0M9 10h.01M15 10h.01M21 12a9 9 0 11-18 0 9 9 0 0118 0z" stroke-linecap="round" stroke-linejoin="round"/></svg>
+                        
+                        <!-- Emoji Picker -->
+                        <div id="emoji-picker-container" class="emoji-picker-container">
+                            <emoji-picker class="light"></emoji-picker>
+                        </div>
                     </div>
                     <button type="submit" class="btn-posting">Posting</button>
                 </div>
@@ -340,5 +365,51 @@
         </div>
     @endforelse
 </div>
+
+<!-- Import emoji-picker-element -->
+<script type="module" src="https://cdn.jsdelivr.net/npm/emoji-picker-element@^1/index.js"></script>
+<script>
+    document.addEventListener('DOMContentLoaded', function() {
+        const emojiBtn = document.getElementById('emoji-button');
+        const emojiPickerContainer = document.getElementById('emoji-picker-container');
+        const emojiPicker = document.querySelector('emoji-picker');
+        const textarea = document.getElementById('thread-content');
+        
+        // Toggle picker
+        emojiBtn.addEventListener('click', function(e) {
+            e.stopPropagation();
+            if (emojiPickerContainer.style.display === 'block') {
+                emojiPickerContainer.style.display = 'none';
+            } else {
+                emojiPickerContainer.style.display = 'block';
+            }
+        });
+
+        // Listen for emoji selection
+        emojiPicker.addEventListener('emoji-click', event => {
+            const emoji = event.detail.unicode;
+            const cursorPosition = textarea.selectionStart;
+            const textBefore = textarea.value.substring(0, cursorPosition);
+            const textAfter = textarea.value.substring(cursorPosition);
+            
+            textarea.value = textBefore + emoji + textAfter;
+            
+            // Focus and set cursor after emoji
+            textarea.focus();
+            textarea.selectionStart = cursorPosition + emoji.length;
+            textarea.selectionEnd = cursorPosition + emoji.length;
+            
+            // Optional: Close picker after selection
+            // emojiPickerContainer.style.display = 'none';
+        });
+
+        // Close when clicking outside
+        document.addEventListener('click', function(e) {
+            if (!emojiPickerContainer.contains(e.target) && e.target !== emojiBtn) {
+                emojiPickerContainer.style.display = 'none';
+            }
+        });
+    });
+</script>
 
 @endsection
