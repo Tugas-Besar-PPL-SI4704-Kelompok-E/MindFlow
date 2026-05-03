@@ -171,6 +171,7 @@
 </head>
 <body>
 
+    @if(!isset($hideSidebar) || !$hideSidebar)
     <!-- SIDEBAR -->
     <aside class="sidebar">
         <div class="brand">
@@ -218,6 +219,7 @@
             </li>
         </ul>
     </aside>
+    @endif
 
     <!-- MAIN CONTENT -->
     <main class="main-content">

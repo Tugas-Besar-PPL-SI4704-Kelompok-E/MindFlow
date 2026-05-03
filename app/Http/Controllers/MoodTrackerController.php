@@ -130,7 +130,7 @@ class MoodTrackerController extends Controller
         // AUTHENTICATED USER: Hitung dan simpan ke database
         $scores = HasilDass21::hitungSkor($responses);
 
-        HasilDass21::create([
+        $hasil = HasilDass21::create([
             'user_id'            => Auth::id(),
             'skor_depresi'       => $scores['skor_depresi'],
             'skor_kecemasan'     => $scores['skor_kecemasan'],
@@ -142,7 +142,16 @@ class MoodTrackerController extends Controller
             'detail_jawaban'     => $responses,
         ]);
 
-        return redirect()->route('mood-tracker.index')
-            ->with('success', 'Evaluasi DASS-21 berhasil disimpan. Terima kasih telah meluangkan waktumu.');
+        return redirect()->route('mood-tracker.mendalam.hasil', $hasil->dass21_id)
+            ->with('success', 'Evaluasi DASS-21 berhasil disimpan. Berikut adalah hasilnya.');
+    }
+
+    /**
+     * Tampilkan hasil pemeriksaan mendalam.
+     */
+    public function mendalamHasil($id)
+    {
+        $hasil = HasilDass21::where('user_id', Auth::id())->findOrFail($id);
+        return view('pages.mood-tracker.hasil-mendalam', compact('hasil'));
     }
 }

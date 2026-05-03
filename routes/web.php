@@ -33,7 +33,6 @@ Route::get('/mood-tracker/mendalam', [MoodTrackerController::class, 'mendalam'])
 Route::post('/mood-tracker/mendalam', [MoodTrackerController::class, 'mendalamStore'])
     ->name('mood-tracker.mendalam.store');
 
-<<<<<<< HEAD
 // Other mood tracker routes (require login)
 Route::get('/mood-tracker', [MoodTrackerController::class, 'index'])
     ->name('mood-tracker.index');
@@ -68,7 +67,6 @@ Route::resource('journals', JournalController::class);
 // Forum resource routes
 Route::resource('forum', ForumController::class);
 
-use App\Http\Controllers\ThreadInteractionController;
 Route::post('forum/{thread}/like', [ThreadInteractionController::class, 'toggleLike'])->name('forum.like');
 Route::post('forum/{thread}/save', [ThreadInteractionController::class, 'toggleSave'])->name('forum.save');
 Route::post('forum/{thread}/reply', [ThreadInteractionController::class, 'storeReply'])->name('forum.reply');
@@ -79,8 +77,6 @@ Route::middleware('auth')->group(function () {
     Route::put('/settings', [UserController::class, 'update'])->name('settings.update');
 });
 
-=======
->>>>>>> 78895bf494d9e1ea084620d76285eb9918f4d014
 Route::get('/faq', function () {
     return view('faq');
 })->name('faq');
