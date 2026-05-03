@@ -17,6 +17,9 @@
     .quick-icon.blue { background: #DBEAFE; }
     .quick-icon.green { background: #D1FAE5; }
     .quick-icon.orange { background: #FFEDD5; }
+    .quick-icon.gray { background: #F3F4F6; }
+    .quick-icon.yellow { background: #FEF9C3; }
+    .quick-icon.red { background: #FEE2E2; }
     .quick-title { font-size: 15px; font-weight: 700; color: #111827; }
     .quick-desc { font-size: 12px; color: #6B7280; margin-top: 2px; }
     .section-title { font-size: 18px; font-weight: 800; color: #111827; margin-bottom: 16px; }
@@ -62,7 +65,32 @@
                 <div class="quick-desc">Berbagi dan saling dukung</div>
             </div>
         </a>
+        <a href="{{ route('settings.edit') }}" class="quick-link">
+            <div class="quick-icon gray">⚙️</div>
+            <div>
+                <div class="quick-title">Pengaturan</div>
+                <div class="quick-desc">Ubah profil & sandi</div>
+            </div>
+        </a>
+        <a href="{{ route('faq') }}" class="quick-link">
+            <div class="quick-icon yellow">❓</div>
+            <div>
+                <div class="quick-title">FAQ</div>
+                <div class="quick-desc">Bantuan & Informasi</div>
+            </div>
+        </a>
+        <a href="#" onclick="event.preventDefault(); document.getElementById('logout-form').submit();" class="quick-link">
+            <div class="quick-icon red">🚪</div>
+            <div>
+                <div class="quick-title">Keluar</div>
+                <div class="quick-desc">Akhiri sesi Anda</div>
+            </div>
+        </a>
     </div>
+
+    <form id="logout-form" action="{{ route('logout') }}" method="POST" style="display: none;">
+        @csrf
+    </form>
 
     <!-- Recent Info -->
     <div style="display: grid; grid-template-columns: 1fr 1fr; gap: 20px;">
