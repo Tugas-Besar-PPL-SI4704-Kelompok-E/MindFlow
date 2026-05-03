@@ -50,6 +50,8 @@ Route::post('/mood-tracker/mendalam', [MoodTrackerController::class, 'mendalamSt
 // Other mood tracker routes (require login)
 Route::get('/mood-tracker', [MoodTrackerController::class, 'index'])
     ->name('mood-tracker.index');
+Route::get('/mood-tracker/mendalam/hasil/{id}', [MoodTrackerController::class, 'mendalamHasil'])
+    ->name('mood-tracker.mendalam.hasil');
 Route::get('/mood-tracker/singkat', [MoodTrackerController::class, 'singkat'])
     ->name('mood-tracker.singkat');
 Route::post('/mood-tracker/singkat', [MoodTrackerController::class, 'singkatStore'])
