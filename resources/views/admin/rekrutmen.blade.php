@@ -14,6 +14,10 @@
         .sidebar-link:hover { background:#F9F9F9; }
         .sidebar-link.active { background:#F4EEFB; color:#9B76D6; border-left-color:#9B76D6; }
         .sidebar-link svg { width:22px; height:22px; margin-right:14px; stroke:currentColor; stroke-width:2; fill:none; }
+
+        /* Detail modal */
+        .modal-backdrop { display:none; position:fixed; inset:0; background:rgba(0,0,0,0.4); backdrop-filter:blur(4px); z-index:50; align-items:center; justify-content:center; }
+        .modal-backdrop.active { display:flex; }
     </style>
 </head>
 <body class="bg-gray-50 antialiased text-gray-900">
@@ -65,6 +69,13 @@
             </header>
 
             <main class="flex-1 overflow-y-auto p-8">
+                {{-- Flash Messages --}}
+                @if(session('success'))
+                <div class="mb-6 px-5 py-3 bg-green-50 border border-green-200 rounded-xl text-green-700 text-sm font-semibold flex items-center gap-2">
+                    ✅ {{ session('success') }}
+                </div>
+                @endif
+
                 {{-- Summary Cards --}}
                 <div class="grid grid-cols-3 gap-5 mb-8">
                     <div class="bg-white rounded-2xl border border-gray-100 p-6 flex items-center gap-4">
@@ -81,7 +92,7 @@
                             <svg class="w-6 h-6 text-yellow-600" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M12 8v4l3 3m6-3a9 9 0 11-18 0 9 9 0 0118 0z"></path></svg>
                         </div>
                         <div>
-                            <div class="text-2xl font-extrabold text-yellow-600">{{ $applicants->where('status', 'Menunggu Review')->count() }}</div>
+                            <div class="text-2xl font-extrabold text-yellow-600">{{ $applicants->where('status', 'pending')->count() }}</div>
                             <div class="text-xs text-gray-500 font-medium">Menunggu Review</div>
                         </div>
                     </div>
@@ -90,7 +101,7 @@
                             <svg class="w-6 h-6 text-green-600" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M9 12l2 2 4-4m6 2a9 9 0 11-18 0 9 9 0 0118 0z"></path></svg>
                         </div>
                         <div>
-                            <div class="text-2xl font-extrabold text-green-600">{{ $applicants->where('status', 'Diverifikasi')->count() }}</div>
+                            <div class="text-2xl font-extrabold text-green-600">{{ $applicants->where('status', 'approved')->count() }}</div>
                             <div class="text-xs text-gray-500 font-medium">Diverifikasi</div>
                         </div>
                     </div>
@@ -104,43 +115,97 @@
                             <p class="text-xs text-gray-400 mt-0.5">Kelola dan verifikasi calon konselor MindFlow</p>
                         </div>
                     </div>
+
+                    @if($applicants->isEmpty())
+                    <div class="px-6 py-16 text-center">
+                        <div class="text-4xl mb-3">📋</div>
+                        <div class="text-gray-500 font-semibold">Belum ada aplikan konselor</div>
+                        <div class="text-gray-400 text-sm mt-1">Aplikan akan muncul di sini setelah ada yang mendaftar melalui halaman rekrutmen.</div>
+                    </div>
+                    @else
                     <table class="w-full text-left text-sm">
                         <thead class="bg-gray-50 text-xs text-gray-500 uppercase tracking-wider">
                             <tr>
                                 <th class="px-6 py-4 font-semibold">Aplikan</th>
                                 <th class="px-6 py-4 font-semibold">Spesialisasi</th>
+                                <th class="px-6 py-4 font-semibold">SIPP</th>
+                                <th class="px-6 py-4 font-semibold">Dokumen</th>
                                 <th class="px-6 py-4 font-semibold">Status</th>
                                 <th class="px-6 py-4 text-center font-semibold">Tindakan</th>
                             </tr>
                         </thead>
                         <tbody class="divide-y divide-gray-50">
                             @foreach($applicants as $applicant)
+                            @php $profil = $applicant->profilKonselor; @endphp
                             <tr class="hover:bg-gray-50/50 transition">
                                 <td class="px-6 py-4">
                                     <div class="flex items-center gap-3">
-                                        <img class="w-9 h-9 rounded-full" src="https://ui-avatars.com/api/?name={{ urlencode($applicant->nama) }}&background=e9d5ff&color=6b21a8&size=36" alt="">
+                                        <img class="w-9 h-9 rounded-full" src="https://ui-avatars.com/api/?name={{ urlencode($applicant->nama_asli) }}&background=e9d5ff&color=6b21a8&size=36" alt="">
                                         <div>
-                                            <div class="font-bold text-gray-900 text-sm">{{ $applicant->nama }}</div>
+                                            <div class="font-bold text-gray-900 text-sm">{{ $applicant->nama_asli }}</div>
                                             <div class="text-gray-400 text-xs">{{ $applicant->email }}</div>
+                                            @if($profil && $profil->nomor_whatsapp)
+                                            <div class="text-gray-400 text-xs">📱 {{ $profil->nomor_whatsapp }}</div>
+                                            @endif
                                         </div>
                                     </div>
                                 </td>
                                 <td class="px-6 py-4">
-                                    <span class="px-3 py-1 bg-purple-50 text-purple-700 rounded-lg text-xs font-semibold">{{ $applicant->spesialisasi }}</span>
+                                    <span class="px-3 py-1 bg-purple-50 text-purple-700 rounded-lg text-xs font-semibold">{{ $profil->spesialisasi ?? '-' }}</span>
                                 </td>
                                 <td class="px-6 py-4">
-                                    <span class="px-3 py-1 bg-yellow-50 text-yellow-700 rounded-full text-xs font-bold">{{ $applicant->status }}</span>
+                                    <span class="text-xs font-mono text-gray-600">{{ $profil->no_sipp ?? '-' }}</span>
+                                </td>
+                                <td class="px-6 py-4">
+                                    <div class="flex gap-1.5">
+                                        @if($profil && $profil->berkas_ktp)
+                                        <a href="{{ asset('storage/' . $profil->berkas_ktp) }}" target="_blank" class="px-2 py-1 bg-blue-50 text-blue-600 rounded text-xs font-semibold hover:bg-blue-100 transition" title="Lihat KTP">🪪 KTP</a>
+                                        @endif
+                                        @if($profil && $profil->berkas_sipp)
+                                        <a href="{{ asset('storage/' . $profil->berkas_sipp) }}" target="_blank" class="px-2 py-1 bg-green-50 text-green-600 rounded text-xs font-semibold hover:bg-green-100 transition" title="Lihat SIPP">📄 SIPP</a>
+                                        @endif
+                                        @if($profil && $profil->berkas_cv)
+                                        <a href="{{ asset('storage/' . $profil->berkas_cv) }}" target="_blank" class="px-2 py-1 bg-orange-50 text-orange-600 rounded text-xs font-semibold hover:bg-orange-100 transition" title="Lihat CV">📋 CV</a>
+                                        @endif
+                                    </div>
+                                </td>
+                                <td class="px-6 py-4">
+                                    @if($applicant->status === 'pending')
+                                        <span class="px-3 py-1 bg-yellow-50 text-yellow-700 rounded-full text-xs font-bold">⏳ Menunggu</span>
+                                    @elseif($applicant->status === 'approved')
+                                        <span class="px-3 py-1 bg-green-50 text-green-700 rounded-full text-xs font-bold">✅ Diverifikasi</span>
+                                    @elseif($applicant->status === 'rejected')
+                                        <span class="px-3 py-1 bg-red-50 text-red-700 rounded-full text-xs font-bold">❌ Ditolak</span>
+                                    @else
+                                        <span class="px-3 py-1 bg-gray-50 text-gray-500 rounded-full text-xs font-bold">{{ $applicant->status ?? '-' }}</span>
+                                    @endif
                                 </td>
                                 <td class="px-6 py-4">
                                     <div class="flex justify-center gap-2">
-                                        <button class="px-4 py-2 bg-purple-600 text-white rounded-xl text-xs font-bold hover:bg-purple-700 transition">Verifikasi</button>
-                                        <button class="px-4 py-2 bg-red-50 text-red-600 rounded-xl text-xs font-bold hover:bg-red-100 transition">Tolak</button>
+                                        @if($applicant->status === 'pending')
+                                            <form action="{{ route('admin.rekrutmen.approve', $applicant->id) }}" method="POST" onsubmit="return confirm('Yakin ingin meng-approve konselor ini?')">
+                                                @csrf
+                                                <button type="submit" class="px-4 py-2 bg-purple-600 text-white rounded-xl text-xs font-bold hover:bg-purple-700 transition">✅ Verifikasi</button>
+                                            </form>
+                                            <form action="{{ route('admin.rekrutmen.reject', $applicant->id) }}" method="POST" onsubmit="return confirm('Yakin ingin menolak aplikan ini?')">
+                                                @csrf
+                                                <button type="submit" class="px-4 py-2 bg-red-50 text-red-600 rounded-xl text-xs font-bold hover:bg-red-100 transition">❌ Tolak</button>
+                                            </form>
+                                        @elseif($applicant->status === 'approved')
+                                            <span class="text-xs text-green-500 font-semibold">Sudah Diverifikasi</span>
+                                        @elseif($applicant->status === 'rejected')
+                                            <form action="{{ route('admin.rekrutmen.approve', $applicant->id) }}" method="POST" onsubmit="return confirm('Yakin ingin meng-approve konselor ini?')">
+                                                @csrf
+                                                <button type="submit" class="px-4 py-2 bg-purple-600 text-white rounded-xl text-xs font-bold hover:bg-purple-700 transition">🔄 Approve Ulang</button>
+                                            </form>
+                                        @endif
                                     </div>
                                 </td>
                             </tr>
                             @endforeach
                         </tbody>
                     </table>
+                    @endif
                 </div>
             </main>
         </div>
