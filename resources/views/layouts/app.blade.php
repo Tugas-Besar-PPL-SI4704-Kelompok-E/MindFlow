@@ -10,15 +10,15 @@
     <script src="https://cdn.tailwindcss.com"></script>
     <style>
         :root {
-            --primary: #a881af; /* Purple accent */
+            --primary: #A881C2; /* Solid Purple from Image 2 */
             --primary-light: #f3e8f5;
-            --primary-hover: #906698;
-            --bg-color: #ffffff;
+            --primary-hover: #8A64A4;
+            --bg-color: #FAFAFB;
             --text-main: #111827;
             --text-muted: #6b7280;
             --border: #f3f4f6;
             --border-dark: #e5e7eb;
-            --sidebar-left-w: 260px;
+            --sidebar-left-w: 280px;
             --sidebar-right-w: 300px;
         }
 
@@ -35,25 +35,26 @@
             line-height: 1.5;
             -webkit-font-smoothing: antialiased;
             display: flex;
+            height: 100vh;
+            overflow: hidden;
         }
 
         .layout {
             display: flex;
             width: 100%;
-            min-height: 100vh;
+            height: 100vh;
         }
 
         /* --- Left Sidebar --- */
         .sidebar-left {
-            width: 280px;
+            width: var(--sidebar-left-w);
             background-color: #FFFFFF;
             border-right: 1px solid var(--border-dark);
-            padding: 40px 0;
+            padding: 40px 0 10px 0;
             display: flex;
             flex-direction: column;
-            position: sticky;
-            top: 0;
-            height: 100vh;
+            flex-shrink: 0;
+            z-index: 10;
         }
 
         .brand {
@@ -92,7 +93,7 @@
         }
 
         .brand span.flow {
-            color: #9B76D6;
+            color: #A881C2;
         }
 
         .menu-title {
@@ -127,8 +128,8 @@
 
         .menu-item.active {
             background-color: #F4EEFB;
-            color: #9B76D6;
-            border-left-color: #9B76D6;
+            color: #A881C2;
+            border-left-color: #A881C2;
         }
 
         .menu-item svg {
@@ -141,80 +142,192 @@
         }
 
         .menu-item.active svg {
-            stroke: #9B76D6;
+            stroke: #A881C2;
         }
 
-        /* --- Main Content --- */
-        .main-content {
+        /* --- SIDEBAR PROFILE SECTION --- */
+        .sidebar-spacer {
             flex: 1;
-            border-right: 1px solid var(--border-dark);
-            min-width: 0;
-            display: flex;
-            flex-direction: column;
         }
 
-        .topbar {
-            display: flex;
-            justify-content: space-between;
-            align-items: center;
+        .sidebar-profile-section {
+            position: relative;
             padding: 20px 24px;
-            border-bottom: 2px solid var(--border);
+            border-top: 1px solid var(--border-dark);
         }
 
-        .welcome-section {
+        .sidebar-profile-btn {
             display: flex;
             align-items: center;
-            gap: 16px;
+            gap: 12px;
+            width: 100%;
+            padding: 10px 12px;
+            border: none;
+            background: transparent;
+            border-radius: 12px;
+            cursor: pointer;
+            transition: all 0.2s ease;
+            text-align: left;
         }
 
-        .user-avatar-lg {
-            width: 56px;
-            height: 56px;
+        .sidebar-profile-btn:hover {
+            background-color: #F4EEFB;
+        }
+
+        .sidebar-profile-avatar {
+            width: 42px;
+            height: 42px;
             border-radius: 50%;
             object-fit: cover;
-            background-color: #d1d5db;
+            border: 2px solid #A881C2;
+            flex-shrink: 0;
         }
 
-        .welcome-text h2 {
-            font-size: 1.25rem;
-            font-weight: 700;
-            margin-bottom: 2px;
+        .sidebar-profile-info {
+            flex: 1;
+            min-width: 0;
+        }
+
+        .sidebar-profile-name {
+            font-family: 'Poppins', sans-serif;
+            font-size: 14px;
+            font-weight: 600;
             color: var(--text-main);
-        }
-        
-        .welcome-text p {
-            font-size: 0.9rem;
-            color: var(--text-muted);
+            white-space: nowrap;
+            overflow: hidden;
+            text-overflow: ellipsis;
         }
 
-        .search-box {
-            position: relative;
-        }
-        .search-box input {
-            padding: 10px 16px 10px 40px;
-            border: 1px solid var(--border-dark);
-            border-radius: 8px;
-            font-size: 0.9rem;
-            width: 240px;
-            outline: none;
-        }
-        .search-icon {
-            position: absolute;
-            left: 12px;
-            top: 50%;
-            transform: translateY(-50%);
+        .sidebar-profile-role {
+            font-family: 'Poppins', sans-serif;
+            font-size: 12px;
             color: var(--text-muted);
+            text-transform: capitalize;
+        }
+
+        .sidebar-profile-chevron {
             width: 18px;
             height: 18px;
+            stroke: var(--text-muted);
+            stroke-width: 2;
+            fill: none;
+            transition: transform 0.25s ease;
+            flex-shrink: 0;
+        }
+
+        .sidebar-profile-btn.open .sidebar-profile-chevron {
+            transform: rotate(180deg);
+        }
+
+        /* Popup Menu */
+        .sidebar-popup {
+            position: absolute;
+            bottom: calc(100% + 8px);
+            left: 20px;
+            right: 20px;
+            background: #FFFFFF;
+            border-radius: 14px;
+            box-shadow: 0 8px 30px rgba(0, 0, 0, 0.12), 0 2px 8px rgba(0, 0, 0, 0.06);
+            border: 1px solid var(--border-dark);
+            padding: 8px;
+            opacity: 0;
+            visibility: hidden;
+            transform: translateY(10px);
+            transition: all 0.25s cubic-bezier(0.4, 0, 0.2, 1);
+            z-index: 100;
+        }
+
+        .sidebar-popup.show {
+            opacity: 1;
+            visibility: visible;
+            transform: translateY(0);
+        }
+
+        .sidebar-popup-item {
+            display: flex;
+            align-items: center;
+            gap: 12px;
+            padding: 12px 14px;
+            border: none;
+            background: transparent;
+            width: 100%;
+            border-radius: 10px;
+            cursor: pointer;
+            font-family: 'Poppins', sans-serif;
+            font-size: 14px;
+            font-weight: 500;
+            color: var(--text-main);
+            text-decoration: none;
+            transition: all 0.15s ease;
+        }
+
+        .sidebar-popup-item:hover {
+            background-color: #F4EEFB;
+            color: #A881C2;
+        }
+
+        .sidebar-popup-item svg {
+            width: 20px;
+            height: 20px;
+            stroke: currentColor;
+            stroke-width: 2;
+            fill: none;
+            flex-shrink: 0;
+        }
+
+        .sidebar-popup-item.logout-item:hover {
+            background-color: #FEF2F2;
+            color: #DC2626;
+        }
+
+        .sidebar-popup-divider {
+            height: 1px;
+            background: var(--border-dark);
+            margin: 4px 8px;
+        }
+
+        /* --- MAIN CONTENT --- */
+        .main-content {
+            flex: 1;
+            padding: 50px 60px;
+            overflow-y: auto;
+            border-right: 1px solid var(--border-dark);
+        }
+
+        .header {
+            display: flex;
+            align-items: center;
+            margin-bottom: 40px;
+        }
+
+        .avatar {
+            width: 65px;
+            height: 65px;
+            border-radius: 50%;
+            object-fit: cover;
+            margin-right: 20px;
+            background-color: #EAEAEA;
+        }
+
+        .welcome-text h1 {
+            font-size: 26px;
+            font-weight: 700;
+            margin-bottom: 4px;
+        }
+
+        .welcome-text p {
+            color: var(--text-muted);
+            font-size: 15px;
+            font-weight: 400;
         }
 
         /* --- Right Sidebar --- */
         .sidebar-right {
             width: var(--sidebar-right-w);
-            padding: 24px;
-            position: sticky;
-            top: 0;
-            height: 100vh;
+            padding: 40px 24px;
+            flex-shrink: 0;
+            overflow-y: auto;
+            background-color: var(--bg-color);
         }
 
         .right-header {
@@ -287,6 +400,18 @@
         .btn-primary:hover {
             background-color: var(--primary-hover);
         }
+
+        .btn-outline {
+            background-color: transparent;
+            color: var(--text-muted);
+            border: 2px solid var(--border-dark);
+        }
+
+        .btn-outline:hover {
+            background-color: var(--bg-color);
+            color: var(--text-main);
+            border-color: var(--text-muted);
+        }
     </style>
     @stack('styles')
 </head><body>
@@ -297,6 +422,8 @@
                 <img src="{{ asset('images/logo.png') }}" alt="Logo MindFlow" style="width: 36px; height: 36px; margin-right: 12px; object-fit: contain;">
                 <div>Mind<span class="flow">Flow</span></div>
             </div>
+            
+            <div class="menu-title">Menu</div>
             <ul class="menu-list">
                 @if(Auth::check() && Auth::user()->role === 'admin')
                 <li>
@@ -354,39 +481,62 @@
                     </a>
                 </li>
                 @endif
-                <li style="margin-top: 24px;">
-                    <form action="{{ route('logout') }}" method="POST" style="margin: 0;">
+            </ul>
+
+            <!-- Spacer to push profile to bottom -->
+            <div class="sidebar-spacer"></div>
+
+            <!-- Profile Section -->
+            <div class="sidebar-profile-section" id="profileSection">
+                <!-- Popup Menu -->
+                <div class="sidebar-popup" id="profilePopup">
+                    <a href="{{ route('settings.edit') }}" class="sidebar-popup-item" id="btn-pengaturan">
+                        <svg viewBox="0 0 24 24"><circle cx="12" cy="12" r="3"></circle><path d="M19.4 15a1.65 1.65 0 0 0 .33 1.82l.06.06a2 2 0 0 1-2.83 2.83l-.06-.06a1.65 1.65 0 0 0-1.82-.33 1.65 1.65 0 0 0-1 1.51V21a2 2 0 0 1-4 0v-.09A1.65 1.65 0 0 0 9 19.4a1.65 1.65 0 0 0-1.82.33l-.06.06a2 2 0 0 1-2.83-2.83l.06-.06A1.65 1.65 0 0 0 4.68 15a1.65 1.65 0 0 0-1.51-1H3a2 2 0 0 1 0-4h.09A1.65 1.65 0 0 0 4.6 9a1.65 1.65 0 0 0-.33-1.82l-.06-.06a2 2 0 0 1 2.83-2.83l.06.06A1.65 1.65 0 0 0 9 4.68a1.65 1.65 0 0 0 1-1.51V3a2 2 0 0 1 4 0v.09a1.65 1.65 0 0 0 1 1.51 1.65 1.65 0 0 0 1.82-.33l.06-.06a2 2 0 0 1 2.83 2.83l-.06.06A1.65 1.65 0 0 0 19.4 9a1.65 1.65 0 0 0 1.51 1H21a2 2 0 0 1 0 4h-.09a1.65 1.65 0 0 0-1.51 1z"></path></svg>
+                        Pengaturan
+                    </a>
+                    <div class="sidebar-popup-divider"></div>
+                    <form method="POST" action="{{ route('logout') }}" style="margin:0;">
                         @csrf
-                        <button type="submit" class="menu-item" style="width: 100%; background: none; border: none; cursor: pointer; color: #ef4444; text-align: left;">
-                            <svg viewBox="0 0 24 24" stroke="#ef4444" fill="none"><path stroke-linecap="round" stroke-linejoin="round" d="M17 16l4-4m0 0l-4-4m4 4H7m6 4v1a3 3 0 01-3 3H6a3 3 0 01-3-3V7a3 3 0 013-3h4a3 3 0 013 3v1"/></svg>
+                        <button type="submit" class="sidebar-popup-item logout-item" id="btn-logout">
+                            <svg viewBox="0 0 24 24"><path d="M9 21H5a2 2 0 0 1-2-2V5a2 2 0 0 1 2-2h4"></path><polyline points="16 17 21 12 16 7"></polyline><line x1="21" y1="12" x2="9" y2="12"></line></svg>
                             Keluar
                         </button>
                     </form>
-                </li>
-            </ul>
+                </div>
+
+                <!-- Profile Button -->
+                <button class="sidebar-profile-btn" id="profileBtn" type="button">
+                    <img src="https://ui-avatars.com/api/?name={{ urlencode(Auth::user()->nama_samaran ?? 'User') }}&background=E8DEFA&color=6B3FA0&size=42&font-size=0.4&bold=true" alt="Profile" class="sidebar-profile-avatar">
+                    <div class="sidebar-profile-info">
+                        <div class="sidebar-profile-name">{{ Auth::user()->nama_samaran ?? 'User' }}</div>
+                        <div class="sidebar-profile-role">{{ ucfirst(Auth::user()->role ?? 'Mahasiswa') }}</div>
+                    </div>
+                    <svg class="sidebar-profile-chevron" viewBox="0 0 24 24"><polyline points="6 9 12 15 18 9"></polyline></svg>
+                </button>
+            </div>
         </aside>
 
         <!-- Main Content (Tengah) -->
         <main class="main-content">
-            <div class="topbar">
-                <div class="welcome-section">
-                    <div class="user-avatar-lg">
-                        <img src="{{ asset('images/profile.png') }}" alt="User Profile" style="width: 100%; height: 100%; border-radius: 50%; object-fit: cover;">
-                    </div>
-                    <div class="welcome-text">
-                        <h2>Welcome, {{ explode(' ', Auth::user()->nama_asli ?? 'User')[0] }}!</h2>
-                        <p>How's your day?</p>
-                    </div>
-                </div>
-                <div class="search-box">
-                    <svg class="search-icon" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M21 21l-6-6m2-5a7 7 0 11-14 0 7 7 0 0114 0z"></path></svg>
-                    <input type="text" placeholder="Cari...">
+            <div class="header">
+                <img src="https://ui-avatars.com/api/?name={{ urlencode(Auth::user()->nama_samaran ?? 'User') }}&background=E2E8F0&color=475569&size=65" alt="Profile" class="avatar">
+                <div class="welcome-text">
+                    <h1>Welcome, {{ Auth::user()->nama_asli ?? 'User' }}!</h1>
+                    <p>How's your day?</p>
                 </div>
             </div>
 
-            @if(session('success'))
-                <div class="alert">
-                    {{ session('success') }}
+            @if(session('success') && !request()->is('konseling*'))
+                <div class="bg-emerald-50 border border-emerald-100 text-emerald-800 px-6 py-4 rounded-2xl mb-8 flex justify-between items-center shadow-sm">
+                    <div class="flex items-center gap-3">
+                        <div class="w-8 h-8 bg-emerald-500 rounded-full flex items-center justify-center text-white shadow-sm shadow-emerald-200">
+                            <svg class="w-5 h-5" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="3" d="M5 13l4 4L19 7"></path></svg>
+                        </div>
+                        <span class="font-bold text-sm">{{ session('success') }}</span>
+                    </div>
+                    <button type="button" class="text-emerald-400 hover:text-emerald-600 transition-colors" onclick="this.parentElement.style.display='none'">
+                        <svg class="w-5 h-5" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2.5" d="M6 18L18 6M6 6l12 12"></path></svg>
+                    </button>
                 </div>
             @endif
 
@@ -396,32 +546,55 @@
         <!-- Sidebar Kanan -->
         <aside class="sidebar-right">
             <div class="right-header">
-                <h3>Jadwal Konsultasi Mendatang</h3>
-                <a href="#">Batalkan</a>
+                <h3 class="text-gray-900 font-bold">Jadwal Konsultasi</h3>
+                <a href="#" class="text-[#A881C2] hover:text-[#8A64A4] font-bold text-xs transition-colors">Lihat Semua</a>
             </div>
             
-            @if(isset($jadwalKonsultasi) && $jadwalKonsultasi->isEmpty())
+            @if(isset($jadwalKonsultasi) && $jadwalKonsultasi->where('status', '!=', 'cancelled')->isEmpty())
                 <div class="empty-state">
-                    <div class="empty-illustration">
-                        <svg width="64" height="64" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.5"><path stroke-linecap="round" stroke-linejoin="round" d="M8 7V3m8 4V3m-9 8h10M5 21h14a2 2 0 002-2V7a2 2 0 00-2-2H5a2 2 0 00-2 2v12a2 2 0 002 2z"></path></svg>
+                    <div class="w-20 h-20 bg-gray-50 rounded-2xl flex items-center justify-center mb-4 border border-gray-100 shadow-inner">
+                        <svg width="32" height="32" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" class="text-gray-300"><path stroke-linecap="round" stroke-linejoin="round" d="M8 7V3m8 4V3m-9 8h10M5 21h14a2 2 0 002-2V7a2 2 0 00-2-2H5a2 2 0 00-2 2v12a2 2 0 002 2z"></path></svg>
                     </div>
-                    <p>Tidak ada jadwal ditemukan<br>Ketuk untuk menambahkan jadwal</p>
+                    <p class="text-[13px] font-medium text-gray-400">Belum ada jadwal<br>konsultasi aktif</p>
                 </div>
             @elseif(isset($jadwalKonsultasi))
-                <div style="display: flex; flex-direction: column; gap: 16px;">
-                    @foreach($jadwalKonsultasi as $jadwal)
-                        <div style="background-color: #f9fafb; padding: 16px; border-radius: 12px; border: 1px solid #f3f4f6;">
-                            <h4 style="font-weight: 700; font-size: 14px; margin-bottom: 4px;">{{ $jadwal->profilKonselor ? $jadwal->profilKonselor->nama : 'Konselor' }}</h4>
-                            <p style="color: #6b7280; font-size: 12px; margin-bottom: 8px;">{{ \Carbon\Carbon::parse($jadwal->jadwal)->format('d M Y, H:i') }}</p>
-                            <div style="margin-bottom: 12px;">
-                                <span style="display: inline-block; background-color: #fef08a; color: #a16207; padding: 4px 8px; border-radius: 4px; font-size: 12px; font-weight: 600;">{{ ucfirst($jadwal->status) }}</span>
+                <div class="flex flex-col gap-5">
+                    @foreach($jadwalKonsultasi->where('status', '!=', 'cancelled') as $jadwal)
+                        <div class="bg-white p-5 rounded-3xl border border-gray-100 shadow-[0_4px_12px_-2px_rgba(0,0,0,0.03)] hover:shadow-md transition-all duration-300 group">
+                            <div class="flex items-start justify-between mb-4">
+                                <div>
+                                    <h4 class="font-bold text-gray-900 text-[14px] leading-tight mb-1 group-hover:text-[#A881C2] transition-colors">{{ $jadwal->profilKonselor ? $jadwal->profilKonselor->nama : 'Konselor' }}</h4>
+                                    <p class="text-gray-400 text-[11px] font-bold uppercase tracking-wider">{{ \Carbon\Carbon::parse($jadwal->jadwal)->translatedFormat('d M Y, H:i') }}</p>
+                                </div>
+                                <div class="p-1.5 rounded-lg bg-purple-50 text-[#A881C2]">
+                                    <svg class="w-4 h-4" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2.5" d="M8 7V3m8 4V3m-9 8h10M5 21h14a2 2 0 002-2V7a2 2 0 00-2-2H5a2 2 0 00-2 2v12a2 2 0 002 2z"></path></svg>
+                                </div>
                             </div>
-                            <div style="display: flex; gap: 8px;">
-                                <a href="{{ route('booking.edit', $jadwal->sesi_konseling_id) }}" style="text-decoration: none; font-size: 12px; background-color: #dbeafe; color: #1d4ed8; padding: 4px 12px; border-radius: 4px;">Ubah Jadwal</a>
-                                <form action="{{ route('booking.cancel', $jadwal->sesi_konseling_id) }}" method="POST" onsubmit="return confirm('Yakin ingin membatalkan sesi ini?')" style="margin: 0;">
+                            
+                            <div class="mb-5">
+                                @php
+                                    $statusColor = match($jadwal->status) {
+                                        'pending' => 'bg-amber-50 text-amber-600 border-amber-100',
+                                        'rescheduled' => 'bg-blue-50 text-blue-600 border-blue-100',
+                                        'confirmed' => 'bg-emerald-50 text-emerald-600 border-emerald-100',
+                                        default => 'bg-gray-50 text-gray-600 border-gray-100'
+                                    };
+                                @endphp
+                                <span class="inline-flex items-center px-3 py-1 {{ $statusColor }} border rounded-lg text-[10px] font-black uppercase tracking-widest">
+                                    {{ $jadwal->status }}
+                                </span>
+                            </div>
+
+                            <div class="flex gap-2">
+                                <a href="{{ route('booking.edit', $jadwal->sesi_konseling_id) }}" class="flex-1 text-center bg-gray-50 hover:bg-purple-50 hover:text-[#A881C2] text-gray-500 py-2.5 rounded-xl text-[11px] font-bold transition-all duration-300 border border-transparent hover:border-purple-100">
+                                    Ubah
+                                </a>
+                                <form action="{{ route('booking.cancel', $jadwal->sesi_konseling_id) }}" method="POST" onsubmit="return confirm('Yakin ingin membatalkan sesi ini?')" class="flex-1">
                                     @csrf
                                     @method('DELETE')
-                                    <button type="submit" style="border: none; cursor: pointer; font-size: 12px; background-color: #fee2e2; color: #b91c1c; padding: 4px 12px; border-radius: 4px;">Batalkan</button>
+                                    <button type="submit" class="w-full bg-gray-50 hover:bg-red-50 hover:text-red-500 text-gray-500 py-2.5 rounded-xl text-[11px] font-bold transition-all duration-300 border border-transparent hover:border-red-100">
+                                        Batal
+                                    </button>
                                 </form>
                             </div>
                         </div>
@@ -429,14 +602,38 @@
                 </div>
             @else
                 <div class="empty-state">
-                    <div class="empty-illustration">
-                        <svg width="64" height="64" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.5"><path stroke-linecap="round" stroke-linejoin="round" d="M8 7V3m8 4V3m-9 8h10M5 21h14a2 2 0 002-2V7a2 2 0 00-2-2H5a2 2 0 00-2 2v12a2 2 0 002 2z"></path></svg>
+                    <div class="w-20 h-20 bg-gray-50 rounded-2xl flex items-center justify-center mb-4 border border-gray-100 shadow-inner">
+                        <svg width="32" height="32" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" class="text-gray-300"><path stroke-linecap="round" stroke-linejoin="round" d="M8 7V3m8 4V3m-9 8h10M5 21h14a2 2 0 002-2V7a2 2 0 00-2-2H5a2 2 0 00-2 2v12a2 2 0 002 2z"></path></svg>
                     </div>
-                    <p>Tidak ada jadwal ditemukan<br>Ketuk untuk menambahkan jadwal</p>
+                    <p class="text-[13px] font-medium text-gray-400">Belum ada jadwal<br>konsultasi aktif</p>
                 </div>
             @endif
         </aside>
     </div>
+
+    <!-- Profile Popup Toggle Script -->
+    <script>
+        document.addEventListener('DOMContentLoaded', function() {
+            const profileBtn = document.getElementById('profileBtn');
+            const profilePopup = document.getElementById('profilePopup');
+
+            if (profileBtn && profilePopup) {
+                profileBtn.addEventListener('click', function(e) {
+                    e.stopPropagation();
+                    profilePopup.classList.toggle('show');
+                    profileBtn.classList.toggle('open');
+                });
+
+                // Close popup when clicking outside
+                document.addEventListener('click', function(e) {
+                    if (!e.target.closest('#profileSection')) {
+                        profilePopup.classList.remove('show');
+                        profileBtn.classList.remove('open');
+                    }
+                });
+            }
+        });
+    </script>
     @stack('scripts')
 </body>
 </html>

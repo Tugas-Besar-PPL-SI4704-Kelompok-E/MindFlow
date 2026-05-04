@@ -40,7 +40,7 @@
             border-right: 1px solid var(--border-color);
             display: flex;
             flex-direction: column;
-            padding: 40px 0;
+            padding: 40px 0 10px 0;
             z-index: 10;
         }
 
@@ -132,6 +132,146 @@
             stroke: var(--primary-purple);
         }
 
+        /* --- SIDEBAR PROFILE SECTION --- */
+        .sidebar-spacer {
+            flex: 1;
+        }
+
+        .sidebar-profile-section {
+            position: relative;
+            padding: 20px 24px;
+            border-top: 1px solid var(--border-color);
+        }
+
+        .sidebar-profile-btn {
+            display: flex;
+            align-items: center;
+            gap: 12px;
+            width: 100%;
+            padding: 10px 12px;
+            border: none;
+            background: transparent;
+            border-radius: 12px;
+            cursor: pointer;
+            transition: all 0.2s ease;
+            text-align: left;
+        }
+
+        .sidebar-profile-btn:hover {
+            background-color: var(--active-bg);
+        }
+
+        .sidebar-profile-avatar {
+            width: 42px;
+            height: 42px;
+            border-radius: 50%;
+            object-fit: cover;
+            border: 2px solid var(--primary-purple);
+            flex-shrink: 0;
+        }
+
+        .sidebar-profile-info {
+            flex: 1;
+            min-width: 0;
+        }
+
+        .sidebar-profile-name {
+            font-family: 'Poppins', sans-serif;
+            font-size: 14px;
+            font-weight: 600;
+            color: var(--text-dark);
+            white-space: nowrap;
+            overflow: hidden;
+            text-overflow: ellipsis;
+        }
+
+        .sidebar-profile-role {
+            font-family: 'Poppins', sans-serif;
+            font-size: 12px;
+            color: var(--text-muted);
+        }
+
+        .sidebar-profile-chevron {
+            width: 18px;
+            height: 18px;
+            stroke: var(--text-muted);
+            stroke-width: 2;
+            fill: none;
+            transition: transform 0.25s ease;
+            flex-shrink: 0;
+        }
+
+        .sidebar-profile-btn.open .sidebar-profile-chevron {
+            transform: rotate(180deg);
+        }
+
+        /* Popup Menu */
+        .sidebar-popup {
+            position: absolute;
+            bottom: calc(100% + 8px);
+            left: 20px;
+            right: 20px;
+            background: var(--bg-surface);
+            border-radius: 14px;
+            box-shadow: 0 8px 30px rgba(0, 0, 0, 0.12), 0 2px 8px rgba(0, 0, 0, 0.06);
+            border: 1px solid var(--border-color);
+            padding: 8px;
+            opacity: 0;
+            visibility: hidden;
+            transform: translateY(10px);
+            transition: all 0.25s cubic-bezier(0.4, 0, 0.2, 1);
+            z-index: 100;
+        }
+
+        .sidebar-popup.show {
+            opacity: 1;
+            visibility: visible;
+            transform: translateY(0);
+        }
+
+        .sidebar-popup-item {
+            display: flex;
+            align-items: center;
+            gap: 12px;
+            padding: 12px 14px;
+            border: none;
+            background: transparent;
+            width: 100%;
+            border-radius: 10px;
+            cursor: pointer;
+            font-family: 'Poppins', sans-serif;
+            font-size: 14px;
+            font-weight: 500;
+            color: var(--text-dark);
+            text-decoration: none;
+            transition: all 0.15s ease;
+        }
+
+        .sidebar-popup-item:hover {
+            background-color: var(--active-bg);
+            color: var(--primary-purple);
+        }
+
+        .sidebar-popup-item svg {
+            width: 20px;
+            height: 20px;
+            stroke: currentColor;
+            stroke-width: 2;
+            fill: none;
+            flex-shrink: 0;
+        }
+
+        .sidebar-popup-item.logout-item:hover {
+            background-color: #FEF2F2;
+            color: #DC2626;
+        }
+
+        .sidebar-popup-divider {
+            height: 1px;
+            background: var(--border-color);
+            margin: 4px 8px;
+        }
+
         /* --- MAIN CONTENT --- */
         .main-content {
             flex: 1;
@@ -219,11 +359,44 @@
                 </a>
             </li>
         </ul>
+
+        <!-- Spacer to push profile to bottom -->
+        <div class="sidebar-spacer"></div>
+
+        <!-- Profile Section -->
+        <div class="sidebar-profile-section" id="profileSection">
+            <!-- Popup Menu -->
+            <div class="sidebar-popup" id="profilePopup">
+                <a href="{{ route('settings.edit') }}" class="sidebar-popup-item" id="btn-pengaturan">
+                    <svg viewBox="0 0 24 24"><circle cx="12" cy="12" r="3"></circle><path d="M19.4 15a1.65 1.65 0 0 0 .33 1.82l.06.06a2 2 0 0 1-2.83 2.83l-.06-.06a1.65 1.65 0 0 0-1.82-.33 1.65 1.65 0 0 0-1 1.51V21a2 2 0 0 1-4 0v-.09A1.65 1.65 0 0 0 9 19.4a1.65 1.65 0 0 0-1.82.33l-.06.06a2 2 0 0 1-2.83-2.83l.06-.06A1.65 1.65 0 0 0 4.68 15a1.65 1.65 0 0 0-1.51-1H3a2 2 0 0 1 0-4h.09A1.65 1.65 0 0 0 4.6 9a1.65 1.65 0 0 0-.33-1.82l-.06-.06a2 2 0 0 1 2.83-2.83l.06.06A1.65 1.65 0 0 0 9 4.68a1.65 1.65 0 0 0 1-1.51V3a2 2 0 0 1 4 0v.09a1.65 1.65 0 0 0 1 1.51 1.65 1.65 0 0 0 1.82-.33l.06-.06a2 2 0 0 1 2.83 2.83l-.06.06A1.65 1.65 0 0 0 19.4 9a1.65 1.65 0 0 0 1.51 1H21a2 2 0 0 1 0 4h-.09a1.65 1.65 0 0 0-1.51 1z"></path></svg>
+                    Pengaturan
+                </a>
+                <div class="sidebar-popup-divider"></div>
+                <form method="POST" action="{{ route('logout') }}" style="margin:0;">
+                    @csrf
+                    <button type="submit" class="sidebar-popup-item logout-item" id="btn-logout">
+                        <svg viewBox="0 0 24 24"><path d="M9 21H5a2 2 0 0 1-2-2V5a2 2 0 0 1 2-2h4"></path><polyline points="16 17 21 12 16 7"></polyline><line x1="21" y1="12" x2="9" y2="12"></line></svg>
+                        Keluar
+                    </button>
+                </form>
+            </div>
+
+            <!-- Profile Button -->
+            <button class="sidebar-profile-btn" id="profileBtn" type="button">
+                <img src="https://ui-avatars.com/api/?name={{ urlencode(Auth::user()->nama_samaran ?? 'User') }}&background=E8DEFA&color=6B3FA0&size=42&font-size=0.4&bold=true" alt="Profile" class="sidebar-profile-avatar">
+                <div class="sidebar-profile-info">
+                    <div class="sidebar-profile-name">{{ Auth::user()->nama_samaran ?? 'User' }}</div>
+                    <div class="sidebar-profile-role">{{ ucfirst(Auth::user()->role ?? 'Mahasiswa') }}</div>
+                </div>
+                <svg class="sidebar-profile-chevron" viewBox="0 0 24 24"><polyline points="6 9 12 15 18 9"></polyline></svg>
+            </button>
+        </div>
     </aside>
     @endif
 
     <!-- MAIN CONTENT -->
     <main class="main-content">
+        @if(!request()->is('home'))
         <div class="header">
             <img src="https://ui-avatars.com/api/?name={{ urlencode(Auth::user()->nama_samaran ?? 'User') }}&background=E2E8F0&color=475569&size=65" alt="Profile" class="avatar">
             <div class="welcome-text">
@@ -231,9 +404,34 @@
                 <p>How's your day?</p>
             </div>
         </div>
+        @endif
 
         @yield('content')
     </main>
+
+    <!-- Profile Popup Toggle Script -->
+    <script>
+        document.addEventListener('DOMContentLoaded', function() {
+            const profileBtn = document.getElementById('profileBtn');
+            const profilePopup = document.getElementById('profilePopup');
+
+            if (profileBtn && profilePopup) {
+                profileBtn.addEventListener('click', function(e) {
+                    e.stopPropagation();
+                    profilePopup.classList.toggle('show');
+                    profileBtn.classList.toggle('open');
+                });
+
+                // Close popup when clicking outside
+                document.addEventListener('click', function(e) {
+                    if (!e.target.closest('#profileSection')) {
+                        profilePopup.classList.remove('show');
+                        profileBtn.classList.remove('open');
+                    }
+                });
+            }
+        });
+    </script>
 
     @yield('scripts')
 </body>

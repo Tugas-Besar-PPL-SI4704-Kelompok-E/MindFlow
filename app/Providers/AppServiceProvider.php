@@ -23,8 +23,11 @@ class AppServiceProvider extends ServiceProvider
     public function boot(): void
     {
         View::composer('*', function ($view) {
-            $testUser = User::where('email', 'asep@example.com')->first();
-            $jadwalKonsultasi = $testUser ? SesiKonseling::with('profilKonselor')->where('user_id', $testUser->id)->get() : collect();
+            $userId = \Illuminate\Support\Facades\Auth::id();
+            $jadwalKonsultasi = $userId ? SesiKonseling::with('profilKonselor')
+                ->where('user_id', $userId)
+                ->where('status', '!=', 'cancelled')
+                ->get() : collect();
             $view->with('jadwalKonsultasi', $jadwalKonsultasi);
         });
     }

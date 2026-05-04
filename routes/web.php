@@ -35,6 +35,9 @@ Route::post('/mood-tracker/mendalam', [MoodTrackerController::class, 'mendalamSt
     ->name('mood-tracker.mendalam.store');
 
 Route::get('/faq', function () {
+    if (auth()->check()) {
+        return redirect()->route('settings.edit', [], 302)->withFragment('faq');
+    }
     return view('faq');
 })->name('faq');
 
