@@ -57,7 +57,9 @@ Route::middleware('auth')->group(function () {
     Route::post('/booking/store', [BookingController::class, 'store'])->name('booking.store');
 
     // PBI 31
-    Route::put('/booking/update/{id}', [BookingController::class, 'updateJadwal'])->name('booking.update');
+    Route::get('/booking/edit/{id}', [BookingController::class, 'edit'])->name('booking.edit');
+    Route::put('/booking/update/{id}', [BookingController::class, 'update'])->name('booking.update');
+    Route::delete('/booking/cancel/{id}', [BookingController::class, 'cancel'])->name('booking.cancel');
 
     // History Route
     Route::get('/history', [HistoryController::class, 'index'])->name('history.index');

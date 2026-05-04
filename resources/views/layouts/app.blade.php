@@ -7,6 +7,7 @@
     <link rel="preconnect" href="https://fonts.googleapis.com">
     <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
     <link href="https://fonts.googleapis.com/css2?family=Poppins:wght@400;500;600;700&display=swap" rel="stylesheet">
+    <script src="https://cdn.tailwindcss.com"></script>
     <style>
         :root {
             --primary: #a881af; /* Purple accent */
@@ -429,8 +430,8 @@
             background-color: var(--primary-hover);
         }
     </style>
-</head>
-<body>
+    @stack('styles')
+</head><body>
     <div class="layout">
         <!-- Sidebar Kiri -->
         <aside class="sidebar-left">
@@ -438,9 +439,6 @@
                 <img src="{{ asset('images/logo.png') }}" alt="Logo MindFlow" style="width: 36px; height: 36px; margin-right: 12px; object-fit: contain;">
                 <div>Mind<span class="flow">Flow</span></div>
             </div>
-            
-            <div class="menu-title">Menu</div>
-            
             <ul class="menu-list">
                 @if(Auth::check() && Auth::user()->role === 'admin')
                 <li>
@@ -538,7 +536,7 @@
             <div class="topbar">
                 <div class="welcome-section">
                     <div class="user-avatar-lg">
-                        <img src="https://ui-avatars.com/api/?name={{ urlencode(Auth::user()->nama_asli ?? 'User') }}&background=e2e8f0&color=1f2937" alt="User" style="width: 100%; height: 100%; border-radius: 50%; object-fit: cover;">
+                        <img src="{{ asset('images/profile.png') }}" alt="User Profile" style="width: 100%; height: 100%; border-radius: 50%; object-fit: cover;">
                     </div>
                     <div class="welcome-text">
                         <h2>Welcome, {{ explode(' ', Auth::user()->nama_asli ?? 'User')[0] }}!</h2>
@@ -567,15 +565,44 @@
                 <a href="#">Batalkan</a>
             </div>
             
-            <div class="empty-state">
-                <div class="empty-illustration">
-                    <!-- Placeholder Illustration -->
-                    <svg width="64" height="64" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.5"><path stroke-linecap="round" stroke-linejoin="round" d="M8 7V3m8 4V3m-9 8h10M5 21h14a2 2 0 002-2V7a2 2 0 00-2-2H5a2 2 0 00-2 2v12a2 2 0 002 2z"></path></svg>
+            @if(isset($jadwalKonsultasi) && $jadwalKonsultasi->isEmpty())
+                <div class="empty-state">
+                    <div class="empty-illustration">
+                        <svg width="64" height="64" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.5"><path stroke-linecap="round" stroke-linejoin="round" d="M8 7V3m8 4V3m-9 8h10M5 21h14a2 2 0 002-2V7a2 2 0 00-2-2H5a2 2 0 00-2 2v12a2 2 0 002 2z"></path></svg>
+                    </div>
+                    <p>Tidak ada jadwal ditemukan<br>Ketuk untuk menambahkan jadwal</p>
                 </div>
-                <p>Tidak ada jadwal ditemukan<br>Ketuk untuk menambahkan jadwal</p>
-            </div>
+            @elseif(isset($jadwalKonsultasi))
+                <div style="display: flex; flex-direction: column; gap: 16px;">
+                    @foreach($jadwalKonsultasi as $jadwal)
+                        <div style="background-color: #f9fafb; padding: 16px; border-radius: 12px; border: 1px solid #f3f4f6;">
+                            <h4 style="font-weight: 700; font-size: 14px; margin-bottom: 4px;">{{ $jadwal->profilKonselor ? $jadwal->profilKonselor->nama : 'Konselor' }}</h4>
+                            <p style="color: #6b7280; font-size: 12px; margin-bottom: 8px;">{{ \Carbon\Carbon::parse($jadwal->jadwal)->format('d M Y, H:i') }}</p>
+                            <div style="margin-bottom: 12px;">
+                                <span style="display: inline-block; background-color: #fef08a; color: #a16207; padding: 4px 8px; border-radius: 4px; font-size: 12px; font-weight: 600;">{{ ucfirst($jadwal->status) }}</span>
+                            </div>
+                            <div style="display: flex; gap: 8px;">
+                                <a href="{{ route('booking.edit', $jadwal->sesi_konseling_id) }}" style="text-decoration: none; font-size: 12px; background-color: #dbeafe; color: #1d4ed8; padding: 4px 12px; border-radius: 4px;">Ubah Jadwal</a>
+                                <form action="{{ route('booking.cancel', $jadwal->sesi_konseling_id) }}" method="POST" onsubmit="return confirm('Yakin ingin membatalkan sesi ini?')" style="margin: 0;">
+                                    @csrf
+                                    @method('DELETE')
+                                    <button type="submit" style="border: none; cursor: pointer; font-size: 12px; background-color: #fee2e2; color: #b91c1c; padding: 4px 12px; border-radius: 4px;">Batalkan</button>
+                                </form>
+                            </div>
+                        </div>
+                    @endforeach
+                </div>
+            @else
+                <div class="empty-state">
+                    <div class="empty-illustration">
+                        <svg width="64" height="64" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.5"><path stroke-linecap="round" stroke-linejoin="round" d="M8 7V3m8 4V3m-9 8h10M5 21h14a2 2 0 002-2V7a2 2 0 00-2-2H5a2 2 0 00-2 2v12a2 2 0 002 2z"></path></svg>
+                    </div>
+                    <p>Tidak ada jadwal ditemukan<br>Ketuk untuk menambahkan jadwal</p>
+                </div>
+            @endif
         </aside>
     </div>
+<<<<<<< HEAD
 
     <!-- Profile Popup Toggle Script -->
     <script>
@@ -600,5 +627,8 @@
             }
         });
     </script>
+=======
+    @stack('scripts')
+>>>>>>> cd97ae40459f1e2192b2a733c97b6548b452140f
 </body>
 </html>
