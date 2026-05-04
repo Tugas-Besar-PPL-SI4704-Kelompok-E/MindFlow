@@ -1,20 +1,158 @@
-@extends('journals.layout')
+@extends('layouts.dashboard')
+
+@section('title', 'Tulis Jurnal Baru - MindFlow')
+
+@section('styles')
+    .journal-form-container {
+        max-width: 1000px;
+        margin: 0 auto;
+        border: 1px solid #E5E7EB;
+        border-radius: 14px;
+        background: #FFFFFF;
+        box-shadow: 0 2px 10px rgba(0,0,0,0.04);
+        display: flex;
+        flex-direction: column;
+        min-height: 500px;
+        overflow: hidden;
+    }
+
+    .journal-form-header {
+        background: #F3E8FF;
+        border-bottom: 1px solid #EDE9FE;
+        padding: 20px 32px;
+    }
+
+    .journal-form-header h2 {
+        font-size: 20px;
+        font-weight: 700;
+        color: #111827;
+        margin-bottom: 4px;
+    }
+
+    .journal-form-header p {
+        font-size: 13px;
+        font-weight: 500;
+        color: #6D28D9;
+    }
+
+    .journal-form-body {
+        padding: 24px 32px;
+        flex-grow: 1;
+        display: flex;
+        flex-direction: column;
+    }
+
+    .journal-form-body label {
+        display: block;
+        font-size: 14px;
+        font-weight: 700;
+        color: #111827;
+        margin-bottom: 8px;
+    }
+
+    .journal-textarea {
+        width: 100%;
+        flex-grow: 1;
+        min-height: 200px;
+        padding: 16px 20px;
+        border: 1px solid #E5E7EB;
+        border-radius: 8px;
+        font-size: 14px;
+        font-family: 'Poppins', sans-serif;
+        color: #374151;
+        resize: none;
+        transition: border-color 0.2s, box-shadow 0.2s;
+        box-shadow: 0 1px 3px rgba(0,0,0,0.04);
+    }
+
+    .journal-textarea:focus {
+        outline: none;
+        border-color: var(--primary-purple);
+        box-shadow: 0 0 0 3px rgba(155, 118, 214, 0.15);
+    }
+
+    .journal-textarea::placeholder {
+        color: #9CA3AF;
+    }
+
+    .journal-hint {
+        font-size: 12px;
+        color: #9CA3AF;
+        font-weight: 500;
+        margin-top: 8px;
+    }
+
+    .journal-form-actions {
+        display: flex;
+        justify-content: flex-end;
+        gap: 12px;
+        margin-top: 24px;
+        padding-top: 16px;
+        border-top: 1px solid #F3F4F6;
+    }
+
+    .btn-cancel {
+        padding: 10px 20px;
+        color: #6B7280;
+        font-size: 14px;
+        font-weight: 600;
+        text-decoration: none;
+        transition: color 0.2s;
+    }
+
+    .btn-cancel:hover {
+        color: #111827;
+    }
+
+    .btn-save {
+        background: #5B21B6;
+        color: #FFFFFF;
+        padding: 10px 24px;
+        border-radius: 8px;
+        border: none;
+        font-size: 14px;
+        font-weight: 600;
+        font-family: 'Poppins', sans-serif;
+        cursor: pointer;
+        box-shadow: 0 1px 3px rgba(0,0,0,0.1);
+        transition: background 0.2s;
+    }
+
+    .btn-save:hover {
+        background: #4C1D95;
+    }
+
+    .btn-save:focus {
+        outline: none;
+        box-shadow: 0 0 0 3px rgba(155, 118, 214, 0.3);
+    }
+
+    .validation-errors {
+        background: #FEF2F2;
+        color: #DC2626;
+        padding: 16px;
+        border-radius: 8px;
+        margin-bottom: 16px;
+        font-size: 14px;
+    }
+
+    .validation-errors ul {
+        list-style: disc;
+        padding-left: 20px;
+    }
+@endsection
 
 @section('content')
-<div class="w-full h-full flex flex-col px-6 py-6 md:px-12 lg:px-[60px]">
-    <!-- Kotak Form Jurnal -->
-    <div class="w-full max-w-[1000px] mx-auto border border-gray-200 rounded-[14px] bg-white shadow-sm flex flex-col h-full overflow-hidden">
-        {{-- Header Form --}}
-        <div class="bg-[#F3E8FF] border-b border-purple-100 px-8 py-5 flex-shrink-0">
-            <h2 class="text-[20px] font-bold text-[#111827]">Tulis Jurnal Baru</h2>
-            <p class="text-purple-700 text-[13px] font-medium mt-1">Bagaimana perasaanmu hari ini? Tuliskan apa yang memicu stres atau kebahagiaanmu.</p>
+    <div class="journal-form-container">
+        <div class="journal-form-header">
+            <h2>Tulis Jurnal Baru</h2>
+            <p>Bagaimana perasaanmu hari ini? Tuliskan apa yang memicu stres atau kebahagiaanmu.</p>
         </div>
 
-        <div class="px-8 py-6 flex-grow flex flex-col">
-            {{-- Menampilkan pesan error validasi --}}
+        <div class="journal-form-body">
             @if ($errors->any())
-                <div class="bg-red-50 text-red-600 p-4 rounded-lg mb-4 text-sm flex-shrink-0">
-                    <ul class="list-disc pl-5">
+                <div class="validation-errors">
+                    <ul>
                         @foreach ($errors->all() as $error)
                             <li>{{ $error }}</li>
                         @endforeach
@@ -22,29 +160,26 @@
                 </div>
             @endif
 
-            <form action="{{ route('journals.store') }}" method="POST" class="flex flex-col h-full">
+            <form action="{{ route('journals.store') }}" method="POST" style="display: flex; flex-direction: column; flex-grow: 1;">
                 @csrf
-                
-                <div class="flex-grow flex flex-col">
-                    <label for="content" class="block text-[14px] font-bold text-[#111827] mb-2 flex-shrink-0">Refleksi Hari Ini</label>
-                    <textarea 
-                        name="content" 
-                        id="content" 
-                        class="w-full flex-grow px-5 py-4 border border-gray-200 rounded-lg text-[14px] focus:outline-none focus:ring-1 focus:ring-purple-500 focus:border-purple-500 transition shadow-sm resize-none text-gray-700"
+
+                <div style="flex-grow: 1; display: flex; flex-direction: column;">
+                    <label for="content">Refleksi Hari Ini</label>
+                    <textarea
+                        name="content"
+                        id="content"
+                        class="journal-textarea"
                         placeholder="Saya merasa sedikit tertekan saat bekerja karena..."
                         required
                     >{{ old('content') }}</textarea>
-                    <p class="text-[12px] text-gray-400 font-medium mt-2 flex-shrink-0">Tuliskan cerita Anda sebebas mungkin. Data ini dilindungi dan hanya Anda yang dapat melihatnya.</p>
+                    <p class="journal-hint">Tuliskan cerita Anda sebebas mungkin. Data ini dilindungi dan hanya Anda yang dapat melihatnya.</p>
                 </div>
 
-                <div class="flex justify-end gap-3 mt-6 pt-4 border-t border-gray-100 flex-shrink-0">
-                    <a href="{{ route('journals.index') }}" class="px-5 py-2.5 text-gray-500 text-[14px] font-semibold hover:text-gray-800 transition">Batal</a>
-                    <button type="submit" class="bg-[#5B21B6] hover:bg-purple-800 text-white px-6 py-2.5 rounded-lg text-[14px] font-semibold shadow-sm transition-all focus:outline-none focus:ring focus:ring-purple-300">
-                        Simpan Jurnal
-                    </button>
+                <div class="journal-form-actions">
+                    <a href="{{ route('journals.index') }}" class="btn-cancel">Batal</a>
+                    <button type="submit" class="btn-save">Simpan Jurnal</button>
                 </div>
             </form>
         </div>
     </div>
-</div>
 @endsection
