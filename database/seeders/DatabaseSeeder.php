@@ -18,5 +18,13 @@ class DatabaseSeeder extends Seeder
         $this->call([
             ProfilKonselorSeeder::class,
         ]);
+
+        // User::factory(10)->create();
+
+        User::factory()->create([
+            'nama_asli' => 'Test User',
+            'nama_samaran' => 'tester',
+            'email' => 'test@example.com',
+        ]);
     }
 }

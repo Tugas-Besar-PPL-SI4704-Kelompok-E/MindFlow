@@ -1,4 +1,4 @@
-@extends('layouts.dashboard')
+@extends('layouts.dashboard', ['hideSidebar' => true])
 
 @section('title', 'Refleksi Diri - MindFlow')
 
