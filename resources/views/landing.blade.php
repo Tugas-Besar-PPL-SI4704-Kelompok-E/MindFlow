@@ -881,7 +881,7 @@
                         <li>Buat catatan sesi</li>
                         <li>Daftar sebagai user terlebih dahulu</li>
                     </ul>
-                    <a href="{{ route('register') }}" class="btn-role btn-role-outline">Daftar & Apply</a>
+                    <a href="{{ route('rekrutmen.create') }}" class="btn-role btn-role-outline">Daftar & Apply</a>
                 </div>
                 <div class="role-card">
                     <div class="role-emoji">⚙️</div>

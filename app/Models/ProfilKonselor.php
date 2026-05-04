@@ -15,6 +15,11 @@ class ProfilKonselor extends Model
         'spesialisasi',
         'biografi',
         'keahlian',
+        'nomor_whatsapp',
+        'no_sipp',
+        'berkas_ktp',
+        'berkas_sipp',
+        'berkas_cv',
     ];
 
     public function user()

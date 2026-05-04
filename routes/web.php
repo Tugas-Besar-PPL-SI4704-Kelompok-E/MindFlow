@@ -12,6 +12,7 @@ use App\Http\Controllers\Auth\LoginController;
 use App\Http\Controllers\Auth\RegisterController;
 use App\Http\Controllers\AdminController;
 use App\Http\Controllers\CounselorController;
+use App\Http\Controllers\CounselorRecruitmentController;
 use App\Http\Controllers\ThreadInteractionController;
 
 // ──────────────────── Landing Page (Guest) ────────────────────
@@ -40,6 +41,11 @@ Route::get('/faq', function () {
     }
     return view('faq');
 })->name('faq');
+
+// ──────────────────── Rekrutmen Konselor (Public) ────────────────────
+Route::get('/rekrutmen-konselor', [CounselorRecruitmentController::class, 'create'])->name('rekrutmen.create');
+Route::post('/rekrutmen-konselor', [CounselorRecruitmentController::class, 'store'])->name('rekrutmen.store');
+Route::get('/rekrutmen-konselor/sukses', [CounselorRecruitmentController::class, 'success'])->name('rekrutmen.success');
 
 // ──────────────────── Protected Routes (Requires Login) ────────────────────
 Route::middleware('auth')->group(function () {
@@ -82,6 +88,8 @@ Route::middleware('auth')->group(function () {
     Route::prefix('admin')->name('admin.')->group(function () {
         Route::get('/dashboard', [AdminController::class, 'index'])->name('dashboard');
         Route::get('/rekrutmen', [AdminController::class, 'rekrutmen'])->name('rekrutmen');
+        Route::post('/rekrutmen/{id}/approve', [AdminController::class, 'approveKonselor'])->name('rekrutmen.approve');
+        Route::post('/rekrutmen/{id}/reject', [AdminController::class, 'rejectKonselor'])->name('rekrutmen.reject');
         Route::get('/laporan', [AdminController::class, 'laporan'])->name('laporan');
         Route::delete('/forum/{id}/delete', [AdminController::class, 'hapusPostingan'])->name('forum.delete');
         Route::get('/spesialisasi', [AdminController::class, 'spesialisasi'])->name('spesialisasi');
