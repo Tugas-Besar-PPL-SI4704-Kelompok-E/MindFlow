@@ -66,17 +66,18 @@
             
             <!-- Dropdown Content -->
             <div id="dropdown-show-{{ $thread->id }}" style="display:none; position:absolute; right:0; top:28px; background:white; border:1px solid var(--border-dark); border-radius:8px; box-shadow:0 4px 6px rgba(0,0,0,0.1); z-index:10; min-width:150px; padding:8px 0; font-family:inherit;">
-                @if($thread->user_id === (Auth::id() ?? 1))
+                @if($thread->user_id === Auth::id())
                     <form action="{{ route('forum.destroy', $thread->id) }}" method="POST" style="margin:0;" onsubmit="return confirm('Hapus post ini?');">
                         @csrf
                         @method('DELETE')
                         <button type="submit" style="width:100%; text-align:left; background:none; border:none; padding:8px 16px; cursor:pointer; color:#ef4444; font-size:0.9rem;">Hapus Post</button>
                     </form>
-                @else
+                @elseif(Auth::user()->role !== 'admin')
                     <button onclick="document.getElementById('report-post-show-{{ $thread->id }}').style.display='block'; document.getElementById('dropdown-show-{{ $thread->id }}').style.display='none';" style="width:100%; text-align:left; background:none; border:none; padding:8px 16px; cursor:pointer; color:var(--text-main); font-size:0.9rem;">Laporkan</button>
                 @endif
             </div>
 
+            @if(Auth::user()->role !== 'admin')
             <!-- Report Form -->
             <form id="report-post-show-{{ $thread->id }}" action="{{ route('forum.report', $thread->id) }}" method="POST" style="display:none; position:absolute; right:0; top:28px; background:white; border:1px solid #ef4444; border-radius:8px; box-shadow:0 4px 6px rgba(0,0,0,0.1); z-index:11; padding:12px; width:240px; font-family:inherit;">
                 @csrf
@@ -87,6 +88,7 @@
                     <button type="submit" style="background:#ef4444; color:white; border:none; padding:4px 12px; border-radius:4px; font-weight:600; font-size:0.8rem; cursor:pointer;">Kirim</button>
                 </div>
             </form>
+            @endif
         </div>
     </div>
 

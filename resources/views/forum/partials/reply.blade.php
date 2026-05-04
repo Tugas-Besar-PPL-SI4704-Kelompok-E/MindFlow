@@ -34,10 +34,7 @@
                     <svg width="14" height="14" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><path stroke-linecap="round" stroke-linejoin="round" d="M3 10h10a8 8 0 018 8v2M3 10l6 6m-6-6l6-6"/></svg>
                     Balas
                 </button>
-                <button onclick="document.getElementById('report-form-{{ $reply->id }}').style.display='flex'; document.getElementById('reply-form-{{ $reply->id }}').style.display='none';" style="background:none; border:none; color:#ef4444; font-weight:600; font-size:0.8rem; cursor:pointer; display:flex; align-items:center; gap:4px;">
-                    <svg width="14" height="14" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><path stroke-linecap="round" stroke-linejoin="round" d="M12 9v2m0 4h.01m-6.938 4h13.856c1.54 0 2.502-1.667 1.732-3L13.732 4c-.77-1.333-2.694-1.333-3.464 0L3.34 16c-.77 1.333.192 3 1.732 3z"/></svg>
-                    Laporkan
-                </button>
+
             </div>
 
             <form id="reply-form-{{ $reply->id }}" action="{{ route('forum.reply', $reply->thread_id) }}" method="POST" style="display:none; margin-top:12px; flex-direction: column; gap:8px;">
@@ -59,12 +56,7 @@
                 </div>
             </form>
 
-            <!-- Report Form -->
-            <form id="report-form-{{ $reply->id }}" action="{{ route('forum.reply.report', $reply->id) }}" method="POST" style="display:none; margin-top:12px; gap:8px;">
-                @csrf
-                <input type="text" name="reason" style="flex:1; padding:8px 12px; border-radius:6px; border:1px solid #ef4444; font-size:0.85rem;" placeholder="Ketik alasan melapor..." required>
-                <button type="submit" style="background:#ef4444; color:white; border:none; border-radius:6px; padding:4px 12px; font-weight:600; font-size:0.8rem; cursor:pointer;">Kirim Laporan</button>
-            </form>
+
         </div>
     </div>
     
