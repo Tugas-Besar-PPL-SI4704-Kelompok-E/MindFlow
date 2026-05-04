@@ -4,6 +4,10 @@ use App\Http\Controllers\MoodTrackerController;
 use Illuminate\Support\Facades\Route;
 use App\Http\Controllers\BookingController;
 use App\Http\Controllers\CounselingController;
+<<<<<<< HEAD
+use App\Http\Controllers\HistoryController;
+use App\Http\Controllers\JournalController;
+=======
 use App\Http\Controllers\JournalController;
 use App\Http\Controllers\UserController;
 use App\Http\Controllers\ForumController;
@@ -11,6 +15,7 @@ use App\Http\Controllers\Auth\LoginController;
 use App\Http\Controllers\Auth\RegisterController;
 use App\Http\Controllers\AdminController;
 use App\Http\Controllers\CounselorController;
+>>>>>>> 3fc92e8cdd2b8349b86c7f44b812713364ae45c2
 use App\Http\Controllers\ThreadInteractionController;
 
 // ──────────────────── Landing Page (Guest) ────────────────────
@@ -64,7 +69,15 @@ Route::prefix('konselor')->name('konselor.')->group(function () {
 // ──────────────────── Journal Routes (PBI 15, 16, 17) ────────────────────
 Route::resource('journals', JournalController::class);
 
+<<<<<<< HEAD
+// ──────────────────── History Route ────────────────────
+Route::get('/history', [HistoryController::class, 'index'])->name('history.index');
+
 // Forum resource routes
+// (Asumsi ForumController & UserController sudah di-import di atasnya atau berfungsi normal)
+=======
+// Forum resource routes
+>>>>>>> 3fc92e8cdd2b8349b86c7f44b812713364ae45c2
 Route::resource('forum', ForumController::class);
 
 Route::post('forum/{thread}/like', [ThreadInteractionController::class, 'toggleLike'])->name('forum.like');
@@ -72,6 +85,10 @@ Route::post('forum/{thread}/save', [ThreadInteractionController::class, 'toggleS
 Route::post('forum/{thread}/reply', [ThreadInteractionController::class, 'storeReply'])->name('forum.reply');
 Route::post('forum/{thread}/report', [ThreadInteractionController::class, 'reportThread'])->name('forum.report');
 Route::post('forum/reply/{reply}/report', [ThreadInteractionController::class, 'reportReply'])->name('forum.reply.report');
+<<<<<<< HEAD
+
+=======
+>>>>>>> 3fc92e8cdd2b8349b86c7f44b812713364ae45c2
 Route::middleware('auth')->group(function () {
     Route::get('/settings', [UserController::class, 'edit'])->name('settings.edit');
     Route::put('/settings', [UserController::class, 'update'])->name('settings.update');
@@ -79,6 +96,9 @@ Route::middleware('auth')->group(function () {
 
 Route::get('/faq', function () {
     return view('faq');
+<<<<<<< HEAD
+})->name('faq');
+=======
 })->name('faq');
 
 // ──────────────────── Protected Routes (Requires Login) ────────────────────
@@ -141,3 +161,4 @@ Route::middleware('auth')->group(function () {
     Route::get('/settings', [UserController::class, 'edit'])->name('settings.edit');
     Route::put('/settings', [UserController::class, 'update'])->name('settings.update');
 });
+>>>>>>> 3fc92e8cdd2b8349b86c7f44b812713364ae45c2
