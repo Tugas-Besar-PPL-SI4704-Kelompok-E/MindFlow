@@ -91,19 +91,8 @@ class ProfilKonselorSeeder extends Seeder
         );
 
         SesiKonseling::firstOrCreate(
-<<<<<<< HEAD
             ['user_id' => $user->id, 'profil_konselor_id' => $profil1->profil_konselor_id, 'jadwal' => '2026-05-10 10:00:00'],
             ['status' => 'pending']
-=======
-            [
-                'user_id' => $user->id,
-                'profil_konselor_id' => $profil1->profil_konselor_id,
-                'jadwal' => '2026-05-10 10:00:00'
-            ],
-            [
-                'status' => 'pending'
-            ]
->>>>>>> 01b426bde8cf49f707464f4896385ca9eff1dde8
         );
     }
 }

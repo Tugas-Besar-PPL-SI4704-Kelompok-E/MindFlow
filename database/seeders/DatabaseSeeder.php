@@ -22,7 +22,6 @@ class DatabaseSeeder extends Seeder
 
         // User::factory(10)->create();
 
-<<<<<<< HEAD
         User::firstOrCreate(
             ['email' => 'test@example.com'],
             [
@@ -31,7 +30,7 @@ class DatabaseSeeder extends Seeder
                 'password' => bcrypt('password'), // Or whatever default factory password is
             ]
         );
-=======
+
         $email = 'test@example.com';
         if (!User::where('email', $email)->exists()) {
             User::factory()->create([
@@ -40,6 +39,5 @@ class DatabaseSeeder extends Seeder
                 'email' => $email,
             ]);
         }
->>>>>>> 01b426bde8cf49f707464f4896385ca9eff1dde8
     }
 }
