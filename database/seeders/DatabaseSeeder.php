@@ -21,10 +21,13 @@ class DatabaseSeeder extends Seeder
 
         // User::factory(10)->create();
 
-        User::factory()->create([
-            'nama_asli' => 'Test User',
-            'nama_samaran' => 'tester',
-            'email' => 'test@example.com',
-        ]);
+        $email = 'test@example.com';
+        if (!User::where('email', $email)->exists()) {
+            User::factory()->create([
+                'nama_asli' => 'Test User',
+                'nama_samaran' => 'tester',
+                'email' => $email,
+            ]);
+        }
     }
 }
