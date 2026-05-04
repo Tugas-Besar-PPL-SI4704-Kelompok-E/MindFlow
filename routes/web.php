@@ -76,7 +76,7 @@ Route::middleware('auth')->group(function () {
         ->name('mood-tracker.open-question.store');
 
     // Admin Routes
-    Route::prefix('admin')->name('admin.')->group(function () {
+    Route::prefix('admin')->name('admin.')->middleware('role:admin')->group(function () {
         Route::get('/dashboard', [AdminController::class, 'index'])->name('dashboard');
         Route::get('/rekrutmen', [AdminController::class, 'rekrutmen'])->name('rekrutmen');
         Route::get('/laporan', [AdminController::class, 'laporan'])->name('laporan');
@@ -85,7 +85,7 @@ Route::middleware('auth')->group(function () {
     });
 
     // Konselor Routes
-    Route::prefix('konselor')->name('konselor.')->group(function () {
+    Route::prefix('konselor')->name('konselor.')->middleware('role:konselor')->group(function () {
         Route::get('/dashboard', [CounselorController::class, 'index'])->name('dashboard');
     });
 

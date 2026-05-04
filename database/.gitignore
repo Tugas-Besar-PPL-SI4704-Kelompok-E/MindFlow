@@ -1,1 +1,1 @@
-*.sqlite*
+php *.sqlite*
