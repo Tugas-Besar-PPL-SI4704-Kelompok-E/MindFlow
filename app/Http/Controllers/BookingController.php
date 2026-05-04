@@ -3,35 +3,64 @@
 namespace App\Http\Controllers;
 
 use Illuminate\Http\Request;
-use App\Models\SesiKonseling; // <--- WAJIB ADA agar tidak error 'Class not found'
+use App\Models\SesiKonseling;
+use App\Models\ProfilKonselor;
 use Illuminate\Support\Facades\Auth;
 
 class BookingController extends Controller
 {
     public function store(Request $request) 
     {
-        // PBI 29: Simpan data pesanan sesi konseling ke database
+        $request->validate([
+            'konselor_id' => 'required|exists:profil_konselor,profil_konselor_id',
+            'jadwal' => 'required',
+        ]);
+
+        $testUser = \App\Models\User::where('email', 'asep@example.com')->first();
+        
         SesiKonseling::create([
-            'user_id' => Auth::id(), // Mengambil ID user yang sedang login
+            'user_id' => $testUser ? $testUser->id : 1,
             'profil_konselor_id' => $request->konselor_id,
             'jadwal' => $request->jadwal,
             'status' => 'pending'
         ]);
 
-        // PBI 30: Sistem notifikasi reservasi sukses via session flash data
         return redirect()->back()->with('success', 'Reservasi berhasil dibuat! Menunggu konfirmasi.');
     }
 
-    public function updateJadwal(Request $request, $id)
+    public function edit($id)
     {
+        $sesi = SesiKonseling::with('profilKonselor')->findOrFail($id);
+        return view('konseling.edit', compact('sesi'));
+    }
+
+    public function update(Request $request, $id)
+    {
+        $request->validate([
+            'jadwal' => 'required',
+        ]);
+
         $sesi = SesiKonseling::findOrFail($id);
         
-        // PBI 31: Logika alur pengajuan perubahan jadwal sesi konseling
         $sesi->update([
-            'jadwal' => $request->jadwal_baru,
+            'jadwal' => $request->jadwal,
             'status' => 'rescheduled'
         ]);
 
-        return redirect()->back()->with('info', 'Jadwal sesi telah berhasil diubah.');
+        return redirect()->route('konseling.show', $sesi->profil_konselor_id)
+            ->with('info', 'Jadwal sesi telah berhasil diubah!');
+    }
+
+    public function cancel($id)
+    {
+        $sesi = SesiKonseling::findOrFail($id);
+        $konselorId = $sesi->profil_konselor_id;
+        
+        $sesi->update([
+            'status' => 'cancelled'
+        ]);
+
+        return redirect()->route('konseling.show', $konselorId)
+            ->with('error', 'Reservasi telah dibatalkan.');
     }
 }

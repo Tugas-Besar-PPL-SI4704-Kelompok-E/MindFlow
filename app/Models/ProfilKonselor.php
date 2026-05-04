@@ -6,7 +6,7 @@ use Illuminate\Database\Eloquent\Model;
 
 class ProfilKonselor extends Model
 {
-    protected $table = 'profil_konselors';
+    protected $table = 'profil_konselor';
     protected $primaryKey = 'profil_konselor_id';
 
     protected $fillable = [
@@ -14,11 +14,16 @@ class ProfilKonselor extends Model
         'nama',
         'spesialisasi',
         'biografi',
-        'keahlian'
+        'keahlian',
     ];
 
     public function user()
     {
         return $this->belongsTo(User::class, 'user_id');
+    }
+
+    public function sesiKonseling()
+    {
+        return $this->hasMany(SesiKonseling::class, 'profil_konselor_id', 'profil_konselor_id');
     }
 }
