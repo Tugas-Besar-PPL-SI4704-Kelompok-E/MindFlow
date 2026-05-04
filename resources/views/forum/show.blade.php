@@ -39,30 +39,19 @@
             </button>
             
             <!-- Dropdown Content -->
-<<<<<<< HEAD
             <div id="dropdown-show-{{ $thread->id }}" class="hidden absolute right-0 top-full mt-1 w-40 bg-white border border-gray-100 rounded-xl shadow-lg py-1.5 z-10">
-                @if($thread->user_id === (Auth::id() ?? 1))
+                @if(Auth::user()->role === 'admin' || $thread->user_id === (Auth::id() ?? 1))
                     <form action="{{ route('forum.destroy', $thread->id) }}" method="POST" class="m-0" onsubmit="return confirm('Hapus post ini?');">
-=======
-            <div id="dropdown-show-{{ $thread->id }}" style="display:none; position:absolute; right:0; top:28px; background:white; border:1px solid var(--border-dark); border-radius:8px; box-shadow:0 4px 6px rgba(0,0,0,0.1); z-index:10; min-width:150px; padding:8px 0; font-family:inherit;">
-                @if($thread->user_id === Auth::id())
-                    <form action="{{ route('forum.destroy', $thread->id) }}" method="POST" style="margin:0;" onsubmit="return confirm('Hapus post ini?');">
->>>>>>> c4f0ce3ee1d03aa624144385bc96873f8fa0a5ba
                         @csrf
                         @method('DELETE')
                         <button type="submit" class="w-full text-left px-4 py-2.5 text-sm text-red-500 hover:bg-red-50 font-semibold transition-colors">Hapus Post</button>
                     </form>
-<<<<<<< HEAD
-                @else
+                @endif
+                @if(Auth::user()->role !== 'admin' && $thread->user_id !== (Auth::id() ?? 1))
                     <button onclick="document.getElementById('report-post-show-{{ $thread->id }}').classList.remove('hidden'); document.getElementById('dropdown-show-{{ $thread->id }}').classList.add('hidden');" class="w-full text-left px-4 py-2.5 text-sm text-gray-700 hover:bg-gray-50 font-semibold transition-colors">Laporkan</button>
-=======
-                @elseif(Auth::user()->role !== 'admin')
-                    <button onclick="document.getElementById('report-post-show-{{ $thread->id }}').style.display='block'; document.getElementById('dropdown-show-{{ $thread->id }}').style.display='none';" style="width:100%; text-align:left; background:none; border:none; padding:8px 16px; cursor:pointer; color:var(--text-main); font-size:0.9rem;">Laporkan</button>
->>>>>>> c4f0ce3ee1d03aa624144385bc96873f8fa0a5ba
                 @endif
             </div>
 
-            @if(Auth::user()->role !== 'admin')
             <!-- Report Form -->
             <form id="report-post-show-{{ $thread->id }}" action="{{ route('forum.report', $thread->id) }}" method="POST" class="hidden absolute right-0 top-full mt-1 w-64 bg-white border border-red-100 rounded-xl shadow-[0_10px_40px_-10px_rgba(239,68,68,0.2)] p-4 z-20">
                 @csrf
@@ -73,7 +62,6 @@
                     <button type="submit" class="px-4 py-1.5 text-[13px] font-bold bg-red-500 text-white rounded-lg hover:bg-red-600 transition-all shadow-sm">Kirim</button>
                 </div>
             </form>
-            @endif
         </div>
     </div>
 
@@ -107,3 +95,19 @@
 </div>
 
 @endsection
+
+@push('scripts')
+<script>
+    // Close dropdowns and report forms when clicking outside
+    document.addEventListener('click', function(e) {
+        // Find if click is on a dropdown button
+        const isDropdownBtn = e.target.closest('button[onclick*="dropdown-"]');
+        const isInsideDropdown = e.target.closest('[id^="dropdown-"]');
+        const isInsideReport = e.target.closest('[id^="report-"]');
+        
+        if (!isDropdownBtn && !isInsideDropdown && !isInsideReport) {
+            document.querySelectorAll('[id^="dropdown-"], [id^="report-"]').forEach(d => d.classList.add('hidden'));
+        }
+    });
+</script>
+@endpush

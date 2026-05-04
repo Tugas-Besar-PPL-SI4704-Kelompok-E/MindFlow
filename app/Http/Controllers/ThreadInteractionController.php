@@ -85,6 +85,17 @@ class ThreadInteractionController extends Controller
 
         return back()->with('success', 'Laporan pos berhasil dikirim.');
     }
+
+    public function destroyReply(ThreadReply $reply)
+    {
+        if (Auth::user()->role !== 'admin' && $reply->user_id !== (Auth::id() ?? 1)) {
+            abort(403, 'Unauthorized action.');
+        }
+
+        $reply->delete();
+
+        return back()->with('success', 'Balasan berhasil dihapus!');
+    }
 }
 
 #SIBUK UTS

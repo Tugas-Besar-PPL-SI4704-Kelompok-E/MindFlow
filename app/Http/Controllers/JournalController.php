@@ -73,7 +73,7 @@ class JournalController extends Controller
         ]);
 
         return redirect()->route('journals.index')
-                         ->with('success', 'Jurnal refleksi berhasil disimpan.');
+                         ->with('success', 'Jurnal berhasil disimpan.');
     }
 
     /**
@@ -137,6 +137,6 @@ class JournalController extends Controller
         $journal->delete();
 
         return redirect()->route('journals.index')
-                         ->with('success', 'Jurnal berhasil dihapus.');
+                         ->with('error', 'Jurnal berhasil dihapus.');
     }
 }

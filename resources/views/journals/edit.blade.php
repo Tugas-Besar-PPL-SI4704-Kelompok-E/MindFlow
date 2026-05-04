@@ -1,181 +1,52 @@
-@extends('layouts.dashboard')
+@extends('layouts.app')
 
 @section('title', 'Edit Jurnal - MindFlow')
 
-@section('styles')
-    .journal-form-container {
-        max-width: 1000px;
-        margin: 0 auto;
-        border: 1px solid #E5E7EB;
-        border-radius: 14px;
-        background: #FFFFFF;
-        box-shadow: 0 2px 10px rgba(0,0,0,0.04);
-        display: flex;
-        flex-direction: column;
-        min-height: 500px;
-        overflow: hidden;
-    }
-
-    .journal-form-header {
-        background: #F3E8FF;
-        border-bottom: 1px solid #EDE9FE;
-        padding: 20px 32px;
-    }
-
-    .journal-form-header h2 {
-        font-size: 20px;
-        font-weight: 700;
-        color: #111827;
-        margin-bottom: 4px;
-    }
-
-    .journal-form-header p {
-        font-size: 13px;
-        font-weight: 500;
-        color: #6D28D9;
-    }
-
-    .journal-form-body {
-        padding: 24px 32px;
-        flex-grow: 1;
-        display: flex;
-        flex-direction: column;
-    }
-
-    .journal-form-body label {
-        display: block;
-        font-size: 14px;
-        font-weight: 700;
-        color: #111827;
-        margin-bottom: 8px;
-    }
-
-    .journal-textarea {
-        width: 100%;
-        flex-grow: 1;
-        min-height: 200px;
-        padding: 16px 20px;
-        border: 1px solid #E5E7EB;
-        border-radius: 8px;
-        font-size: 14px;
-        font-family: 'Poppins', sans-serif;
-        color: #374151;
-        resize: none;
-        transition: border-color 0.2s, box-shadow 0.2s;
-        box-shadow: 0 1px 3px rgba(0,0,0,0.04);
-    }
-
-    .journal-textarea:focus {
-        outline: none;
-        border-color: var(--primary-purple);
-        box-shadow: 0 0 0 3px rgba(155, 118, 214, 0.15);
-    }
-
-    .journal-hint {
-        font-size: 12px;
-        color: #9CA3AF;
-        font-weight: 500;
-        margin-top: 8px;
-    }
-
-    .journal-form-actions {
-        display: flex;
-        justify-content: flex-end;
-        gap: 12px;
-        margin-top: 24px;
-        padding-top: 16px;
-        border-top: 1px solid #F3F4F6;
-    }
-
-    .btn-cancel {
-        padding: 10px 20px;
-        color: #6B7280;
-        font-size: 14px;
-        font-weight: 600;
-        text-decoration: none;
-        transition: color 0.2s;
-    }
-
-    .btn-cancel:hover {
-        color: #111827;
-    }
-
-    .btn-save {
-        background: #5B21B6;
-        color: #FFFFFF;
-        padding: 10px 24px;
-        border-radius: 8px;
-        border: none;
-        font-size: 14px;
-        font-weight: 600;
-        font-family: 'Poppins', sans-serif;
-        cursor: pointer;
-        box-shadow: 0 1px 3px rgba(0,0,0,0.1);
-        transition: background 0.2s;
-    }
-
-    .btn-save:hover {
-        background: #4C1D95;
-    }
-
-    .btn-save:focus {
-        outline: none;
-        box-shadow: 0 0 0 3px rgba(155, 118, 214, 0.3);
-    }
-
-    .validation-errors {
-        background: #FEF2F2;
-        color: #DC2626;
-        padding: 16px;
-        border-radius: 8px;
-        margin-bottom: 16px;
-        font-size: 14px;
-    }
-
-    .validation-errors ul {
-        list-style: disc;
-        padding-left: 20px;
-    }
-@endsection
-
 @section('content')
-    <div class="journal-form-container">
-        <div class="journal-form-header">
-            <h2>Edit Jurnal</h2>
-            <p>Mengubah atau menambahkan detail pada refleksi Anda.</p>
+<div class="max-w-4xl mx-auto pb-12">
+    <div class="mb-8 flex items-center justify-between">
+        <div>
+            <h3 class="text-gray-900 font-extrabold text-2xl tracking-tight mb-2">Edit Jurnal</h3>
+            <p class="text-gray-500 text-[15px] font-medium">Mengubah atau menambahkan detail pada refleksi Anda.</p>
         </div>
-
-        <div class="journal-form-body">
-            @if ($errors->any())
-                <div class="validation-errors">
-                    <ul>
-                        @foreach ($errors->all() as $error)
-                            <li>{{ $error }}</li>
-                        @endforeach
-                    </ul>
-                </div>
-            @endif
-
-            <form action="{{ route('journals.update', $journal->journal_id) }}" method="POST" style="display: flex; flex-direction: column; flex-grow: 1;">
-                @csrf
-                @method('PUT')
-
-                <div style="flex-grow: 1; display: flex; flex-direction: column;">
-                    <label for="content">Refleksi Hari Ini</label>
-                    <textarea
-                        name="content"
-                        id="content"
-                        class="journal-textarea"
-                        required
-                    >{{ old('content', $journal->content) }}</textarea>
-                    <p class="journal-hint">Anda pertama kali menulis ini pada {{ $journal->created_at->format('d M Y') }}.</p>
-                </div>
-
-                <div class="journal-form-actions">
-                    <a href="{{ route('journals.index') }}" class="btn-cancel">Batal</a>
-                    <button type="submit" class="btn-save">Simpan Perubahan</button>
-                </div>
-            </form>
-        </div>
+        <a href="{{ route('journals.index') }}" class="w-10 h-10 bg-white border border-gray-100 rounded-full flex items-center justify-center text-gray-400 hover:text-[#A881C2] hover:border-purple-100 hover:bg-purple-50 transition-all shadow-sm">
+            <svg class="w-5 h-5" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2.5" d="M15 19l-7-7 7-7"></path></svg>
+        </a>
     </div>
+
+    <div class="bg-white rounded-[32px] shadow-[0_4px_20px_-4px_rgba(0,0,0,0.03)] border border-gray-100 p-8 md:p-10">
+        @if ($errors->any())
+            <div class="bg-red-50 border border-red-100 text-red-800 px-6 py-4 rounded-2xl mb-8 shadow-sm">
+                <ul class="list-disc list-inside text-sm font-medium">
+                    @foreach ($errors->all() as $error)
+                        <li>{{ $error }}</li>
+                    @endforeach
+                </ul>
+            </div>
+        @endif
+
+        <form action="{{ route('journals.update', $journal->journal_id) }}" method="POST">
+            @csrf
+            @method('PUT')
+            <div class="mb-6">
+                <label for="content" class="block text-[15px] font-bold text-gray-900 mb-3">Refleksi Hari Ini</label>
+                <textarea
+                    name="content"
+                    id="content"
+                    class="w-full min-h-[250px] bg-gray-50 border border-gray-200 rounded-2xl px-5 py-4 focus:outline-none focus:ring-4 focus:ring-[#A881C2]/10 focus:border-[#A881C2] focus:bg-white text-[15px] text-gray-700 font-medium transition-all placeholder-gray-400 resize-y"
+                    required
+                >{{ old('content', $journal->content) }}</textarea>
+                <p class="mt-3 text-sm font-medium text-gray-400 flex items-center gap-2">
+                    <svg class="w-4 h-4" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M12 8v4l3 3m6-3a9 9 0 11-18 0 9 9 0 0118 0z"></path></svg>
+                    Anda pertama kali menulis ini pada {{ $journal->created_at->translatedFormat('d M Y') }}.
+                </p>
+            </div>
+
+            <div class="flex items-center justify-end gap-3 pt-6 border-t border-gray-50">
+                <a href="{{ route('journals.index') }}" class="px-6 py-3 rounded-2xl text-[14px] font-bold text-gray-500 hover:text-gray-700 hover:bg-gray-100 transition-colors">Batal</a>
+                <button type="submit" class="bg-[#A881C2] hover:bg-[#8A64A4] text-white px-8 py-3 rounded-2xl font-bold text-[14px] shadow-md shadow-[#A881C2]/20 transition-all active:scale-95 tracking-wide">Simpan Perubahan</button>
+            </div>
+        </form>
+    </div>
+</div>
 @endsection
