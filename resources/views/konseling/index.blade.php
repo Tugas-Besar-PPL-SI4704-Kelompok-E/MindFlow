@@ -1,256 +1,58 @@
-@extends('layouts.dashboard')
-
-@section('title', 'Konsultasi - MindFlow')
-
-@section('styles')
-    /* --- Konselor Page --- */
-    .konselor-header {
-        display: flex;
-        justify-content: space-between;
-        align-items: center;
-        margin-bottom: 32px;
-        flex-wrap: wrap;
-        gap: 16px;
-    }
-
-    .konselor-header h3 {
-        font-size: 18px;
-        font-weight: 700;
-        color: #111827;
-    }
-
-    .filter-form {
-        display: flex;
-        align-items: center;
-        gap: 8px;
-    }
-
-    .filter-select-wrapper {
-        position: relative;
-    }
-
-    .filter-select {
-        appearance: none;
-        background: #FFFFFF;
-        border: 1px solid #E5E7EB;
-        color: #374151;
-        padding: 8px 40px 8px 16px;
-        border-radius: 12px;
-        font-size: 14px;
-        font-weight: 500;
-        font-family: 'Poppins', sans-serif;
-        cursor: pointer;
-        transition: box-shadow 0.2s, border-color 0.2s;
-        box-shadow: 0 1px 3px rgba(0,0,0,0.04);
-    }
-
-    .filter-select:focus {
-        outline: none;
-        border-color: var(--primary-purple);
-        box-shadow: 0 0 0 3px rgba(155, 118, 214, 0.15);
-    }
-
-    .filter-select-icon {
-        pointer-events: none;
-        position: absolute;
-        top: 50%;
-        right: 12px;
-        transform: translateY(-50%);
-        color: #6B7280;
-    }
-
-    .filter-select-icon svg {
-        width: 16px;
-        height: 16px;
-        fill: none;
-        stroke: currentColor;
-    }
-
-    .btn-filter {
-        background: var(--active-bg);
-        color: var(--primary-purple);
-        padding: 8px 20px;
-        border-radius: 12px;
-        font-size: 14px;
-        font-weight: 700;
-        font-family: 'Poppins', sans-serif;
-        border: none;
-        cursor: pointer;
-        transition: background 0.2s;
-        box-shadow: 0 1px 3px rgba(0,0,0,0.04);
-    }
-
-    .btn-filter:hover {
-        background: #E9D5FF;
-    }
-
-    /* Empty state */
-    .empty-konselor {
-        background: #FFFFFF;
-        border-radius: 20px;
-        box-shadow: 0 2px 10px rgba(0,0,0,0.04);
-        border: 1px solid #E5E7EB;
-        padding: 48px;
-        display: flex;
-        flex-direction: column;
-        align-items: center;
-        justify-content: center;
-        min-height: 450px;
-        position: relative;
-    }
-
-    .empty-konselor .btn-buat-janji {
-        position: absolute;
-        top: 24px;
-        right: 24px;
-        background: #A881C2;
-        color: #FFFFFF;
-        padding: 8px 24px;
-        border-radius: 999px;
-        font-size: 14px;
-        font-weight: 600;
-        border: none;
-        cursor: pointer;
-        transition: background 0.2s;
-        box-shadow: 0 1px 3px rgba(0,0,0,0.1);
-    }
-
-    .empty-konselor .btn-buat-janji:hover {
-        background: #8A64A4;
-    }
-
-    .empty-konselor img {
-        width: 160px;
-        height: 160px;
-        object-fit: contain;
-        opacity: 0.6;
-        margin-bottom: 24px;
-    }
-
-    .empty-konselor p {
-        font-size: 13px;
-        font-weight: 500;
-        color: #6B7280;
-    }
-
-    /* Konselor grid */
-    .konselor-grid {
-        display: grid;
-        grid-template-columns: repeat(auto-fill, minmax(280px, 1fr));
-        gap: 32px;
-    }
-
-    .konselor-card {
-        background: #FFFFFF;
-        border-radius: 24px;
-        overflow: hidden;
-        box-shadow: 0 2px 15px -3px rgba(0,0,0,0.07);
-        border: 1px solid #F3F4F6;
-        display: flex;
-        flex-direction: column;
-        position: relative;
-        transition: box-shadow 0.3s;
-    }
-
-    .konselor-card:hover {
-        box-shadow: 0 8px 30px rgba(0,0,0,0.12);
-    }
-
-    .konselor-card-gradient {
-        height: 140px;
-        background: linear-gradient(to bottom, #987FC5, #B5A1D6);
-        position: relative;
-    }
-
-    .konselor-avatar-wrapper {
-        position: absolute;
-        top: 60px;
-        left: 50%;
-        transform: translateX(-50%);
-        z-index: 2;
-    }
-
-    .konselor-avatar {
-        width: 120px;
-        height: 120px;
-        object-fit: cover;
-        border-radius: 12px;
-        box-shadow: 0 4px 12px rgba(0,0,0,0.1);
-        border: 4px solid #FFFFFF;
-        background: #FFFFFF;
-    }
-
-    .konselor-card-body {
-        padding: 50px 24px 24px;
-        flex: 1;
-        display: flex;
-        flex-direction: column;
-        align-items: center;
-        text-align: center;
-    }
-
-    .konselor-card-body h4 {
-        font-weight: 700;
-        color: #111827;
-        font-size: 17px;
-        margin-bottom: 4px;
-        transition: color 0.2s;
-    }
-
-    .konselor-card:hover .konselor-card-body h4 {
-        color: #A881C2;
-    }
-
-    .konselor-card-body .spesialisasi {
-        font-size: 13px;
-        color: #6B7280;
-        margin-bottom: 24px;
-        font-weight: 500;
-    }
-
-    .konselor-card-footer {
-        margin-top: auto;
-        width: 100%;
-        display: flex;
-        align-items: center;
-        justify-content: space-between;
-        gap: 8px;
-    }
-
-    .jadwal-badge {
-        border: 1px solid #E5E7EB;
-        border-radius: 8px;
-        padding: 8px 12px;
-        font-size: 10px;
-        color: #6B7280;
-        font-weight: 500;
-        white-space: nowrap;
-        background: #F9FAFB;
-        flex: 1;
-        text-align: left;
-        overflow: hidden;
-        text-overflow: ellipsis;
-    }
-
-    .btn-pilih-sesi {
-        background: #A881C2;
-        color: #FFFFFF;
-        padding: 8px 20px;
-        border-radius: 8px;
-        font-size: 13px;
-        font-weight: 600;
-        text-decoration: none;
-        transition: background 0.2s;
-        box-shadow: 0 1px 3px rgba(0,0,0,0.1);
-        white-space: nowrap;
-    }
-
-    .btn-pilih-sesi:hover {
-        background: #8A64A4;
-    }
-@endsection
+@extends('layouts.app')
 
 @section('content')
+<div class="flex flex-col sm:flex-row justify-between items-start sm:items-center mb-8 gap-4">
+    <h3 class="font-bold text-gray-900 text-[18px]">Konselor</h3>
+    
+    <!-- PBI 27: Filter Spesialisasi -->
+    <form action="{{ route('konseling.index') }}" method="GET" class="flex items-center gap-2">
+        <div class="relative">
+            <select name="spesialisasi" onchange="this.form.submit()" class="appearance-none bg-white border border-gray-200 text-gray-700 py-2 pl-4 pr-10 rounded-xl focus:outline-none focus:ring-2 focus:ring-[#A881C2] focus:border-[#A881C2] shadow-sm text-sm font-medium cursor-pointer transition-shadow">
+                <option value="">-- Semua Spesialisasi --</option>
+                <option value="Kesehatan Mental" {{ request('spesialisasi') == 'Kesehatan Mental' ? 'selected' : '' }}>Kesehatan Mental</option>
+                <option value="Konseling Akademik" {{ request('spesialisasi') == 'Konseling Akademik' ? 'selected' : '' }}>Konseling Akademik</option>
+                <option value="Karir" {{ request('spesialisasi') == 'Karir' ? 'selected' : '' }}>Karir</option>
+            </select>
+            <div class="pointer-events-none absolute inset-y-0 right-0 flex items-center px-3 text-gray-500">
+                <svg class="w-4 h-4" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M19 9l-7 7-7-7"></path></svg>
+            </div>
+        </div>
+        @if(request('spesialisasi'))
+            <a href="{{ route('konseling.index') }}" class="text-gray-500 hover:text-gray-700 text-sm font-medium flex items-center gap-1">
+                <svg class="w-4 h-4" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M6 18L18 6M6 6l12 12"></path></svg>
+                Reset
+            </a>
+        @endif
+    </form>
+</div>
+
+@if($konselors->isEmpty())
+    <!-- Empty State -->
+    <div class="bg-white rounded-[20px] shadow-sm border border-gray-200 p-12 flex flex-col items-center justify-center min-h-[450px]">
+        <img src="https://ui-avatars.com/api/?name=Empty&background=fff&color=cbd5e1&size=160&font-size=0.33" alt="Empty" class="w-40 h-40 mb-6 opacity-60">
+        <p class="text-gray-500 text-[13px] font-medium">Tidak ada konselor dengan spesialisasi "{{ request('spesialisasi') }}"</p>
+    </div>
+@else
+    <!-- Grid -->
+    <div class="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-8">
+        @foreach($konselors as $k)
+        <div class="bg-white rounded-[24px] overflow-hidden shadow-[0_2px_15px_-3px_rgba(0,0,0,0.07)] border border-gray-100 flex flex-col hover:shadow-[0_8px_30px_rgb(0,0,0,0.12)] transition-all duration-300 relative group">
+            
+            <div class="h-[140px] bg-gradient-to-b from-[#987FC5] to-[#B5A1D6] relative">
+            </div>
+            
+            <div class="absolute top-[60px] left-1/2 transform -translate-x-1/2 z-10">
+                <img src="https://ui-avatars.com/api/?name={{ urlencode($k->nama) }}&background=random&color=fff&size=120" alt="{{ $k->nama }}" class="w-[120px] h-[120px] object-cover rounded-xl shadow-lg border-4 border-white bg-white">
+            </div>
+
+            <div class="pt-[50px] pb-6 px-6 flex-1 flex flex-col items-center text-center">
+                <h4 class="font-bold text-gray-900 text-[17px] mb-1 group-hover:text-[#A881C2] transition-colors">{{ $k->nama }}</h4>
+                <p class="text-[13px] text-gray-500 mb-6 font-medium">{{ $k->spesialisasi }}</p>
+                
+                <div class="mt-auto w-full flex items-center justify-between gap-2">
+                    <div class="border border-gray-200 rounded-lg px-3 py-2 text-[10px] text-gray-500 font-medium whitespace-nowrap bg-gray-50 flex-1 text-left truncate">
+                        Senin - Rabu, 09.00 - 12.00
+                    </div>
                     <a href="{{ route('konseling.show', $k->profil_konselor_id) }}" class="bg-[#A881C2] hover:bg-[#8A64A4] text-white px-5 py-2 rounded-lg text-[13px] font-semibold transition shadow-sm whitespace-nowrap">
                         Pilih Sesi
                     </a>
@@ -260,4 +62,5 @@
         @endforeach
     </div>
 @endif
+
 @endsection

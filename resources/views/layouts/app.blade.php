@@ -7,6 +7,7 @@
     <link rel="preconnect" href="https://fonts.googleapis.com">
     <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
     <link href="https://fonts.googleapis.com/css2?family=Poppins:wght@400;500;600;700&display=swap" rel="stylesheet">
+    <script src="https://cdn.tailwindcss.com"></script>
     <style>
         :root {
             --primary: #a881af; /* Purple accent */
@@ -287,6 +288,7 @@
             background-color: var(--primary-hover);
         }
     </style>
+    @stack('styles')
 </head><body>
     <div class="layout">
         <!-- Sidebar Kiri -->
@@ -369,7 +371,7 @@
             <div class="topbar">
                 <div class="welcome-section">
                     <div class="user-avatar-lg">
-                        <img src="https://ui-avatars.com/api/?name={{ urlencode(Auth::user()->nama_asli ?? 'User') }}&background=e2e8f0&color=1f2937" alt="User" style="width: 100%; height: 100%; border-radius: 50%; object-fit: cover;">
+                        <img src="{{ asset('images/profile.png') }}" alt="User Profile" style="width: 100%; height: 100%; border-radius: 50%; object-fit: cover;">
                     </div>
                     <div class="welcome-text">
                         <h2>Welcome, {{ explode(' ', Auth::user()->nama_asli ?? 'User')[0] }}!</h2>
@@ -435,5 +437,6 @@
             @endif
         </aside>
     </div>
+    @stack('scripts')
 </body>
 </html>
