@@ -12,11 +12,11 @@ use App\Http\Controllers\Auth\RegisterController;
 Route::get('/konseling', [CounselingController::class, 'index'])->name('konseling.index');
 Route::get('/konseling/{id}', [CounselingController::class, 'show'])->name('konseling.show');
 
-// PBI 29 & 30
+// PBI 29, 30 & 31
 Route::post('/booking/store', [BookingController::class, 'store'])->name('booking.store');
-
-// PBI 31
-Route::put('/booking/update/{id}', [BookingController::class, 'updateJadwal'])->name('booking.update');
+Route::get('/booking/{id}/edit', [BookingController::class, 'edit'])->name('booking.edit');
+Route::put('/booking/{id}', [BookingController::class, 'update'])->name('booking.update');
+Route::delete('/booking/{id}', [BookingController::class, 'cancel'])->name('booking.cancel');
 
 Route::get('/', function () {
     // Mengalihkan halaman utama (/) ke halaman konseling

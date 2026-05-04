@@ -32,11 +32,10 @@
         <!-- Logo -->
         <div class="h-24 flex items-center px-8">
             <div class="flex items-center gap-3">
-                <div class="w-8 h-8 rounded-full bg-gradient-to-br from-indigo-900 to-indigo-500 flex items-center justify-center">
-                    <!-- Logo mark placeholder -->
-                    <svg class="w-5 h-5 text-white transform -rotate-45" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M12 19l9 2-9-18-9 18 9-2zm0 0v-8"></path></svg>
-                </div>
-                <span class="text-xl font-bold text-gray-900 tracking-tight">MindFlow</span>
+                <img src="{{ asset('images/logo.png') }}" alt="MindFlow Logo" class="w-16 h-16">
+                <span class="text-2xl font-bold tracking-tight">
+                    <span class="text-gray-900">Mind</span><span class="text-purple-600">Flow</span>
+                </span>
             </div>
         </div>
 
@@ -73,7 +72,7 @@
         <!-- Top Header -->
         <header class="h-28 px-8 flex items-center justify-between flex-shrink-0">
             <div class="flex items-center gap-4">
-                <img src="https://ui-avatars.com/api/?name=Asep&background=EBF4FF&color=4F46E5&rounded=true&size=64" alt="Profile" class="w-16 h-16 rounded-full shadow-sm">
+                <img src="{{ asset('images/profile.png') }}" alt="Profile" class="w-16 h-16 rounded-full object-cover" style="object-position: 50% 20%;">
                 <div>
                     <h2 class="text-[26px] font-bold text-gray-900 leading-tight">Welcome, Asep!</h2>
                     <p class="text-gray-500 text-sm font-medium mt-1">How's your day?</p>
@@ -100,13 +99,34 @@
             <div class="flex justify-between items-center mb-10">
                 <h3 class="font-bold text-gray-900 text-[15px]">Jadwal Konsultasi Mendatang</h3>
                 <a href="#" class="text-[13px] text-[#A881C2] hover:text-purple-800 font-medium">Batalkan</a>
-            </div>
-            
-            <div class="flex flex-col items-center justify-center mt-20 text-center">
-                <!-- Fallback to a nicely styled avatar if image fails -->
-                <img src="https://ui-avatars.com/api/?name=Schedule&background=F3E8FF&color=8B5CF6&size=150&font-size=0.33" alt="Empty Schedule" class="w-48 h-48 mb-8 object-contain opacity-90 hover:opacity-100 transition-opacity">
-                <p class="text-[13px] text-gray-500 font-medium leading-relaxed max-w-[200px]">Tidak ada jadwal ditemukan<br>Ketuk untuk menambahkan jadwal</p>
-            </div>
+            </div>            
+            @if($jadwalKonsultasi->isEmpty())
+                <div class="flex flex-col items-center justify-center mt-20 text-center">
+                    <!-- Fallback to a nicely styled avatar if image fails -->
+                    <img src="https://ui-avatars.com/api/?name=Schedule&background=F3E8FF&color=8B5CF6&size=150&font-size=0.33" alt="Empty Schedule" class="w-48 h-48 mb-8 object-contain opacity-90 hover:opacity-100 transition-opacity">
+                    <p class="text-[13px] text-gray-500 font-medium leading-relaxed max-w-[200px]">Tidak ada jadwal ditemukan<br>Ketuk untuk menambahkan jadwal</p>
+                </div>
+            @else
+                <div class="space-y-4">
+                    @foreach($jadwalKonsultasi as $jadwal)
+                        <div class="bg-gray-50 rounded-xl p-4 border border-gray-100">
+                            <h4 class="font-bold text-gray-900 text-sm mb-1">{{ $jadwal->profilKonselor ? $jadwal->profilKonselor->nama : 'Konselor' }}</h4>
+                            <p class="text-gray-500 text-xs mb-2">{{ $jadwal->jadwal }}</p>
+                            <div class="flex items-center gap-2 mb-2">
+                                <span class="inline-block bg-yellow-100 text-yellow-700 px-2 py-1 rounded text-xs font-semibold">{{ ucfirst($jadwal->status) }}</span>
+                            </div>
+                            <div class="flex gap-2">
+                                <a href="{{ route('booking.edit', $jadwal->sesi_konseling_id) }}" class="text-xs bg-blue-100 text-blue-700 px-3 py-1 rounded hover:bg-blue-200 transition">Ubah Jadwal</a>
+                                <form action="{{ route('booking.cancel', $jadwal->sesi_konseling_id) }}" method="POST" onsubmit="return confirm('Yakin ingin membatalkan sesi ini?')">
+                                    @csrf
+                                    @method('DELETE')
+                                    <button type="submit" class="text-xs bg-red-100 text-red-700 px-3 py-1 rounded hover:bg-red-200 transition">Batalkan</button>
+                                </form>
+                            </div>
+                        </div>
+                    @endforeach
+                </div>
+            @endif
         </div>
     </aside>
 

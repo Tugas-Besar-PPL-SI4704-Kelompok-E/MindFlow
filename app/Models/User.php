@@ -8,9 +8,9 @@ use Illuminate\Database\Eloquent\Factories\HasFactory;
 use Illuminate\Foundation\Auth\User as Authenticatable;
 use Illuminate\Notifications\Notifiable;
 
+
 class User extends Authenticatable
 {
-    /** @use HasFactory<UserFactory> */
     use HasFactory, Notifiable;
 
     /**
@@ -23,6 +23,7 @@ class User extends Authenticatable
         'nama_samaran',
         'email',
         'password',
+        'status',
         'role',
     ];
 
@@ -47,5 +48,26 @@ class User extends Authenticatable
             'email_verified_at' => 'datetime',
             'password' => 'hashed',
         ];
+    }
+    public function profilKonselor()
+    {
+        return $this->hasOne(ProfilKonselor::class);
+    }
+    public function sesiKonseling()
+    {
+        return $this->hasMany(SesiKonseling::class);
+    }
+    public function scopeApproved($query)
+    {
+        return $query->where('status', 'approved');
+    }
+    public function scopeByRole($query, $role)
+    {
+        return $query->where('role', $role);
+    }
+    public function scopeKonselorApproved($query)
+    {
+        return $query->where('role', 'konselor')
+                     ->where('status', 'approved');
     }
 }
