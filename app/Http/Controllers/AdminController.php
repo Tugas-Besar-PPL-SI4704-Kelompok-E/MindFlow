@@ -99,30 +99,40 @@ class AdminController extends Controller
     }
 
     /**
-     * PBI 37: Page rekrutmen aplikan (masih dummy karena fitur apply belum diimplementasi).
+     * PBI 37: Page rekrutmen aplikan — data real dari database.
      */
     public function rekrutmen()
     {
-        $applicants = collect([
-            (object)[
-                'id' => 1,
-                'nama' => 'Dr. Aisyah Putri',
-                'email' => 'aisyah.putri@klinikjiwa.com',
-                'spesialisasi' => 'Klinis & Depresi',
-                'tanggal_daftar' => '18 Apr 2026',
-                'status' => 'Menunggu Review'
-            ],
-            (object)[
-                'id' => 2,
-                'nama' => 'Bima Satria, M.Psi',
-                'email' => 'bimasatria@gmail.com',
-                'spesialisasi' => 'Konseling Remaja',
-                'tanggal_daftar' => '19 Apr 2026',
-                'status' => 'Menunggu Review'
-            ]
-        ]);
+        // Ambil semua user konselor beserta profil mereka
+        $applicants = User::where('role', 'konselor')
+            ->with('profilKonselor')
+            ->orderByRaw("FIELD(status, 'pending', 'approved', 'rejected')")
+            ->latest()
+            ->get();
 
         return view('admin.rekrutmen', compact('applicants'));
+    }
+
+    /**
+     * Approve aplikan konselor — ubah status menjadi approved.
+     */
+    public function approveKonselor($id)
+    {
+        $user = User::findOrFail($id);
+        $user->update(['status' => 'approved']);
+
+        return back()->with('success', 'Konselor ' . $user->nama_asli . ' berhasil diverifikasi!');
+    }
+
+    /**
+     * Reject aplikan konselor — ubah status menjadi rejected.
+     */
+    public function rejectKonselor($id)
+    {
+        $user = User::findOrFail($id);
+        $user->update(['status' => 'rejected']);
+
+        return back()->with('success', 'Aplikan ' . $user->nama_asli . ' telah ditolak.');
     }
 
     /**
