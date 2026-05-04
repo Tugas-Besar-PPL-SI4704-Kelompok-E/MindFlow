@@ -254,6 +254,26 @@
         background: rgba(255,255,255,0.2);
         border-color: rgba(255,255,255,0.4);
     }
+    .btn-hero-accent {
+        padding: 0.85rem 2rem;
+        border-radius: 12px;
+        font-size: 1rem;
+        font-weight: 600;
+        color: white;
+        background: #10b981;
+        border: none;
+        cursor: pointer;
+        transition: all 0.3s;
+        box-shadow: 0 4px 15px rgba(16, 185, 129, 0.3);
+        display: inline-flex;
+        align-items: center;
+        gap: 0.5rem;
+    }
+    .btn-hero-accent:hover {
+        transform: translateY(-2px);
+        background: #059669;
+        box-shadow: 0 8px 25px rgba(16, 185, 129, 0.4);
+    }
 
     .hero-stats {
         display: flex;
@@ -728,7 +748,7 @@
                     Mulai Sekarang
                     <svg width="18" height="18" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.5" stroke-linecap="round" stroke-linejoin="round"><path d="m9 18 6-6-6-6"/></svg>
                 </a>
-                <a href="{{ route('mood-tracker.mendalam') }}" class="btn-hero-secondary" style="background: rgba(16,185,129,0.1); color: #059669; border-color: rgba(16,185,129,0.3);">
+                <a href="{{ route('mood-tracker.mendalam') }}" class="btn-hero-accent">
                     🩺 Cek Kesehatan Mental Gratis
                 </a>
                 <a href="#features" class="btn-hero-secondary">
@@ -738,15 +758,15 @@
             </div>
             <div class="hero-stats">
                 <div class="hero-stat">
-                    <div class="hero-stat-number">10K+</div>
+                    <div class="hero-stat-number">1000+</div>
                     <div class="hero-stat-label">Pengguna Aktif</div>
                 </div>
                 <div class="hero-stat">
-                    <div class="hero-stat-number">500+</div>
+                    <div class="hero-stat-number">20+</div>
                     <div class="hero-stat-label">Konselor Profesional</div>
                 </div>
                 <div class="hero-stat">
-                    <div class="hero-stat-number">50K+</div>
+                    <div class="hero-stat-number">100+</div>
                     <div class="hero-stat-label">Sesi Konseling</div>
                 </div>
             </div>
