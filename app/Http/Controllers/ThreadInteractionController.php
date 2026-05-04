@@ -69,14 +69,18 @@ class ThreadInteractionController extends Controller
 
     public function reportThread(Request $request, Thread $thread)
     {
+        if (Auth::user()->role === 'admin') {
+            abort(403, 'Admin tidak diizinkan melaporkan postingan.');
+        }
+
         $request->validate([
             'reason' => 'required|string|max:255',
         ]);
 
         \App\Models\ThreadReport::create([
             'thread_id' => $thread->id,
-            'user_id' => Auth::id() ?? 1,
-            'reason' => $request->reason,
+            'user_id'   => Auth::id(),
+            'reason'    => $request->reason,
         ]);
 
         return back()->with('success', 'Laporan pos berhasil dikirim.');
