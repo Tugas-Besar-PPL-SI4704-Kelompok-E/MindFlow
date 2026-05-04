@@ -34,6 +34,7 @@ class JournalController extends Controller
         // Data Kalender Mood (Dinamis & Dummy Placeholder)
         $currentMonth = \Carbon\Carbon::now()->translatedFormat('F'); // Contoh: "April"
         $daysInMonth = \Carbon\Carbon::now()->daysInMonth;
+        $currentDay = \Carbon\Carbon::now()->day;
         
         // Dummy placeholder untuk status mood berdasarkan tanggal bulan ini
         // Rencana: Hijau = Senang, Kuning = Biasa, Merah = Stres
@@ -43,7 +44,7 @@ class JournalController extends Controller
             3 => 'stres',
         ];
 
-        return view('journals.index', compact('journals', 'currentMonth', 'daysInMonth', 'moodData'));
+        return view('journals.index', compact('journals', 'currentMonth', 'daysInMonth', 'currentDay', 'moodData'));
     }
 
     /**

@@ -1,4 +1,308 @@
+<<<<<<< HEAD
 @extends('journals.layout')
+=======
+@extends('layouts.dashboard')
+
+@section('title', 'Jurnal Refleksi Mandiri - MindFlow')
+
+@section('styles')
+    .journal-section {
+        max-width: 800px;
+        margin: 0 auto;
+    }
+
+    .section-title {
+        font-size: 16px;
+        font-weight: 700;
+        color: #111827;
+        margin-bottom: 12px;
+    }
+
+    /* Create new journal card */
+    .journal-create-card {
+        display: flex;
+        flex-direction: column;
+        align-items: center;
+        justify-content: center;
+        width: 100%;
+        border: 1px solid #E5E7EB;
+        border-radius: 14px;
+        background: #FFFFFF;
+        padding: 40px 20px;
+        text-decoration: none;
+        transition: all 0.2s;
+        box-shadow: 0 2px 10px rgba(0,0,0,0.02);
+        cursor: pointer;
+    }
+
+    .journal-create-card:hover {
+        background-color: #F9FAFB;
+    }
+
+    .journal-create-card:hover .create-plus,
+    .journal-create-card:hover .create-text {
+        color: var(--primary-purple);
+    }
+
+    .create-icon-row {
+        display: flex;
+        align-items: center;
+        gap: 12px;
+        margin-bottom: 8px;
+    }
+
+    .create-plus {
+        font-size: 32px;
+        font-weight: 300;
+        color: #6B7280;
+        transition: color 0.2s;
+    }
+
+    .create-text {
+        font-size: 12px;
+        font-weight: 500;
+        color: #9CA3AF;
+        transition: color 0.2s;
+    }
+
+    /* Flash message */
+    .flash-success {
+        background: #ECFDF5;
+        border: 1px solid #A7F3D0;
+        color: #047857;
+        padding: 16px;
+        border-radius: 12px;
+        margin-bottom: 16px;
+        font-size: 14px;
+        font-weight: 500;
+    }
+
+    /* Journal grid */
+    .journal-grid {
+        display: grid;
+        grid-template-columns: repeat(auto-fill, minmax(240px, 1fr));
+        gap: 20px;
+    }
+
+    .journal-card {
+        border: 1px solid #E5E7EB;
+        background: #FFFFFF;
+        border-radius: 14px;
+        box-shadow: 0 2px 10px rgba(0,0,0,0.02);
+        padding: 20px;
+        display: flex;
+        flex-direction: column;
+        transition: box-shadow 0.2s;
+    }
+
+    .journal-card:hover {
+        box-shadow: 0 4px 16px rgba(0,0,0,0.08);
+    }
+
+    .journal-date {
+        font-size: 11px;
+        font-weight: 700;
+        color: var(--primary-purple);
+        text-transform: uppercase;
+        letter-spacing: 0.05em;
+        margin-bottom: 8px;
+    }
+
+    .journal-date .edited-badge {
+        margin-left: 4px;
+        color: #9CA3AF;
+        text-transform: none;
+        font-weight: 400;
+    }
+
+    .journal-content {
+        color: #374151;
+        font-size: 14px;
+        margin-bottom: 20px;
+        flex-grow: 1;
+        line-height: 1.6;
+        display: -webkit-box;
+        -webkit-line-clamp: 3;
+        -webkit-box-orient: vertical;
+        overflow: hidden;
+    }
+
+    .journal-actions {
+        display: flex;
+        justify-content: flex-end;
+        gap: 8px;
+        border-top: 1px solid #F3F4F6;
+        padding-top: 12px;
+        margin-top: auto;
+    }
+
+    .btn-edit {
+        font-size: 12px;
+        padding: 6px 12px;
+        color: #6D28D9;
+        background: #F3E8FF;
+        border-radius: 8px;
+        text-decoration: none;
+        font-weight: 600;
+        transition: background 0.2s;
+    }
+
+    .btn-edit:hover {
+        background: #EDE9FE;
+    }
+
+    .btn-delete {
+        font-size: 12px;
+        padding: 6px 12px;
+        color: #DC2626;
+        background: #FEF2F2;
+        border: none;
+        border-radius: 8px;
+        font-weight: 600;
+        cursor: pointer;
+        transition: background 0.2s;
+    }
+
+    .btn-delete:hover {
+        background: #FEE2E2;
+    }
+
+    /* Empty state */
+    .empty-state {
+        border: 1px solid #E5E7EB;
+        border-radius: 14px;
+        background: #FFFFFF;
+        box-shadow: 0 2px 10px rgba(0,0,0,0.02);
+        padding: 60px 20px;
+        display: flex;
+        flex-direction: column;
+        align-items: center;
+        justify-content: center;
+    }
+
+    .empty-state p {
+        font-size: 12px;
+        font-weight: 500;
+        color: #9CA3AF;
+    }
+
+    /* Mood calendar */
+    .mood-calendar-header {
+        display: flex;
+        justify-content: center;
+        align-items: center;
+        gap: 16px;
+        margin-bottom: 24px;
+    }
+
+    .mood-nav-btn {
+        width: 24px;
+        height: 24px;
+        border-radius: 50%;
+        background: #A855F7;
+        color: #FFFFFF;
+        border: none;
+        display: flex;
+        align-items: center;
+        justify-content: center;
+        cursor: pointer;
+        transition: background 0.2s;
+        box-shadow: 0 1px 3px rgba(0,0,0,0.1);
+    }
+
+    .mood-nav-btn:hover {
+        background: #9333EA;
+    }
+
+    .mood-nav-btn svg {
+        width: 14px;
+        height: 14px;
+        stroke: currentColor;
+        fill: none;
+    }
+
+    .mood-month-label {
+        font-weight: 800;
+        color: #111827;
+        font-size: 13px;
+        letter-spacing: 0.05em;
+        text-transform: uppercase;
+    }
+
+    .mood-grid {
+        display: flex;
+        flex-wrap: wrap;
+        gap: 10px;
+        justify-content: center;
+    }
+
+    .mood-day {
+        width: 34px;
+        height: 34px;
+        display: flex;
+        align-items: center;
+        justify-content: center;
+        font-size: 13px;
+        color: #FFFFFF;
+        font-weight: 700;
+        border-radius: 6px;
+        box-shadow: 0 1px 3px rgba(0,0,0,0.1);
+        transition: opacity 0.2s;
+        cursor: default;
+    }
+
+    .mood-day:hover {
+        opacity: 0.8;
+    }
+
+    .mood-default { background: #D8B4E2; }
+    .mood-happy { background: #86EFAC; }
+    .mood-neutral { background: #FDE047; }
+    .mood-stressed { background: #F87171; }
+
+    .current-day {
+        border: 2px solid #6D28D9;
+        font-weight: 800;
+        box-shadow: 0 0 8px rgba(109, 40, 217, 0.4);
+    }
+
+    .calendar-card {
+        border: 1px solid #E5E7EB;
+        border-radius: 14px;
+        background: #FFFFFF;
+        box-shadow: 0 2px 10px rgba(0,0,0,0.02);
+        padding: 24px 40px;
+    }
+
+    .btn-history {
+        display: inline-flex;
+        align-items: center;
+        font-size: 13px;
+        font-weight: 600;
+        color: #FFFFFF;
+        background-color: var(--primary-purple, #9B76D6);
+        padding: 8px 16px;
+        border-radius: 8px;
+        text-decoration: none;
+        transition: background-color 0.2s, transform 0.1s;
+        box-shadow: 0 2px 8px rgba(155, 118, 214, 0.4);
+    }
+
+    .btn-history:hover {
+        background-color: #875ec2;
+        transform: translateY(-1px);
+    }
+
+    .btn-history svg {
+        width: 16px;
+        height: 16px;
+        margin-right: 6px;
+        stroke: currentColor;
+        stroke-width: 2;
+        fill: none;
+    }
+@endsection
+>>>>>>> 133792b (TBPSKE-15 : PBI-15 : CRUD editor teks untuk refleksi harian)
 
 @section('content')
 <!-- Left section (Main Dashboard Content) -->
@@ -46,11 +350,24 @@
         </a>
     </div>
 
+<<<<<<< HEAD
     <!-- Riwayat Jurnal Section -->
     <div class="mb-10 w-full max-w-[800px] mx-auto">
         <h3 class="text-[16px] font-bold text-[#111827] mb-3">Riwayat Jurnal</h3>
         
         {{-- Flash message jika berhasil melakukan operasi --}}
+=======
+    {{-- Riwayat Jurnal Section --}}
+    <div class="journal-section" style="margin-bottom: 40px;">
+        <div style="display: flex; justify-content: space-between; align-items: center; margin-bottom: 12px;">
+            <h3 class="section-title" style="margin-bottom: 0;">Riwayat Jurnal</h3>
+            <a href="{{ route('history.index') }}" class="btn-history">
+                <svg viewBox="0 0 24 24"><circle cx="12" cy="12" r="10"></circle><polyline points="12 6 12 12 16 14"></polyline></svg>
+                Lihat History Lengkap
+            </a>
+        </div>
+
+>>>>>>> 133792b (TBPSKE-15 : PBI-15 : CRUD editor teks untuk refleksi harian)
         @if (session('success'))
             <div class="bg-green-50 border border-green-200 text-green-700 p-4 rounded-xl mb-4 shadow-sm text-sm font-medium" role="alert">
                 <p>{{ session('success') }}</p>
@@ -130,8 +447,13 @@
                                $bgClass = 'bg-[#F87171]'; // Merah
                            }
                        }
+                       $isCurrentDay = (isset($currentDay) && $i == $currentDay) ? 'current-day' : '';
                    @endphp
+<<<<<<< HEAD
                    <div class="w-[34px] h-[34px] flex items-center justify-center text-[13px] text-white font-bold {{ $bgClass }} rounded shadow-sm hover:opacity-80 transition cursor-default" title="Tanggal {{ $i }}">{{ $i }}</div>
+=======
+                   <div class="mood-day {{ $moodClass }} {{ $isCurrentDay }}" title="Tanggal {{ $i }}">{{ $i }}</div>
+>>>>>>> 133792b (TBPSKE-15 : PBI-15 : CRUD editor teks untuk refleksi harian)
                @endfor
             </div>
         </div>
