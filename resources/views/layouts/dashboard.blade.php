@@ -171,10 +171,7 @@
 </head>
 <body>
 
-<<<<<<< HEAD
-=======
     @if(!isset($hideSidebar) || !$hideSidebar)
->>>>>>> 3fc92e8cdd2b8349b86c7f44b812713364ae45c2
     <!-- SIDEBAR -->
     <aside class="sidebar">
         <div class="brand">
@@ -214,10 +211,7 @@
                     Jurnal
                 </a>
             </li>
-<<<<<<< HEAD
 
-=======
->>>>>>> 3fc92e8cdd2b8349b86c7f44b812713364ae45c2
             <li>
                 <a href="#" class="menu-item {{ request()->is('artikel*') ? 'active' : '' }}">
                     <svg viewBox="0 0 24 24"><path d="M4 4h16c1.1 0 2 .9 2 2v12c0 1.1-.9 2-2 2H4c-1.1 0-2-.9-2-2V6c0-1.1.9-2 2-2z"></path><polyline points="22,6 12,13 2,6"></polyline></svg>
@@ -226,10 +220,7 @@
             </li>
         </ul>
     </aside>
-<<<<<<< HEAD
-=======
     @endif
->>>>>>> 3fc92e8cdd2b8349b86c7f44b812713364ae45c2
 
     <!-- MAIN CONTENT -->
     <main class="main-content">

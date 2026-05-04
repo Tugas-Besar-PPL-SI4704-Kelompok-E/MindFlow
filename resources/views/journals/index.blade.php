@@ -1,9 +1,3 @@
-<<<<<<< HEAD
-<<<<<<< HEAD
-@extends('journals.layout')
-=======
-=======
->>>>>>> 3fc92e8cdd2b8349b86c7f44b812713364ae45c2
 @extends('layouts.dashboard')
 
 @section('title', 'Jurnal Refleksi Mandiri - MindFlow')
@@ -263,15 +257,11 @@
     .mood-neutral { background: #FDE047; }
     .mood-stressed { background: #F87171; }
 
-<<<<<<< HEAD
     .current-day {
         border: 2px solid #6D28D9;
         font-weight: 800;
         box-shadow: 0 0 8px rgba(109, 40, 217, 0.4);
     }
-
-=======
->>>>>>> 3fc92e8cdd2b8349b86c7f44b812713364ae45c2
     .calendar-card {
         border: 1px solid #E5E7EB;
         border-radius: 14px;
@@ -279,8 +269,6 @@
         box-shadow: 0 2px 10px rgba(0,0,0,0.02);
         padding: 24px 40px;
     }
-<<<<<<< HEAD
-
     .btn-history {
         display: inline-flex;
         align-items: center;
@@ -309,10 +297,6 @@
         fill: none;
     }
 @endsection
->>>>>>> 133792b (TBPSKE-15 : PBI-15 : CRUD editor teks untuk refleksi harian)
-=======
-@endsection
->>>>>>> 3fc92e8cdd2b8349b86c7f44b812713364ae45c2
 
 @section('content')
     {{-- Jurnal Section --}}
@@ -335,14 +319,6 @@
         </a>
     </div>
 
-<<<<<<< HEAD
-<<<<<<< HEAD
-    <!-- Riwayat Jurnal Section -->
-    <div class="mb-10 w-full max-w-[800px] mx-auto">
-        <h3 class="text-[16px] font-bold text-[#111827] mb-3">Riwayat Jurnal</h3>
-        
-        {{-- Flash message jika berhasil melakukan operasi --}}
-=======
     {{-- Riwayat Jurnal Section --}}
     <div class="journal-section" style="margin-bottom: 40px;">
         <div style="display: flex; justify-content: space-between; align-items: center; margin-bottom: 12px;">
@@ -352,14 +328,6 @@
                 Lihat History Lengkap
             </a>
         </div>
-
->>>>>>> 133792b (TBPSKE-15 : PBI-15 : CRUD editor teks untuk refleksi harian)
-=======
-    {{-- Riwayat Jurnal Section --}}
-    <div class="journal-section" style="margin-bottom: 40px;">
-        <h3 class="section-title">Riwayat Jurnal</h3>
-
->>>>>>> 3fc92e8cdd2b8349b86c7f44b812713364ae45c2
         @if (session('success'))
             <div class="flash-success" role="alert">
                 <p>{{ session('success') }}</p>
@@ -433,15 +401,7 @@
                        }
                        $isCurrentDay = (isset($currentDay) && $i == $currentDay) ? 'current-day' : '';
                    @endphp
-<<<<<<< HEAD
-<<<<<<< HEAD
-                   <div class="w-[34px] h-[34px] flex items-center justify-center text-[13px] text-white font-bold {{ $bgClass }} rounded shadow-sm hover:opacity-80 transition cursor-default" title="Tanggal {{ $i }}">{{ $i }}</div>
-=======
                    <div class="mood-day {{ $moodClass }} {{ $isCurrentDay }}" title="Tanggal {{ $i }}">{{ $i }}</div>
->>>>>>> 133792b (TBPSKE-15 : PBI-15 : CRUD editor teks untuk refleksi harian)
-=======
-                   <div class="mood-day {{ $moodClass }}" title="Tanggal {{ $i }}">{{ $i }}</div>
->>>>>>> 3fc92e8cdd2b8349b86c7f44b812713364ae45c2
                @endfor
             </div>
         </div>
