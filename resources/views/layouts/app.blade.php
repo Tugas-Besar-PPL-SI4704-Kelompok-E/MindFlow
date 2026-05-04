@@ -540,6 +540,20 @@
                 </div>
             @endif
 
+            @if(session('error'))
+                <div class="bg-red-50 border border-red-100 text-red-800 px-6 py-4 rounded-2xl mb-8 flex justify-between items-center shadow-sm">
+                    <div class="flex items-center gap-3">
+                        <div class="w-8 h-8 bg-red-500 rounded-full flex items-center justify-center text-white shadow-sm shadow-red-200">
+                            <svg class="w-5 h-5" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="3" d="M6 18L18 6M6 6l12 12"></path></svg>
+                        </div>
+                        <span class="font-bold text-sm">{{ session('error') }}</span>
+                    </div>
+                    <button type="button" class="text-red-400 hover:text-red-600 transition-colors" onclick="this.parentElement.style.display='none'">
+                        <svg class="w-5 h-5" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2.5" d="M6 18L18 6M6 6l12 12"></path></svg>
+                    </button>
+                </div>
+            @endif
+
             @yield('content')
         </main>
 

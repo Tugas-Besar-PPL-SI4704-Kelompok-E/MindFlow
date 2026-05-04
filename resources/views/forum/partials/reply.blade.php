@@ -22,10 +22,31 @@
              alt="Avatar" class="w-10 h-10 rounded-full object-cover border border-gray-100 z-10 flex-shrink-0">
         
         <div class="flex-1 min-w-0">
-            <div class="flex flex-wrap items-center gap-2 mb-1.5">
-                <span class="font-bold text-gray-900 text-[14px]">{{ $authorName }}</span>
-                <span class="px-2 py-0.5 rounded-md text-[10px] font-black uppercase tracking-widest {{ $badgeClass }}">{{ $badgeText }}</span>
-                <span class="text-gray-400 text-[12px] font-medium ml-1">{{ $reply->created_at->diffForHumans() }}</span>
+            <div class="flex items-center justify-between mb-1.5">
+                <div class="flex flex-wrap items-center gap-2">
+                    <span class="font-bold text-gray-900 text-[14px]">{{ $authorName }}</span>
+                    <span class="px-2 py-0.5 rounded-md text-[10px] font-black uppercase tracking-widest {{ $badgeClass }}">{{ $badgeText }}</span>
+                    <span class="text-gray-400 text-[12px] font-medium ml-1">{{ $reply->created_at->diffForHumans() }}</span>
+                </div>
+                
+                <div class="relative">
+                    <button onclick="document.getElementById('dropdown-reply-{{ $reply->id }}').classList.toggle('hidden')" class="text-gray-400 hover:text-gray-600 transition-colors p-1 rounded-full hover:bg-gray-100">
+                        <svg class="w-4 h-4" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2.5" d="M5 12h.01M12 12h.01M19 12h.01M6 12a1 1 0 11-2 0 1 1 0 012 0zm7 0a1 1 0 11-2 0 1 1 0 012 0zm7 0a1 1 0 11-2 0 1 1 0 012 0z"/></svg>
+                    </button>
+                    <!-- Dropdown -->
+                    <div id="dropdown-reply-{{ $reply->id }}" class="hidden absolute right-0 top-full mt-1 w-32 bg-white border border-gray-100 rounded-xl shadow-lg py-1.5 z-10">
+                        @if(Auth::user()->role === 'admin' || $reply->user_id === (Auth::id() ?? 1))
+                             <form action="{{ route('forum.reply.destroy', $reply->id) }}" method="POST" class="m-0" onsubmit="return confirm('Hapus balasan ini?');">
+                                 @csrf
+                                 @method('DELETE')
+                                 <button type="submit" class="w-full text-left px-3 py-2 text-xs text-red-500 hover:bg-red-50 font-semibold transition-colors">Hapus</button>
+                             </form>
+                        @endif
+                        @if(Auth::user()->role !== 'admin' && $reply->user_id !== (Auth::id() ?? 1))
+                             <button onclick="document.getElementById('report-form-{{ $reply->id }}').classList.remove('hidden'); document.getElementById('dropdown-reply-{{ $reply->id }}').classList.add('hidden'); document.getElementById('reply-form-{{ $reply->id }}').classList.add('hidden');" class="w-full text-left px-3 py-2 text-xs text-gray-700 hover:bg-gray-50 font-semibold transition-colors">Laporkan</button>
+                        @endif
+                    </div>
+                </div>
             </div>
             
             <p class="text-gray-700 text-[14.5px] leading-relaxed whitespace-pre-wrap">{{ $reply->content }}</p>
@@ -35,14 +56,6 @@
                     <svg class="w-4 h-4" fill="none" stroke="currentColor" stroke-width="2.5" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" d="M3 10h10a8 8 0 018 8v2M3 10l6 6m-6-6l6-6"/></svg>
                     Balas
                 </button>
-<<<<<<< HEAD
-                <button onclick="document.getElementById('report-form-{{ $reply->id }}').classList.toggle('hidden'); document.getElementById('reply-form-{{ $reply->id }}').classList.add('hidden');" class="flex items-center gap-1.5 text-gray-400 hover:text-red-500 transition-colors text-xs font-bold px-2 py-1 rounded-lg hover:bg-red-50">
-                    <svg class="w-4 h-4" fill="none" stroke="currentColor" stroke-width="2.5" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" d="M12 9v2m0 4h.01m-6.938 4h13.856c1.54 0 2.502-1.667 1.732-3L13.732 4c-.77-1.333-2.694-1.333-3.464 0L3.34 16c-.77 1.333.192 3 1.732 3z"/></svg>
-                    Laporkan
-                </button>
-=======
-
->>>>>>> c4f0ce3ee1d03aa624144385bc96873f8fa0a5ba
             </div>
 
             <form id="reply-form-{{ $reply->id }}" action="{{ route('forum.reply', $reply->thread_id) }}" method="POST" class="hidden mt-3 bg-gray-50 p-4 rounded-2xl border border-gray-100">
@@ -65,18 +78,18 @@
                 </div>
             </form>
 
-<<<<<<< HEAD
             <!-- Report Form -->
-            <form id="report-form-{{ $reply->id }}" action="{{ route('forum.reply.report', $reply->id) }}" method="POST" class="hidden mt-3 bg-red-50 p-4 rounded-2xl border border-red-100">
+            <form id="report-form-{{ $reply->id }}" action="{{ route('forum.reply.report', $reply->id) }}" method="POST" class="hidden mt-3 bg-red-50 p-4 rounded-2xl border border-red-100 relative">
                 @csrf
+                <button type="button" onclick="document.getElementById('report-form-{{ $reply->id }}').classList.add('hidden')" class="absolute top-2 right-2 text-red-300 hover:text-red-500">
+                    <svg class="w-4 h-4" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M6 18L18 6M6 6l12 12"></path></svg>
+                </button>
+                <div class="text-[11px] font-black uppercase tracking-wider text-red-500 mb-2">Laporkan Balasan</div>
                 <div class="flex gap-2">
                     <input type="text" name="reason" class="flex-1 bg-white border border-red-200 rounded-xl px-3 py-2 text-sm focus:outline-none focus:ring-2 focus:ring-red-300/20 focus:border-red-400 transition-all placeholder-red-300" placeholder="Ketik alasan melapor..." required>
                     <button type="submit" class="bg-red-500 hover:bg-red-600 text-white px-4 py-2 rounded-xl font-bold text-sm shadow-sm transition-all active:scale-95">Kirim Laporan</button>
                 </div>
             </form>
-=======
-
->>>>>>> c4f0ce3ee1d03aa624144385bc96873f8fa0a5ba
         </div>
     </div>
     
