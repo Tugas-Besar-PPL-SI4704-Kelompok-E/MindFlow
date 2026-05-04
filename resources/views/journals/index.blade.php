@@ -1,369 +1,78 @@
-@extends('layouts.dashboard')
+@extends('layouts.app')
 
 @section('title', 'Jurnal Refleksi Mandiri - MindFlow')
 
-@section('styles')
-    .journal-section {
-        max-width: 800px;
-        margin: 0 auto;
-    }
-
-    .section-title {
-        font-size: 16px;
-        font-weight: 700;
-        color: #111827;
-        margin-bottom: 12px;
-    }
-
-    /* Create new journal card */
-    .journal-create-card {
-        display: flex;
-        flex-direction: column;
-        align-items: center;
-        justify-content: center;
-        width: 100%;
-        border: 1px solid #E5E7EB;
-        border-radius: 14px;
-        background: #FFFFFF;
-        padding: 40px 20px;
-        text-decoration: none;
-        transition: all 0.2s;
-        box-shadow: 0 2px 10px rgba(0,0,0,0.02);
-        cursor: pointer;
-    }
-
-    .journal-create-card:hover {
-        background-color: #F9FAFB;
-    }
-
-    .journal-create-card:hover .create-plus,
-    .journal-create-card:hover .create-text {
-        color: var(--primary-purple);
-    }
-
-    .create-icon-row {
-        display: flex;
-        align-items: center;
-        gap: 12px;
-        margin-bottom: 8px;
-    }
-
-    .create-plus {
-        font-size: 32px;
-        font-weight: 300;
-        color: #6B7280;
-        transition: color 0.2s;
-    }
-
-    .create-text {
-        font-size: 12px;
-        font-weight: 500;
-        color: #9CA3AF;
-        transition: color 0.2s;
-    }
-
-    /* Flash message */
-    .flash-success {
-        background: #ECFDF5;
-        border: 1px solid #A7F3D0;
-        color: #047857;
-        padding: 16px;
-        border-radius: 12px;
-        margin-bottom: 16px;
-        font-size: 14px;
-        font-weight: 500;
-    }
-
-    /* Journal grid */
-    .journal-grid {
-        display: grid;
-        grid-template-columns: repeat(auto-fill, minmax(240px, 1fr));
-        gap: 20px;
-    }
-
-    .journal-card {
-        border: 1px solid #E5E7EB;
-        background: #FFFFFF;
-        border-radius: 14px;
-        box-shadow: 0 2px 10px rgba(0,0,0,0.02);
-        padding: 20px;
-        display: flex;
-        flex-direction: column;
-        transition: box-shadow 0.2s;
-    }
-
-    .journal-card:hover {
-        box-shadow: 0 4px 16px rgba(0,0,0,0.08);
-    }
-
-    .journal-date {
-        font-size: 11px;
-        font-weight: 700;
-        color: var(--primary-purple);
-        text-transform: uppercase;
-        letter-spacing: 0.05em;
-        margin-bottom: 8px;
-    }
-
-    .journal-date .edited-badge {
-        margin-left: 4px;
-        color: #9CA3AF;
-        text-transform: none;
-        font-weight: 400;
-    }
-
-    .journal-content {
-        color: #374151;
-        font-size: 14px;
-        margin-bottom: 20px;
-        flex-grow: 1;
-        line-height: 1.6;
-        display: -webkit-box;
-        -webkit-line-clamp: 3;
-        -webkit-box-orient: vertical;
-        overflow: hidden;
-    }
-
-    .journal-actions {
-        display: flex;
-        justify-content: flex-end;
-        gap: 8px;
-        border-top: 1px solid #F3F4F6;
-        padding-top: 12px;
-        margin-top: auto;
-    }
-
-    .btn-edit {
-        font-size: 12px;
-        padding: 6px 12px;
-        color: #6D28D9;
-        background: #F3E8FF;
-        border-radius: 8px;
-        text-decoration: none;
-        font-weight: 600;
-        transition: background 0.2s;
-    }
-
-    .btn-edit:hover {
-        background: #EDE9FE;
-    }
-
-    .btn-delete {
-        font-size: 12px;
-        padding: 6px 12px;
-        color: #DC2626;
-        background: #FEF2F2;
-        border: none;
-        border-radius: 8px;
-        font-weight: 600;
-        cursor: pointer;
-        transition: background 0.2s;
-    }
-
-    .btn-delete:hover {
-        background: #FEE2E2;
-    }
-
-    /* Empty state */
-    .empty-state {
-        border: 1px solid #E5E7EB;
-        border-radius: 14px;
-        background: #FFFFFF;
-        box-shadow: 0 2px 10px rgba(0,0,0,0.02);
-        padding: 60px 20px;
-        display: flex;
-        flex-direction: column;
-        align-items: center;
-        justify-content: center;
-    }
-
-    .empty-state p {
-        font-size: 12px;
-        font-weight: 500;
-        color: #9CA3AF;
-    }
-
-    /* Mood calendar */
-    .mood-calendar-header {
-        display: flex;
-        justify-content: center;
-        align-items: center;
-        gap: 16px;
-        margin-bottom: 24px;
-    }
-
-    .mood-nav-btn {
-        width: 24px;
-        height: 24px;
-        border-radius: 50%;
-        background: #A855F7;
-        color: #FFFFFF;
-        border: none;
-        display: flex;
-        align-items: center;
-        justify-content: center;
-        cursor: pointer;
-        transition: background 0.2s;
-        box-shadow: 0 1px 3px rgba(0,0,0,0.1);
-    }
-
-    .mood-nav-btn:hover {
-        background: #9333EA;
-    }
-
-    .mood-nav-btn svg {
-        width: 14px;
-        height: 14px;
-        stroke: currentColor;
-        fill: none;
-    }
-
-    .mood-month-label {
-        font-weight: 800;
-        color: #111827;
-        font-size: 13px;
-        letter-spacing: 0.05em;
-        text-transform: uppercase;
-    }
-
-    .mood-grid {
-        display: flex;
-        flex-wrap: wrap;
-        gap: 10px;
-        justify-content: center;
-    }
-
-    .mood-day {
-        width: 34px;
-        height: 34px;
-        display: flex;
-        align-items: center;
-        justify-content: center;
-        font-size: 13px;
-        color: #FFFFFF;
-        font-weight: 700;
-        border-radius: 6px;
-        box-shadow: 0 1px 3px rgba(0,0,0,0.1);
-        transition: opacity 0.2s;
-        cursor: default;
-    }
-
-    .mood-day:hover {
-        opacity: 0.8;
-    }
-
-    .mood-default { background: #D8B4E2; }
-    .mood-happy { background: #86EFAC; }
-    .mood-neutral { background: #FDE047; }
-    .mood-stressed { background: #F87171; }
-
-    .current-day {
-        border: 2px solid #6D28D9;
-        font-weight: 800;
-        box-shadow: 0 0 8px rgba(109, 40, 217, 0.4);
-    }
-    .calendar-card {
-        border: 1px solid #E5E7EB;
-        border-radius: 14px;
-        background: #FFFFFF;
-        box-shadow: 0 2px 10px rgba(0,0,0,0.02);
-        padding: 24px 40px;
-    }
-    .btn-history {
-        display: inline-flex;
-        align-items: center;
-        font-size: 13px;
-        font-weight: 600;
-        color: #FFFFFF;
-        background-color: var(--primary-purple, #9B76D6);
-        padding: 8px 16px;
-        border-radius: 8px;
-        text-decoration: none;
-        transition: background-color 0.2s, transform 0.1s;
-        box-shadow: 0 2px 8px rgba(155, 118, 214, 0.4);
-    }
-
-    .btn-history:hover {
-        background-color: #875ec2;
-        transform: translateY(-1px);
-    }
-
-    .btn-history svg {
-        width: 16px;
-        height: 16px;
-        margin-right: 6px;
-        stroke: currentColor;
-        stroke-width: 2;
-        fill: none;
-    }
-@endsection
-
 @section('content')
-    {{-- Jurnal Section --}}
-    <div class="journal-section" style="margin-bottom: 40px;">
-        <h3 class="section-title">Jurnal</h3>
-        <a href="{{ route('journals.create') }}" class="journal-create-card">
-            <div class="create-icon-row">
-                {{-- Book Illustration SVG --}}
-                <svg width="60" height="50" viewBox="0 0 60 50" fill="none" xmlns="http://www.w3.org/2000/svg">
-                    <path d="M15 15L45 5L50 15L20 25L15 15Z" fill="#E9D8FD" stroke="#6B7280" stroke-width="2" stroke-linejoin="round"/>
-                    <path d="M15 15V25L45 15V5L15 15Z" fill="#F3E8FF" stroke="#6B7280" stroke-width="2" stroke-linejoin="round"/>
-                    <path d="M20 25V35L50 25V15L20 25Z" fill="#D8B4E2" stroke="#6B7280" stroke-width="2" stroke-linejoin="round"/>
-                    <path d="M15 25L20 35M45 15L50 25" stroke="#6B7280" stroke-width="2" stroke-linecap="round"/>
-                    <path d="M25 10L40 5" stroke="#9CA3AF" stroke-width="1.5" stroke-linecap="round"/>
-                    <path d="M30 15L45 10" stroke="#9CA3AF" stroke-width="1.5" stroke-linecap="round"/>
-                </svg>
-                <span class="create-plus">+</span>
+<div class="max-w-4xl mx-auto pb-12">
+
+    {{-- Alert Messages --}}
+    @if(session('success'))
+        <div class="bg-emerald-50 border border-emerald-100 text-emerald-800 px-6 py-4 rounded-2xl mb-8 flex justify-between items-center shadow-sm">
+            <div class="flex items-center gap-3">
+                <div class="w-8 h-8 bg-emerald-500 rounded-full flex items-center justify-center text-white shadow-sm shadow-emerald-200">
+                    <svg class="w-5 h-5" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="3" d="M5 13l4 4L19 7"></path></svg>
+                </div>
+                <span class="font-bold text-sm">{{ session('success') }}</span>
             </div>
-            <p class="create-text">Ketuk untuk menulis jurnal</p>
+            <button type="button" class="text-emerald-400 hover:text-emerald-600 transition-colors" onclick="this.parentElement.style.display='none'">
+                <svg class="w-5 h-5" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2.5" d="M6 18L18 6M6 6l12 12"></path></svg>
+            </button>
+        </div>
+    @endif
+
+    {{-- Jurnal Section --}}
+    <div class="mb-10">
+        <h3 class="text-gray-900 font-extrabold text-xl mb-4 tracking-tight">Jurnal</h3>
+        <a href="{{ route('journals.create') }}" class="flex flex-col items-center justify-center w-full bg-white border border-gray-100 rounded-[24px] p-10 hover:bg-purple-50 hover:border-purple-100 transition-all shadow-[0_4px_20px_-4px_rgba(0,0,0,0.03)] hover:shadow-[0_8px_30px_-4px_rgba(0,0,0,0.06)] group">
+            <div class="flex items-center gap-4 mb-3">
+                <svg class="w-12 h-12 text-[#A881C2] group-hover:scale-110 transition-transform" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="1.5" d="M12 6.253v13m0-13C10.832 5.477 9.246 5 7.5 5S4.168 5.477 3 6.253v13C4.168 18.477 5.754 18 7.5 18s3.332.477 4.5 1.253m0-13C13.168 5.477 14.754 5 16.5 5c1.747 0 3.332.477 4.5 1.253v13C19.832 18.477 18.247 18 16.5 18c-1.746 0-3.332.477-4.5 1.253"></path></svg>
+                <span class="text-3xl font-light text-gray-400 group-hover:text-[#A881C2] transition-colors">+</span>
+            </div>
+            <p class="text-sm font-semibold text-gray-500 group-hover:text-[#A881C2] transition-colors">Ketuk untuk menulis jurnal</p>
         </a>
     </div>
 
     {{-- Riwayat Jurnal Section --}}
-    <div class="journal-section" style="margin-bottom: 40px;">
-        <div style="display: flex; justify-content: space-between; align-items: center; margin-bottom: 12px;">
-            <h3 class="section-title" style="margin-bottom: 0;">Riwayat Jurnal</h3>
-            <a href="{{ route('history.index') }}" class="btn-history">
-                <svg viewBox="0 0 24 24"><circle cx="12" cy="12" r="10"></circle><polyline points="12 6 12 12 16 14"></polyline></svg>
+    <div class="mb-10">
+        <div class="flex justify-between items-center mb-4">
+            <h3 class="text-gray-900 font-extrabold text-xl tracking-tight">Riwayat Jurnal</h3>
+            <a href="{{ route('history.index') }}" class="inline-flex items-center gap-2 text-sm font-bold text-white bg-[#A881C2] hover:bg-[#8A64A4] px-5 py-2.5 rounded-full shadow-md shadow-[#A881C2]/20 transition-all active:scale-95">
+                <svg class="w-4 h-4" fill="none" stroke="currentColor" viewBox="0 0 24 24"><circle cx="12" cy="12" r="10" stroke-width="2.5"></circle><polyline points="12 6 12 12 16 14" stroke-width="2.5"></polyline></svg>
                 Lihat History Lengkap
             </a>
         </div>
-        @if (session('success'))
-            <div class="flash-success" role="alert">
-                <p>{{ session('success') }}</p>
-            </div>
-        @endif
 
         @if ($journals->isEmpty())
-            <div class="empty-state">
-                <svg width="120" height="60" viewBox="0 0 120 60" fill="none" xmlns="http://www.w3.org/2000/svg" style="margin-bottom: 16px;">
-                    <path d="M30 45C22 45 18 38 22 32C23 30 25 29 27 29C28 22 36 18 42 22C46 15 58 13 65 20C70 14 82 17 84 25C90 24 95 28 94 34C98 36 96 45 88 45H30Z" fill="white" stroke="#D1D5DB" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"/>
-                    <path d="M40 35C38 32 40 28 45 28C48 24 55 24 58 29" stroke="#E5E7EB" stroke-width="2" stroke-linecap="round"/>
-                    <path d="M100 50C97 50 95 47 97 45C98 44 98 43 99 43C100 40 103 39 105 40C107 38 111 39 112 42C114 41 116 43 116 45C118 46 117 50 114 50H100Z" fill="white" stroke="#E5E7EB" stroke-width="1.5" stroke-linecap="round" stroke-linejoin="round"/>
-                </svg>
-                <p>Jurnal masih kosong</p>
+            <div class="bg-white rounded-[32px] shadow-[0_4px_20px_-4px_rgba(0,0,0,0.03)] border border-gray-100 p-12 flex flex-col items-center justify-center min-h-[300px]">
+                <div class="w-20 h-20 bg-gray-50 rounded-full flex items-center justify-center mb-5">
+                    <svg class="w-10 h-10 text-gray-300" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="1.5" d="M19 11H5m14 0a2 2 0 012 2v6a2 2 0 01-2 2H5a2 2 0 01-2-2v-6a2 2 0 012-2m14 0V9a2 2 0 00-2-2M5 11V9a2 2 0 012-2m0 0V5a2 2 0 012-2h6a2 2 0 012 2v2M7 7h10"></path></svg>
+                </div>
+                <h4 class="text-gray-900 font-bold text-lg mb-1">Jurnal Masih Kosong</h4>
+                <p class="text-gray-500 text-sm text-center">Mulailah menulis luapan perasaanmu hari ini.</p>
             </div>
         @else
-            <div class="journal-grid">
+            <div class="grid grid-cols-1 md:grid-cols-2 gap-5">
                 @foreach ($journals as $journal)
-                    <div class="journal-card">
-                        <div class="journal-date">
-                            {{ $journal->updated_at->translatedFormat('d M Y, H:i') }}
-                            @if($journal->created_at->ne($journal->updated_at))
-                                <span class="edited-badge">(Diedit)</span>
-                            @endif
+                    <div class="bg-white border border-gray-100 rounded-[24px] shadow-[0_4px_20px_-4px_rgba(0,0,0,0.03)] hover:shadow-[0_8px_30px_-4px_rgba(0,0,0,0.06)] transition-all p-6 flex flex-col relative group">
+                        <div class="flex items-center justify-between mb-3">
+                            <div class="text-[12px] font-black text-[#A881C2] uppercase tracking-widest flex items-center gap-2">
+                                {{ $journal->updated_at->translatedFormat('d M Y, H:i') }}
+                                @if($journal->created_at->ne($journal->updated_at))
+                                    <span class="text-gray-400 font-medium tracking-normal normal-case text-[11px]">(Diedit)</span>
+                                @endif
+                            </div>
                         </div>
 
-                        <div class="journal-content">
-                            {{ Str::limit($journal->content, 120, '...') }}
+                        <div class="text-gray-700 text-[15px] mb-5 flex-grow leading-relaxed line-clamp-3">
+                            {{ $journal->content }}
                         </div>
 
-                        <div class="journal-actions">
-                            <a href="{{ route('journals.edit', $journal->journal_id) }}" class="btn-edit">Edit</a>
-                            <form action="{{ route('journals.destroy', $journal->journal_id) }}" method="POST" onsubmit="return confirm('Hapus jurnal ini?');">
+                        <div class="flex justify-end gap-2 pt-4 border-t border-gray-50 mt-auto">
+                            <a href="{{ route('journals.edit', $journal->journal_id) }}" class="px-4 py-1.5 bg-purple-50 text-[#A881C2] hover:bg-[#A881C2] hover:text-white rounded-lg text-sm font-bold transition-colors">Edit</a>
+                            <form action="{{ route('journals.destroy', $journal->journal_id) }}" method="POST" onsubmit="return confirm('Hapus jurnal ini?');" class="m-0">
                                 @csrf
                                 @method('DELETE')
-                                <button type="submit" class="btn-delete">Hapus</button>
+                                <button type="submit" class="px-4 py-1.5 bg-red-50 text-red-500 hover:bg-red-500 hover:text-white rounded-lg text-sm font-bold transition-colors">Hapus</button>
                             </form>
                         </div>
                     </div>
@@ -373,37 +82,47 @@
     </div>
 
     {{-- Kalender Mood Section --}}
-    <div class="journal-section" style="margin-bottom: 40px; padding-bottom: 40px;">
-        <h3 class="section-title">Kalender Mood</h3>
-        <div class="calendar-card">
-            <div class="mood-calendar-header">
-                <button class="mood-nav-btn">
-                    <svg viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="3" d="M15 19l-7-7 7-7"></path></svg>
+    <div class="mb-6">
+        <h3 class="text-gray-900 font-extrabold text-xl mb-4 tracking-tight">Kalender Mood</h3>
+        <div class="bg-white rounded-[32px] shadow-[0_4px_20px_-4px_rgba(0,0,0,0.03)] border border-gray-100 p-8 md:p-10">
+            <div class="flex justify-center items-center gap-6 mb-8">
+                <button class="w-10 h-10 rounded-full bg-purple-50 text-[#A881C2] hover:bg-[#A881C2] hover:text-white flex items-center justify-center transition-colors">
+                    <svg class="w-5 h-5" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2.5" d="M15 19l-7-7 7-7"></path></svg>
                 </button>
-                <span class="mood-month-label">{{ $currentMonth }}</span>
-                <button class="mood-nav-btn">
-                    <svg viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="3" d="M9 5l7 7-7 7"></path></svg>
+                <span class="font-black text-gray-900 text-[15px] uppercase tracking-widest min-w-[120px] text-center">{{ $currentMonth }}</span>
+                <button class="w-10 h-10 rounded-full bg-purple-50 text-[#A881C2] hover:bg-[#A881C2] hover:text-white flex items-center justify-center transition-colors">
+                    <svg class="w-5 h-5" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2.5" d="M9 5l7 7-7 7"></path></svg>
                 </button>
             </div>
 
-            <div class="mood-grid">
+            <div class="flex flex-wrap justify-center gap-3">
                @for ($i = 1; $i <= $daysInMonth; $i++)
                    @php
-                       $moodClass = 'mood-default';
+                       $moodClass = 'bg-[#E8DEFA] text-gray-600 hover:opacity-80';
                        if (isset($moodData[$i])) {
                            if ($moodData[$i] === 'senang') {
-                               $moodClass = 'mood-happy';
+                               $moodClass = 'bg-emerald-300 text-emerald-900 shadow-sm shadow-emerald-200';
                            } elseif ($moodData[$i] === 'biasa') {
-                               $moodClass = 'mood-neutral';
+                               $moodClass = 'bg-yellow-300 text-yellow-900 shadow-sm shadow-yellow-200';
                            } elseif ($moodData[$i] === 'stres') {
-                               $moodClass = 'mood-stressed';
+                               $moodClass = 'bg-red-400 text-white shadow-sm shadow-red-200';
                            }
                        }
-                       $isCurrentDay = (isset($currentDay) && $i == $currentDay) ? 'current-day' : '';
+                       $isCurrentDay = (isset($currentDay) && $i == $currentDay) ? 'ring-4 ring-[#A881C2]/30 ring-offset-2 !font-black !scale-110 z-10' : '';
                    @endphp
-                   <div class="mood-day {{ $moodClass }} {{ $isCurrentDay }}" title="Tanggal {{ $i }}">{{ $i }}</div>
+                   <div class="w-10 h-10 md:w-11 md:h-11 flex items-center justify-center text-[14px] font-bold rounded-xl transition-all cursor-default {{ $moodClass }} {{ $isCurrentDay }}" title="Tanggal {{ $i }}">
+                       {{ $i }}
+                   </div>
                @endfor
+            </div>
+            
+            <div class="flex justify-center items-center gap-6 mt-8 pt-6 border-t border-gray-50 flex-wrap">
+                <div class="flex items-center gap-2"><div class="w-3 h-3 rounded-full bg-emerald-300"></div><span class="text-xs font-bold text-gray-500 uppercase tracking-wide">Senang</span></div>
+                <div class="flex items-center gap-2"><div class="w-3 h-3 rounded-full bg-yellow-300"></div><span class="text-xs font-bold text-gray-500 uppercase tracking-wide">Biasa</span></div>
+                <div class="flex items-center gap-2"><div class="w-3 h-3 rounded-full bg-red-400"></div><span class="text-xs font-bold text-gray-500 uppercase tracking-wide">Buruk</span></div>
+                <div class="flex items-center gap-2"><div class="w-3 h-3 rounded-full bg-[#E8DEFA]"></div><span class="text-xs font-bold text-gray-500 uppercase tracking-wide">Kosong</span></div>
             </div>
         </div>
     </div>
+</div>
 @endsection

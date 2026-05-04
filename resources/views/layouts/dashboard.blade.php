@@ -396,6 +396,7 @@
 
     <!-- MAIN CONTENT -->
     <main class="main-content">
+        @if(!request()->is('home'))
         <div class="header">
             <img src="https://ui-avatars.com/api/?name={{ urlencode(Auth::user()->nama_samaran ?? 'User') }}&background=E2E8F0&color=475569&size=65" alt="Profile" class="avatar">
             <div class="welcome-text">
@@ -403,6 +404,7 @@
                 <p>How's your day?</p>
             </div>
         </div>
+        @endif
 
         @yield('content')
     </main>

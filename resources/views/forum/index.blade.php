@@ -2,275 +2,74 @@
 
 @section('content')
 
-<style>
-    .editor-section {
-        padding: 24px;
-        border-bottom: 8px solid var(--border); /* Thick separator */
-    }
-    
-    .editor-body {
-        display: flex;
-        gap: 16px;
-    }
-    
-    .editor-avatar {
-        width: 48px;
-        height: 48px;
-        border-radius: 50%;
-        background-color: #d1d5db;
-        flex-shrink: 0;
-        object-fit: cover;
-    }
-
-    .editor-content {
-        flex: 1;
-        display: flex;
-        flex-direction: column;
-    }
-
-    .editor-input {
-        width: 100%;
-        border: none;
-        outline: none;
-        font-size: 1.05rem;
-        color: var(--text-main);
-        resize: none;
-        padding-top: 12px;
-        font-family: inherit;
-        background: transparent;
-    }
-
-    .editor-input::placeholder {
-        color: #9ca3af;
-    }
-
-    .editor-footer {
-        display: flex;
-        justify-content: space-between;
-        align-items: center;
-        margin-top: 16px;
-    }
-
-    .editor-actions {
-        display: flex;
-        gap: 12px;
-        color: var(--primary);
-    }
-    
-    .editor-icon {
-        width: 20px;
-        height: 20px;
-        cursor: pointer;
-        stroke: currentColor;
-        stroke-width: 2;
-        fill: none;
-    }
-
-    .btn-posting {
-        background-color: var(--primary);
-        color: white;
-        padding: 8px 24px;
-        border-radius: 9999px;
-        font-weight: 600;
-        border: none;
-        cursor: pointer;
-        font-size: 0.9rem;
-    }
-
-    .thread-feed {
-        display: flex;
-        flex-direction: column;
-    }
-
-    .thread-item {
-        padding: 24px;
-        border-bottom: 1px solid var(--border-dark);
-        display: flex;
-        gap: 16px;
-        position: relative;
-    }
-
-    .thread-item:hover {
-        background-color: #f9fafb;
-    }
-
-    .thread-avatar {
-        width: 48px;
-        height: 48px;
-        border-radius: 50%;
-        flex-shrink: 0;
-        display: flex;
-        align-items: center;
-        justify-content: center;
-        font-weight: bold;
-        color: white;
-    }
-    
-    .thread-avatar.anon {
-        background-color: #9ca3af;
-    }
-    
-    .thread-avatar.real {
-        background-color: #d1d5db;
-    }
-
-    .thread-body {
-        flex: 1;
-        min-width: 0;
-    }
-
-    .thread-top {
-        display: flex;
-        align-items: center;
-        margin-bottom: 4px;
-    }
-
-    .thread-author {
-        font-weight: 700;
-        color: var(--text-main);
-        margin-right: 8px;
-        font-size: 0.95rem;
-    }
-
-    .thread-time {
-        color: var(--text-muted);
-        font-size: 0.85rem;
-    }
-
-    .thread-menu {
-        position: absolute;
-        right: 24px;
-        top: 24px;
-        color: var(--text-muted);
-        cursor: pointer;
-    }
-
-    .badge {
-        font-size: 0.65rem;
-        padding: 2px 6px;
-        border-radius: 4px;
-        font-weight: 700;
-        text-transform: uppercase;
-        margin-left: 8px;
-        vertical-align: middle;
-    }
-    .badge-admin { background-color: #fef08a; color: #854d0e; }
-    .badge-konselor { background-color: #bfdbfe; color: #1e40af; }
-    .badge-user { background-color: #e2e8f0; color: #475569; }
-
-    .thread-text {
-        font-size: 0.95rem;
-        line-height: 1.5;
-        color: var(--text-main);
-        white-space: pre-wrap;
-        margin-bottom: 16px;
-    }
-
-    .thread-stats {
-        display: flex;
-        gap: 24px;
-        color: var(--text-muted);
-        font-size: 0.85rem;
-    }
-
-    .stat-item {
-        display: flex;
-        align-items: center;
-        gap: 6px;
-        cursor: pointer;
-    }
-    
-    .stat-item:hover {
-        color: var(--primary);
-    }
-
-    .stat-icon {
-        width: 18px;
-        height: 18px;
-        stroke: currentColor;
-        stroke-width: 1.5;
-        fill: none;
-    }
-
-    .emoji-picker-container {
-        display: none;
-        position: absolute;
-        top: 100%;
-        left: 0;
-        margin-top: 8px;
-        z-index: 50;
-        box-shadow: 0 4px 12px rgba(0,0,0,0.15);
-        border-radius: 8px;
-    }
-
-    emoji-picker {
-        width: 320px;
-        height: 350px;
-        --background: #ffffff;
-        --border-color: var(--border-dark);
-        --input-border-color: var(--border-dark);
-    }
-</style>
-
-<div class="editor-section">
-    <form action="{{ route('forum.store') }}" method="POST">
-        @csrf
-        <div class="editor-body">
-            @php
-                $currentUserRole = Auth::user()->role ?? 'user';
-                $isCurrentUserAnon = $currentUserRole === 'user';
-            @endphp
-            <img src="https://ui-avatars.com/api/?name={{ urlencode($isCurrentUserAnon ? 'User Anonim' : Auth::user()->nama_asli) }}&background={{ $isCurrentUserAnon ? '9ca3af' : 'd1d5db' }}&color=1f2937" 
-                 alt="Avatar" class="editor-avatar">
-            
-            <div class="editor-content">
-                <div style="font-weight: 600; font-size: 0.95rem; margin-bottom: 8px; color: var(--text-main);">
-                    Posting sebagai: {{ $isCurrentUserAnon ? 'User Anonim' : Auth::user()->nama_asli }}
-                    @php
-                        $currentUserBadgeClass = '';
-                        $currentUserBadgeText = '';
-                        if ($currentUserRole === 'admin') {
-                            $currentUserBadgeClass = 'badge-admin';
-                            $currentUserBadgeText = 'Admin';
-                        } elseif ($currentUserRole === 'konselor') {
-                            $currentUserBadgeClass = 'badge-konselor';
-                            $currentUserBadgeText = 'Dokter';
-                        } else {
-                            $currentUserBadgeClass = 'badge-user';
-                            $currentUserBadgeText = 'Anonim';
-                        }
-                    @endphp
-                    <span class="badge {{ $currentUserBadgeClass }}">{{ $currentUserBadgeText }}</span>
+<div class="mb-8">
+    <div class="bg-white rounded-[32px] p-6 md:p-8 shadow-[0_4px_20px_-4px_rgba(0,0,0,0.03)] border border-gray-100">
+        <form action="{{ route('forum.store') }}" method="POST">
+            @csrf
+            <div class="flex gap-4 md:gap-5">
+                @php
+                    $currentUserRole = Auth::user()->role ?? 'user';
+                    $isCurrentUserAnon = $currentUserRole === 'user';
+                @endphp
+                <div class="flex-shrink-0">
+                    <img src="https://ui-avatars.com/api/?name={{ urlencode($isCurrentUserAnon ? 'User Anonim' : Auth::user()->nama_asli) }}&background={{ $isCurrentUserAnon ? 'F3F4F6' : 'E8DEFA' }}&color={{ $isCurrentUserAnon ? '9CA3AF' : '6B3FA0' }}&size=48&bold=true" 
+                         alt="Avatar" class="w-12 h-12 rounded-full object-cover border border-gray-100">
                 </div>
-                <textarea name="content" id="thread-content" class="editor-input" rows="2" placeholder="Ceritakan pengalamanmu!" required></textarea>
                 
-                @error('content')
-                    <div style="color: #ef4444; font-size: 0.8rem; margin-top: 4px;">{{ $message }}</div>
-                @enderror
-
-                <div class="editor-footer">
-                    <div class="editor-actions" style="position: relative;">
-                        <!-- Camera Icon -->
-                        <svg class="editor-icon" viewBox="0 0 24 24"><path d="M3 9a2 2 0 012-2h.93a2 2 0 001.664-.89l.812-1.22A2 2 0 0110.07 4h3.86a2 2 0 011.664.89l.812 1.22A2 2 0 0018.07 7H19a2 2 0 012 2v9a2 2 0 01-2 2H5a2 2 0 01-2-2V9z" stroke-linecap="round" stroke-linejoin="round"/><path d="M15 13a3 3 0 11-6 0 3 3 0 016 0z" stroke-linecap="round" stroke-linejoin="round"/></svg>
-                        
-                        <!-- Smile Icon -->
-                        <svg id="emoji-button" class="editor-icon" viewBox="0 0 24 24"><path d="M14.828 14.828a4 4 0 01-5.656 0M9 10h.01M15 10h.01M21 12a9 9 0 11-18 0 9 9 0 0118 0z" stroke-linecap="round" stroke-linejoin="round"/></svg>
-                        
-                        <!-- Emoji Picker -->
-                        <div id="emoji-picker-container" class="emoji-picker-container">
-                            <emoji-picker class="light"></emoji-picker>
-                        </div>
+                <div class="flex-1 min-w-0">
+                    <div class="flex items-center gap-2 mb-2">
+                        <span class="text-sm font-semibold text-gray-600">Posting sebagai: <span class="text-gray-900">{{ $isCurrentUserAnon ? 'User Anonim' : Auth::user()->nama_asli }}</span></span>
+                        @php
+                            $currentUserBadgeClass = '';
+                            $currentUserBadgeText = '';
+                            if ($currentUserRole === 'admin') {
+                                $currentUserBadgeClass = 'bg-amber-100 text-amber-700';
+                                $currentUserBadgeText = 'Admin';
+                            } elseif ($currentUserRole === 'konselor') {
+                                $currentUserBadgeClass = 'bg-blue-100 text-blue-700';
+                                $currentUserBadgeText = 'Dokter';
+                            } else {
+                                $currentUserBadgeClass = 'bg-gray-100 text-gray-500';
+                                $currentUserBadgeText = 'Anonim';
+                            }
+                        @endphp
+                        <span class="px-2.5 py-0.5 rounded-md text-[10px] font-black uppercase tracking-widest {{ $currentUserBadgeClass }}">{{ $currentUserBadgeText }}</span>
                     </div>
-                    <button type="submit" class="btn-posting">Posting</button>
+                    
+                    <textarea name="content" id="thread-content" class="w-full bg-transparent border-none focus:ring-0 p-0 text-gray-800 text-[15px] resize-none placeholder-gray-400 mt-1" rows="2" placeholder="Ceritakan pengalamanmu!" required></textarea>
+                    
+                    @error('content')
+                        <div class="text-red-500 text-xs mt-1 font-medium">{{ $message }}</div>
+                    @enderror
+
+                    <div class="flex justify-between items-center mt-3 pt-3 border-t border-gray-50">
+                        <div class="flex gap-3 relative">
+                            <!-- Camera Icon -->
+                            <button type="button" class="text-gray-400 hover:text-[#A881C2] transition-colors p-1.5 rounded-lg hover:bg-purple-50">
+                                <svg class="w-5 h-5" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><path d="M3 9a2 2 0 012-2h.93a2 2 0 001.664-.89l.812-1.22A2 2 0 0110.07 4h3.86a2 2 0 011.664.89l.812 1.22A2 2 0 0018.07 7H19a2 2 0 012 2v9a2 2 0 01-2 2H5a2 2 0 01-2-2V9z" stroke-linecap="round" stroke-linejoin="round"/><path d="M15 13a3 3 0 11-6 0 3 3 0 016 0z" stroke-linecap="round" stroke-linejoin="round"/></svg>
+                            </button>
+                            
+                            <!-- Smile Icon -->
+                            <button type="button" id="emoji-button" class="text-gray-400 hover:text-[#A881C2] transition-colors p-1.5 rounded-lg hover:bg-purple-50">
+                                <svg class="w-5 h-5" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><path d="M14.828 14.828a4 4 0 01-5.656 0M9 10h.01M15 10h.01M21 12a9 9 0 11-18 0 9 9 0 0118 0z" stroke-linecap="round" stroke-linejoin="round"/></svg>
+                            </button>
+                            
+                            <!-- Emoji Picker -->
+                            <div id="emoji-picker-container" class="hidden absolute top-full left-0 mt-2 z-50 shadow-[0_10px_40px_-10px_rgba(0,0,0,0.15)] rounded-2xl overflow-hidden border border-gray-100">
+                                <emoji-picker class="light" style="width: 320px; height: 350px; --background: #ffffff; --border-color: #f3f4f6; --input-border-color: #e5e7eb;"></emoji-picker>
+                            </div>
+                        </div>
+                        <button type="submit" class="bg-[#A881C2] hover:bg-[#8A64A4] text-white px-7 py-2.5 rounded-full font-bold text-[13px] shadow-md shadow-[#A881C2]/20 transition-all active:scale-95 tracking-wide">Posting</button>
+                    </div>
                 </div>
             </div>
-        </div>
-    </form>
+        </form>
+    </div>
 </div>
 
-<div class="thread-feed">
+<div class="space-y-6">
     @forelse($threads as $thread)
-        <div class="thread-item">
+        <div class="bg-white rounded-[32px] p-6 md:p-8 shadow-[0_4px_20px_-4px_rgba(0,0,0,0.03)] border border-gray-100 relative group transition-all hover:shadow-[0_8px_30px_-4px_rgba(0,0,0,0.06)]">
             @php
                 $role = $thread->user->role ?? 'user';
                 $isAnon = $role === 'user';
@@ -279,89 +78,96 @@
                 $badgeClass = '';
                 $badgeText = '';
                 if ($role === 'admin') {
-                    $badgeClass = 'badge-admin';
+                    $badgeClass = 'bg-amber-100 text-amber-700';
                     $badgeText = 'Admin';
                 } elseif ($role === 'konselor') {
-                    $badgeClass = 'badge-konselor';
+                    $badgeClass = 'bg-blue-100 text-blue-700';
                     $badgeText = 'Dokter';
                 } else {
-                    $badgeClass = 'badge-user';
+                    $badgeClass = 'bg-gray-100 text-gray-500';
                     $badgeText = 'Anonim';
                 }
             @endphp
 
-            <img src="https://ui-avatars.com/api/?name={{ urlencode($authorName) }}&background={{ $isAnon ? '9ca3af' : 'd1d5db' }}&color=1f2937" 
-                 alt="Avatar" class="thread-avatar {{ $isAnon ? 'anon' : 'real' }}">
-            
-            <div class="thread-body">
-                <div class="thread-top">
-                    <span class="thread-author">
-                        {{ $authorName }}
-                        <span class="badge {{ $badgeClass }}">{{ $badgeText }}</span>
-                    </span>
-                    <span class="thread-time">{{ $thread->created_at->diffForHumans() }}</span>
+            <div class="flex gap-4 md:gap-5">
+                <div class="flex-shrink-0">
+                    <img src="https://ui-avatars.com/api/?name={{ urlencode($authorName) }}&background={{ $isAnon ? 'F3F4F6' : 'E8DEFA' }}&color={{ $isAnon ? '9CA3AF' : '6B3FA0' }}&size=48&bold=true" 
+                         alt="Avatar" class="w-12 h-12 rounded-full object-cover border border-gray-100">
                 </div>
                 
-                <div class="thread-text">{{ $thread->content }}</div>
-                
-                <div class="thread-stats">
-                    <a href="{{ route('forum.show', $thread->id) }}" class="stat-item" style="text-decoration: none; color: inherit;">
-                        <svg class="stat-icon" viewBox="0 0 24 24"><path d="M8 12h.01M12 12h.01M16 12h.01M21 12c0 4.418-4.03 8-9 8a9.863 9.863 0 01-4.255-.949L3 20l1.395-3.72C3.512 15.042 3 13.574 3 12c0-4.418 4.03-8 9-8s9 3.582 9 8z" stroke-linecap="round" stroke-linejoin="round"/></svg>
-                        <span>{{ $thread->replies_count }}</span>
-                    </a>
-                    
-                    <form action="{{ route('forum.like', $thread->id) }}" method="POST" style="margin:0;">
-                        @csrf
-                        <button type="submit" class="stat-item" style="background:none; border:none; color: {{ $thread->isLikedBy(Auth::id() ?? 1) ? '#ef4444' : 'inherit' }};">
-                            <svg class="stat-icon" viewBox="0 0 24 24" fill="{{ $thread->isLikedBy(Auth::id() ?? 1) ? '#ef4444' : 'none' }}"><path d="M4.318 6.318a4.5 4.5 0 000 6.364L12 20.364l7.682-7.682a4.5 4.5 0 00-6.364-6.364L12 7.636l-1.318-1.318a4.5 4.5 0 00-6.364 0z" stroke-linecap="round" stroke-linejoin="round"/></svg>
-                            <span>{{ $thread->likes_count }}</span>
-                        </button>
-                    </form>
-
-                    <form action="{{ route('forum.save', $thread->id) }}" method="POST" style="margin:0;">
-                        @csrf
-                        <button type="submit" class="stat-item" style="background:none; border:none; color: {{ $thread->isSavedBy(Auth::id() ?? 1) ? 'var(--primary)' : 'inherit' }};">
-                            <svg class="stat-icon" viewBox="0 0 24 24" fill="{{ $thread->isSavedBy(Auth::id() ?? 1) ? 'var(--primary)' : 'none' }}"><path d="M5 5a2 2 0 012-2h10a2 2 0 012 2v16l-7-3.5L5 21V5z" stroke-linecap="round" stroke-linejoin="round"/></svg>
-                            <span>{{ $thread->saves_count }}</span>
-                        </button>
-                    </form>
-                </div>
-            </div>
-
-            <div class="thread-menu">
-                <button onclick="document.getElementById('dropdown-{{ $thread->id }}').style.display = document.getElementById('dropdown-{{ $thread->id }}').style.display === 'none' ? 'block' : 'none';" style="background:transparent; border:none; cursor:pointer; color:var(--text-muted);">
-                    <svg width="24" height="24" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><circle cx="12" cy="12" r="1"/><circle cx="19" cy="12" r="1"/><circle cx="5" cy="12" r="1"/></svg>
-                </button>
-                
-                <!-- Dropdown Content -->
-                <div id="dropdown-{{ $thread->id }}" style="display:none; position:absolute; right:0; top:28px; background:white; border:1px solid var(--border-dark); border-radius:8px; box-shadow:0 4px 6px rgba(0,0,0,0.1); z-index:10; min-width:150px; padding:8px 0; font-family:inherit;">
-                    
-                    @if($thread->user_id === (Auth::id() ?? 1))
-                        <form action="{{ route('forum.destroy', $thread->id) }}" method="POST" style="margin:0;" onsubmit="return confirm('Hapus post ini?');">
-                            @csrf
-                            @method('DELETE')
-                            <button type="submit" style="width:100%; text-align:left; background:none; border:none; padding:8px 16px; cursor:pointer; color:#ef4444; font-size:0.9rem;">Hapus Post</button>
-                        </form>
-                    @else
-                        <button onclick="document.getElementById('report-post-{{ $thread->id }}').style.display='block'; document.getElementById('dropdown-{{ $thread->id }}').style.display='none';" style="width:100%; text-align:left; background:none; border:none; padding:8px 16px; cursor:pointer; color:var(--text-main); font-size:0.9rem;">Laporkan</button>
-                    @endif
-                </div>
-
-                <!-- Report Form -->
-                <form id="report-post-{{ $thread->id }}" action="{{ route('forum.report', $thread->id) }}" method="POST" style="display:none; position:absolute; right:0; top:28px; background:white; border:1px solid #ef4444; border-radius:8px; box-shadow:0 4px 6px rgba(0,0,0,0.1); z-index:11; padding:12px; width:240px; font-family:inherit;">
-                    @csrf
-                    <div style="font-weight:600; font-size:0.85rem; margin-bottom:8px; color:#ef4444;">Laporkan Postingan</div>
-                    <input type="text" name="reason" placeholder="Contoh: Spam, Mengganggu..." style="width:100%; padding:6px 8px; border:1px solid var(--border-dark); border-radius:4px; margin-bottom:8px; font-size:0.85rem;" required>
-                    <div style="display:flex; justify-content:flex-end; gap:8px;">
-                        <button type="button" onclick="document.getElementById('report-post-{{ $thread->id }}').style.display='none'" style="background:none; border:none; font-size:0.8rem; cursor:pointer; color:var(--text-muted); font-weight:600;">Batal</button>
-                        <button type="submit" style="background:#ef4444; color:white; border:none; padding:4px 12px; border-radius:4px; font-weight:600; font-size:0.8rem; cursor:pointer;">Kirim</button>
+                <div class="flex-1 min-w-0">
+                    <div class="flex items-center justify-between mb-1.5">
+                        <div class="flex items-center gap-2 flex-wrap">
+                            <span class="font-bold text-gray-900 text-[15px]">{{ $authorName }}</span>
+                            <span class="px-2 py-0.5 rounded-md text-[10px] font-black uppercase tracking-widest {{ $badgeClass }}">{{ $badgeText }}</span>
+                            <span class="text-gray-400 text-[12px] font-medium ml-1">{{ $thread->created_at->diffForHumans() }}</span>
+                        </div>
                     </div>
-                </form>
+                    
+                    <p class="text-gray-700 text-[15px] leading-relaxed mb-5 whitespace-pre-wrap">{{ $thread->content }}</p>
+                    
+                    <div class="flex items-center gap-6">
+                        <a href="{{ route('forum.show', $thread->id) }}" class="flex items-center gap-2 text-gray-400 hover:text-[#A881C2] transition-colors text-sm font-semibold group/btn">
+                            <div class="p-1.5 rounded-lg group-hover/btn:bg-purple-50 transition-colors">
+                                <svg class="w-5 h-5" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M8 12h.01M12 12h.01M16 12h.01M21 12c0 4.418-4.03 8-9 8a9.863 9.863 0 01-4.255-.949L3 20l1.395-3.72C3.512 15.042 3 13.574 3 12c0-4.418 4.03-8 9-8s9 3.582 9 8z"/></svg>
+                            </div>
+                            <span>{{ $thread->replies_count }}</span>
+                        </a>
+                        
+                        <button type="button" onclick="handleLike(this, '{{ route('forum.like', $thread->id) }}')" class="flex items-center gap-2 transition-colors text-sm font-semibold group/btn {{ $thread->isLikedBy(Auth::id() ?? 1) ? 'text-red-500 is-liked' : 'text-gray-400 hover:text-red-500' }}">
+                            <div class="p-1.5 rounded-lg group-hover/btn:bg-red-50 transition-colors">
+                                <svg class="w-5 h-5 like-icon" viewBox="0 0 24 24" fill="{{ $thread->isLikedBy(Auth::id() ?? 1) ? 'currentColor' : 'none' }}" stroke="currentColor"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M4.318 6.318a4.5 4.5 0 000 6.364L12 20.364l7.682-7.682a4.5 4.5 0 00-6.364-6.364L12 7.636l-1.318-1.318a4.5 4.5 0 00-6.364 0z"/></svg>
+                            </div>
+                            <span class="like-count">{{ $thread->likes_count }}</span>
+                        </button>
+
+                        <button type="button" onclick="handleSave(this, '{{ route('forum.save', $thread->id) }}')" class="flex items-center gap-2 transition-colors text-sm font-semibold group/btn {{ $thread->isSavedBy(Auth::id() ?? 1) ? 'text-[#A881C2] is-saved' : 'text-gray-400 hover:text-[#A881C2]' }}">
+                            <div class="p-1.5 rounded-lg group-hover/btn:bg-purple-50 transition-colors">
+                                <svg class="w-5 h-5 save-icon" viewBox="0 0 24 24" fill="{{ $thread->isSavedBy(Auth::id() ?? 1) ? 'currentColor' : 'none' }}" stroke="currentColor"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M5 5a2 2 0 012-2h10a2 2 0 012 2v16l-7-3.5L5 21V5z"/></svg>
+                            </div>
+                            <span class="save-count">{{ $thread->saves_count }}</span>
+                        </button>
+                    </div>
+                </div>
+
+                <div class="absolute top-6 right-6">
+                    <button onclick="document.getElementById('dropdown-{{ $thread->id }}').classList.toggle('hidden')" class="text-gray-400 hover:text-gray-600 transition-colors p-1.5 rounded-full hover:bg-gray-100">
+                        <svg class="w-5 h-5" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2.5" d="M5 12h.01M12 12h.01M19 12h.01M6 12a1 1 0 11-2 0 1 1 0 012 0zm7 0a1 1 0 11-2 0 1 1 0 012 0zm7 0a1 1 0 11-2 0 1 1 0 012 0z"/></svg>
+                    </button>
+                    
+                    <!-- Dropdown Content -->
+                    <div id="dropdown-{{ $thread->id }}" class="hidden absolute right-0 top-full mt-1 w-40 bg-white border border-gray-100 rounded-xl shadow-lg py-1.5 z-10">
+                        @if($thread->user_id === (Auth::id() ?? 1))
+                            <form action="{{ route('forum.destroy', $thread->id) }}" method="POST" class="m-0" onsubmit="return confirm('Hapus post ini?');">
+                                @csrf
+                                @method('DELETE')
+                                <button type="submit" class="w-full text-left px-4 py-2.5 text-sm text-red-500 hover:bg-red-50 font-semibold transition-colors">Hapus Post</button>
+                            </form>
+                        @else
+                            <button onclick="document.getElementById('report-post-{{ $thread->id }}').classList.remove('hidden'); document.getElementById('dropdown-{{ $thread->id }}').classList.add('hidden');" class="w-full text-left px-4 py-2.5 text-sm text-gray-700 hover:bg-gray-50 font-semibold transition-colors">Laporkan</button>
+                        @endif
+                    </div>
+
+                    <!-- Report Form -->
+                    <form id="report-post-{{ $thread->id }}" action="{{ route('forum.report', $thread->id) }}" method="POST" class="hidden absolute right-0 top-full mt-1 w-64 bg-white border border-red-100 rounded-xl shadow-[0_10px_40px_-10px_rgba(239,68,68,0.2)] p-4 z-20">
+                        @csrf
+                        <div class="text-[13px] font-black uppercase tracking-wider text-red-500 mb-3">Laporkan Postingan</div>
+                        <input type="text" name="reason" placeholder="Contoh: Spam, Mengganggu..." class="w-full px-3 py-2 border border-gray-200 rounded-lg mb-3 text-sm focus:outline-none focus:border-red-300 focus:ring-2 focus:ring-red-300/20 font-medium" required>
+                        <div class="flex justify-end gap-2">
+                            <button type="button" onclick="document.getElementById('report-post-{{ $thread->id }}').classList.add('hidden')" class="px-3 py-1.5 text-[13px] font-bold text-gray-500 hover:text-gray-700 hover:bg-gray-100 rounded-lg transition-all">Batal</button>
+                            <button type="submit" class="px-4 py-1.5 text-[13px] font-bold bg-red-500 text-white rounded-lg hover:bg-red-600 transition-all shadow-sm">Kirim</button>
+                        </div>
+                    </form>
+                </div>
             </div>
         </div>
     @empty
-        <div style="text-align: center; padding: 40px; color: var(--text-muted);">
-            Belum ada pos di forum ini. Jadilah yang pertama untuk berbagi!
+        <div class="bg-white rounded-[32px] shadow-sm border border-gray-100 p-12 flex flex-col items-center justify-center min-h-[400px]">
+            <div class="w-24 h-24 bg-purple-50 rounded-full flex items-center justify-center mb-6">
+                <svg class="w-12 h-12 text-[#A881C2]" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="1.5" d="M17 8h2a2 2 0 012 2v6a2 2 0 01-2 2h-2v4l-4-4H9a1.994 1.994 0 01-1.414-.586m0 0L11 14h4a2 2 0 002-2V6a2 2 0 00-2-2H5a2 2 0 00-2 2v6a2 2 0 002 2h2v4l.586-.586z"></path></svg>
+            </div>
+            <h4 class="text-gray-900 font-bold text-xl mb-2">Belum Ada Diskusi</h4>
+            <p class="text-gray-500 text-[15px] text-center max-w-xs leading-relaxed">Jadilah yang pertama untuk memulai percakapan di forum ini!</p>
         </div>
     @endforelse
 </div>
@@ -378,10 +184,10 @@
         // Toggle picker
         emojiBtn.addEventListener('click', function(e) {
             e.stopPropagation();
-            if (emojiPickerContainer.style.display === 'block') {
-                emojiPickerContainer.style.display = 'none';
+            if (emojiPickerContainer.classList.contains('hidden')) {
+                emojiPickerContainer.classList.remove('hidden');
             } else {
-                emojiPickerContainer.style.display = 'block';
+                emojiPickerContainer.classList.add('hidden');
             }
         });
 
@@ -398,18 +204,81 @@
             textarea.focus();
             textarea.selectionStart = cursorPosition + emoji.length;
             textarea.selectionEnd = cursorPosition + emoji.length;
-            
-            // Optional: Close picker after selection
-            // emojiPickerContainer.style.display = 'none';
         });
 
         // Close when clicking outside
         document.addEventListener('click', function(e) {
             if (!emojiPickerContainer.contains(e.target) && e.target !== emojiBtn) {
-                emojiPickerContainer.style.display = 'none';
+                emojiPickerContainer.classList.add('hidden');
             }
         });
     });
 </script>
-
 @endsection
+
+@push('scripts')
+<script>
+function handleLike(btn, url) {
+    const isLiked = btn.classList.contains('is-liked');
+    const countSpan = btn.querySelector('.like-count');
+    const icon = btn.querySelector('.like-icon');
+    let count = parseInt(countSpan.textContent);
+    
+    // Optimistic UI update
+    if (isLiked) {
+        btn.classList.remove('is-liked', 'text-red-500');
+        btn.classList.add('text-gray-400');
+        icon.setAttribute('fill', 'none');
+        countSpan.textContent = count - 1;
+    } else {
+        btn.classList.add('is-liked', 'text-red-500');
+        btn.classList.remove('text-gray-400');
+        icon.setAttribute('fill', 'currentColor');
+        countSpan.textContent = count + 1;
+    }
+
+    // Actual request
+    fetch(url, {
+        method: 'POST',
+        headers: {
+            'X-CSRF-TOKEN': '{{ csrf_token() }}',
+            'Accept': 'application/json'
+        }
+    }).catch(error => {
+        console.error('Error:', error);
+        // Revert on error (optional)
+    });
+}
+
+function handleSave(btn, url) {
+    const isSaved = btn.classList.contains('is-saved');
+    const countSpan = btn.querySelector('.save-count');
+    const icon = btn.querySelector('.save-icon');
+    let count = parseInt(countSpan.textContent);
+    
+    // Optimistic UI update
+    if (isSaved) {
+        btn.classList.remove('is-saved', 'text-[#A881C2]');
+        btn.classList.add('text-gray-400');
+        icon.setAttribute('fill', 'none');
+        countSpan.textContent = count - 1;
+    } else {
+        btn.classList.add('is-saved', 'text-[#A881C2]');
+        btn.classList.remove('text-gray-400');
+        icon.setAttribute('fill', 'currentColor');
+        countSpan.textContent = count + 1;
+    }
+
+    // Actual request
+    fetch(url, {
+        method: 'POST',
+        headers: {
+            'X-CSRF-TOKEN': '{{ csrf_token() }}',
+            'Accept': 'application/json'
+        }
+    }).catch(error => {
+        console.error('Error:', error);
+    });
+}
+</script>
+@endpush

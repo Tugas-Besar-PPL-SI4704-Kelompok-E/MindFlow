@@ -2,6 +2,15 @@
 
 @section('content')
 
+    <div class="mb-10">
+        <a href="{{ route('forum.index') }}" class="inline-flex items-center gap-4 group">
+            <div class="w-11 h-11 rounded-full bg-white border border-gray-200 flex items-center justify-center shadow-sm group-hover:shadow group-hover:border-purple-200 transition-all text-gray-500 group-hover:text-[#A881C2]">
+                <svg class="w-6 h-6 group-hover:-translate-x-0.5 transition-transform" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2.5" d="M15 19l-7-7 7-7"></path></svg>
+            </div>
+            <span class="text-[#4B5563] font-extrabold text-xl">Kembali</span>
+        </a>
+    </div>
+
 <style>
     .edit-post {
         background: var(--card-bg);

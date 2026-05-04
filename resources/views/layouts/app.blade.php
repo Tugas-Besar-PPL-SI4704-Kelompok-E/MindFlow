@@ -10,15 +10,15 @@
     <script src="https://cdn.tailwindcss.com"></script>
     <style>
         :root {
-            --primary: #a881af; /* Purple accent */
+            --primary: #A881C2; /* Solid Purple from Image 2 */
             --primary-light: #f3e8f5;
-            --primary-hover: #906698;
-            --bg-color: #ffffff;
+            --primary-hover: #8A64A4;
+            --bg-color: #FAFAFB;
             --text-main: #111827;
             --text-muted: #6b7280;
             --border: #f3f4f6;
             --border-dark: #e5e7eb;
-            --sidebar-left-w: 260px;
+            --sidebar-left-w: 280px;
             --sidebar-right-w: 300px;
         }
 
@@ -35,25 +35,25 @@
             line-height: 1.5;
             -webkit-font-smoothing: antialiased;
             display: flex;
+            height: 100vh;
+            overflow: hidden;
         }
 
         .layout {
             display: flex;
             width: 100%;
-            min-height: 100vh;
+            height: 100vh;
         }
 
         /* --- Left Sidebar --- */
         .sidebar-left {
-            width: 280px;
+            width: var(--sidebar-left-w);
             background-color: #FFFFFF;
             border-right: 1px solid var(--border-dark);
             padding: 40px 0 10px 0;
             display: flex;
             flex-direction: column;
-            position: sticky;
-            top: 0;
-            height: 100vh;
+            flex-shrink: 0;
             z-index: 10;
         }
 
@@ -93,7 +93,7 @@
         }
 
         .brand span.flow {
-            color: #9B76D6;
+            color: #A881C2;
         }
 
         .menu-title {
@@ -128,8 +128,8 @@
 
         .menu-item.active {
             background-color: #F4EEFB;
-            color: #9B76D6;
-            border-left-color: #9B76D6;
+            color: #A881C2;
+            border-left-color: #A881C2;
         }
 
         .menu-item svg {
@@ -142,7 +142,7 @@
         }
 
         .menu-item.active svg {
-            stroke: #9B76D6;
+            stroke: #A881C2;
         }
 
         /* --- SIDEBAR PROFILE SECTION --- */
@@ -179,7 +179,7 @@
             height: 42px;
             border-radius: 50%;
             object-fit: cover;
-            border: 2px solid #9B76D6;
+            border: 2px solid #A881C2;
             flex-shrink: 0;
         }
 
@@ -263,7 +263,7 @@
 
         .sidebar-popup-item:hover {
             background-color: #F4EEFB;
-            color: #9B76D6;
+            color: #A881C2;
         }
 
         .sidebar-popup-item svg {
@@ -286,77 +286,48 @@
             margin: 4px 8px;
         }
 
-        /* --- Main Content --- */
+        /* --- MAIN CONTENT --- */
         .main-content {
             flex: 1;
+            padding: 50px 60px;
+            overflow-y: auto;
             border-right: 1px solid var(--border-dark);
-            min-width: 0;
-            display: flex;
-            flex-direction: column;
         }
 
-        .topbar {
-            display: flex;
-            justify-content: space-between;
-            align-items: center;
-            padding: 20px 24px;
-            border-bottom: 2px solid var(--border);
-        }
-
-        .welcome-section {
+        .header {
             display: flex;
             align-items: center;
-            gap: 16px;
+            margin-bottom: 40px;
         }
 
-        .user-avatar-lg {
-            width: 56px;
-            height: 56px;
+        .avatar {
+            width: 65px;
+            height: 65px;
             border-radius: 50%;
             object-fit: cover;
-            background-color: #d1d5db;
+            margin-right: 20px;
+            background-color: #EAEAEA;
         }
 
-        .welcome-text h2 {
-            font-size: 1.25rem;
+        .welcome-text h1 {
+            font-size: 26px;
             font-weight: 700;
-            margin-bottom: 2px;
-            color: var(--text-main);
-        }
-        
-        .welcome-text p {
-            font-size: 0.9rem;
-            color: var(--text-muted);
+            margin-bottom: 4px;
         }
 
-        .search-box {
-            position: relative;
-        }
-        .search-box input {
-            padding: 10px 16px 10px 40px;
-            border: 1px solid var(--border-dark);
-            border-radius: 8px;
-            font-size: 0.9rem;
-            width: 240px;
-            outline: none;
-        }
-        .search-icon {
-            position: absolute;
-            left: 12px;
-            top: 50%;
-            transform: translateY(-50%);
+        .welcome-text p {
             color: var(--text-muted);
-            width: 18px;
-            height: 18px;
+            font-size: 15px;
+            font-weight: 400;
         }
 
         /* --- Right Sidebar --- */
         .sidebar-right {
             width: var(--sidebar-right-w);
-            padding: 24px;
-            position: sticky;
-            top: 0;
-            height: 100vh;
+            padding: 40px 24px;
+            flex-shrink: 0;
+            overflow-y: auto;
+            background-color: var(--bg-color);
         }
 
         .right-header {
@@ -429,6 +400,18 @@
         .btn-primary:hover {
             background-color: var(--primary-hover);
         }
+
+        .btn-outline {
+            background-color: transparent;
+            color: var(--text-muted);
+            border: 2px solid var(--border-dark);
+        }
+
+        .btn-outline:hover {
+            background-color: var(--bg-color);
+            color: var(--text-main);
+            border-color: var(--text-muted);
+        }
     </style>
     @stack('styles')
 </head><body>
@@ -439,6 +422,8 @@
                 <img src="{{ asset('images/logo.png') }}" alt="Logo MindFlow" style="width: 36px; height: 36px; margin-right: 12px; object-fit: contain;">
                 <div>Mind<span class="flow">Flow</span></div>
             </div>
+            
+            <div class="menu-title">Menu</div>
             <ul class="menu-list">
                 @if(Auth::check() && Auth::user()->role === 'admin')
                 <li>
@@ -533,25 +518,25 @@
 
         <!-- Main Content (Tengah) -->
         <main class="main-content">
-            <div class="topbar">
-                <div class="welcome-section">
-                    <div class="user-avatar-lg">
-                        <img src="{{ asset('images/profile.png') }}" alt="User Profile" style="width: 100%; height: 100%; border-radius: 50%; object-fit: cover;">
-                    </div>
-                    <div class="welcome-text">
-                        <h2>Welcome, {{ explode(' ', Auth::user()->nama_asli ?? 'User')[0] }}!</h2>
-                        <p>How's your day?</p>
-                    </div>
-                </div>
-                <div class="search-box">
-                    <svg class="search-icon" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M21 21l-6-6m2-5a7 7 0 11-14 0 7 7 0 0114 0z"></path></svg>
-                    <input type="text" placeholder="Cari...">
+            <div class="header">
+                <img src="https://ui-avatars.com/api/?name={{ urlencode(Auth::user()->nama_samaran ?? 'User') }}&background=E2E8F0&color=475569&size=65" alt="Profile" class="avatar">
+                <div class="welcome-text">
+                    <h1>Welcome, {{ Auth::user()->nama_asli ?? 'User' }}!</h1>
+                    <p>How's your day?</p>
                 </div>
             </div>
 
-            @if(session('success'))
-                <div class="alert">
-                    {{ session('success') }}
+            @if(session('success') && !request()->is('konseling*'))
+                <div class="bg-emerald-50 border border-emerald-100 text-emerald-800 px-6 py-4 rounded-2xl mb-8 flex justify-between items-center shadow-sm">
+                    <div class="flex items-center gap-3">
+                        <div class="w-8 h-8 bg-emerald-500 rounded-full flex items-center justify-center text-white shadow-sm shadow-emerald-200">
+                            <svg class="w-5 h-5" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="3" d="M5 13l4 4L19 7"></path></svg>
+                        </div>
+                        <span class="font-bold text-sm">{{ session('success') }}</span>
+                    </div>
+                    <button type="button" class="text-emerald-400 hover:text-emerald-600 transition-colors" onclick="this.parentElement.style.display='none'">
+                        <svg class="w-5 h-5" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2.5" d="M6 18L18 6M6 6l12 12"></path></svg>
+                    </button>
                 </div>
             @endif
 
@@ -561,32 +546,55 @@
         <!-- Sidebar Kanan -->
         <aside class="sidebar-right">
             <div class="right-header">
-                <h3>Jadwal Konsultasi Mendatang</h3>
-                <a href="#">Batalkan</a>
+                <h3 class="text-gray-900 font-bold">Jadwal Konsultasi</h3>
+                <a href="#" class="text-[#A881C2] hover:text-[#8A64A4] font-bold text-xs transition-colors">Lihat Semua</a>
             </div>
             
-            @if(isset($jadwalKonsultasi) && $jadwalKonsultasi->isEmpty())
+            @if(isset($jadwalKonsultasi) && $jadwalKonsultasi->where('status', '!=', 'cancelled')->isEmpty())
                 <div class="empty-state">
-                    <div class="empty-illustration">
-                        <svg width="64" height="64" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.5"><path stroke-linecap="round" stroke-linejoin="round" d="M8 7V3m8 4V3m-9 8h10M5 21h14a2 2 0 002-2V7a2 2 0 00-2-2H5a2 2 0 00-2 2v12a2 2 0 002 2z"></path></svg>
+                    <div class="w-20 h-20 bg-gray-50 rounded-2xl flex items-center justify-center mb-4 border border-gray-100 shadow-inner">
+                        <svg width="32" height="32" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" class="text-gray-300"><path stroke-linecap="round" stroke-linejoin="round" d="M8 7V3m8 4V3m-9 8h10M5 21h14a2 2 0 002-2V7a2 2 0 00-2-2H5a2 2 0 00-2 2v12a2 2 0 002 2z"></path></svg>
                     </div>
-                    <p>Tidak ada jadwal ditemukan<br>Ketuk untuk menambahkan jadwal</p>
+                    <p class="text-[13px] font-medium text-gray-400">Belum ada jadwal<br>konsultasi aktif</p>
                 </div>
             @elseif(isset($jadwalKonsultasi))
-                <div style="display: flex; flex-direction: column; gap: 16px;">
-                    @foreach($jadwalKonsultasi as $jadwal)
-                        <div style="background-color: #f9fafb; padding: 16px; border-radius: 12px; border: 1px solid #f3f4f6;">
-                            <h4 style="font-weight: 700; font-size: 14px; margin-bottom: 4px;">{{ $jadwal->profilKonselor ? $jadwal->profilKonselor->nama : 'Konselor' }}</h4>
-                            <p style="color: #6b7280; font-size: 12px; margin-bottom: 8px;">{{ \Carbon\Carbon::parse($jadwal->jadwal)->format('d M Y, H:i') }}</p>
-                            <div style="margin-bottom: 12px;">
-                                <span style="display: inline-block; background-color: #fef08a; color: #a16207; padding: 4px 8px; border-radius: 4px; font-size: 12px; font-weight: 600;">{{ ucfirst($jadwal->status) }}</span>
+                <div class="flex flex-col gap-5">
+                    @foreach($jadwalKonsultasi->where('status', '!=', 'cancelled') as $jadwal)
+                        <div class="bg-white p-5 rounded-3xl border border-gray-100 shadow-[0_4px_12px_-2px_rgba(0,0,0,0.03)] hover:shadow-md transition-all duration-300 group">
+                            <div class="flex items-start justify-between mb-4">
+                                <div>
+                                    <h4 class="font-bold text-gray-900 text-[14px] leading-tight mb-1 group-hover:text-[#A881C2] transition-colors">{{ $jadwal->profilKonselor ? $jadwal->profilKonselor->nama : 'Konselor' }}</h4>
+                                    <p class="text-gray-400 text-[11px] font-bold uppercase tracking-wider">{{ \Carbon\Carbon::parse($jadwal->jadwal)->translatedFormat('d M Y, H:i') }}</p>
+                                </div>
+                                <div class="p-1.5 rounded-lg bg-purple-50 text-[#A881C2]">
+                                    <svg class="w-4 h-4" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2.5" d="M8 7V3m8 4V3m-9 8h10M5 21h14a2 2 0 002-2V7a2 2 0 00-2-2H5a2 2 0 00-2 2v12a2 2 0 002 2z"></path></svg>
+                                </div>
                             </div>
-                            <div style="display: flex; gap: 8px;">
-                                <a href="{{ route('booking.edit', $jadwal->sesi_konseling_id) }}" style="text-decoration: none; font-size: 12px; background-color: #dbeafe; color: #1d4ed8; padding: 4px 12px; border-radius: 4px;">Ubah Jadwal</a>
-                                <form action="{{ route('booking.cancel', $jadwal->sesi_konseling_id) }}" method="POST" onsubmit="return confirm('Yakin ingin membatalkan sesi ini?')" style="margin: 0;">
+                            
+                            <div class="mb-5">
+                                @php
+                                    $statusColor = match($jadwal->status) {
+                                        'pending' => 'bg-amber-50 text-amber-600 border-amber-100',
+                                        'rescheduled' => 'bg-blue-50 text-blue-600 border-blue-100',
+                                        'confirmed' => 'bg-emerald-50 text-emerald-600 border-emerald-100',
+                                        default => 'bg-gray-50 text-gray-600 border-gray-100'
+                                    };
+                                @endphp
+                                <span class="inline-flex items-center px-3 py-1 {{ $statusColor }} border rounded-lg text-[10px] font-black uppercase tracking-widest">
+                                    {{ $jadwal->status }}
+                                </span>
+                            </div>
+
+                            <div class="flex gap-2">
+                                <a href="{{ route('booking.edit', $jadwal->sesi_konseling_id) }}" class="flex-1 text-center bg-gray-50 hover:bg-purple-50 hover:text-[#A881C2] text-gray-500 py-2.5 rounded-xl text-[11px] font-bold transition-all duration-300 border border-transparent hover:border-purple-100">
+                                    Ubah
+                                </a>
+                                <form action="{{ route('booking.cancel', $jadwal->sesi_konseling_id) }}" method="POST" onsubmit="return confirm('Yakin ingin membatalkan sesi ini?')" class="flex-1">
                                     @csrf
                                     @method('DELETE')
-                                    <button type="submit" style="border: none; cursor: pointer; font-size: 12px; background-color: #fee2e2; color: #b91c1c; padding: 4px 12px; border-radius: 4px;">Batalkan</button>
+                                    <button type="submit" class="w-full bg-gray-50 hover:bg-red-50 hover:text-red-500 text-gray-500 py-2.5 rounded-xl text-[11px] font-bold transition-all duration-300 border border-transparent hover:border-red-100">
+                                        Batal
+                                    </button>
                                 </form>
                             </div>
                         </div>
@@ -594,15 +602,14 @@
                 </div>
             @else
                 <div class="empty-state">
-                    <div class="empty-illustration">
-                        <svg width="64" height="64" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.5"><path stroke-linecap="round" stroke-linejoin="round" d="M8 7V3m8 4V3m-9 8h10M5 21h14a2 2 0 002-2V7a2 2 0 00-2-2H5a2 2 0 00-2 2v12a2 2 0 002 2z"></path></svg>
+                    <div class="w-20 h-20 bg-gray-50 rounded-2xl flex items-center justify-center mb-4 border border-gray-100 shadow-inner">
+                        <svg width="32" height="32" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" class="text-gray-300"><path stroke-linecap="round" stroke-linejoin="round" d="M8 7V3m8 4V3m-9 8h10M5 21h14a2 2 0 002-2V7a2 2 0 00-2-2H5a2 2 0 00-2 2v12a2 2 0 002 2z"></path></svg>
                     </div>
-                    <p>Tidak ada jadwal ditemukan<br>Ketuk untuk menambahkan jadwal</p>
+                    <p class="text-[13px] font-medium text-gray-400">Belum ada jadwal<br>konsultasi aktif</p>
                 </div>
             @endif
         </aside>
     </div>
-<<<<<<< HEAD
 
     <!-- Profile Popup Toggle Script -->
     <script>
@@ -627,8 +634,6 @@
             }
         });
     </script>
-=======
     @stack('scripts')
->>>>>>> cd97ae40459f1e2192b2a733c97b6548b452140f
 </body>
 </html>
