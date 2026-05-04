@@ -12,14 +12,12 @@ class BookingController extends Controller
     public function store(Request $request) 
     {
         $request->validate([
-            'konselor_id' => 'required|exists:profil_konselor,profil_konselor_id',
+            'konselor_id' => 'required|exists:profil_konselors,profil_konselor_id',
             'jadwal' => 'required',
         ]);
 
-        $testUser = \App\Models\User::where('email', 'asep@example.com')->first();
-        
         SesiKonseling::create([
-            'user_id' => $testUser ? $testUser->id : 1,
+            'user_id' => Auth::id(),
             'profil_konselor_id' => $request->konselor_id,
             'jadwal' => $request->jadwal,
             'status' => 'pending'
