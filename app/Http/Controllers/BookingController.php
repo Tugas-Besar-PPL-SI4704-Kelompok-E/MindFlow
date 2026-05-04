@@ -16,10 +16,8 @@ class BookingController extends Controller
             'jadwal' => 'required',
         ]);
 
-        $testUser = \App\Models\User::where('email', 'asep@example.com')->first();
-        
         SesiKonseling::create([
-            'user_id' => $testUser ? $testUser->id : 1,
+            'user_id' => Auth::id(),
             'profil_konselor_id' => $request->konselor_id,
             'jadwal' => $request->jadwal,
             'status' => 'pending'

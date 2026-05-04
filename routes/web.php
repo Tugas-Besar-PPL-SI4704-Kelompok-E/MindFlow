@@ -35,6 +35,9 @@ Route::post('/mood-tracker/mendalam', [MoodTrackerController::class, 'mendalamSt
     ->name('mood-tracker.mendalam.store');
 
 Route::get('/faq', function () {
+    if (auth()->check()) {
+        return redirect()->route('settings.edit', [], 302)->withFragment('faq');
+    }
     return view('faq');
 })->name('faq');
 
@@ -100,6 +103,7 @@ Route::middleware('auth')->group(function () {
     Route::post('forum/{thread}/reply', [ThreadInteractionController::class, 'storeReply'])->name('forum.reply');
     Route::post('forum/{thread}/report', [ThreadInteractionController::class, 'reportThread'])->name('forum.report');
     Route::post('forum/reply/{reply}/report', [ThreadInteractionController::class, 'reportReply'])->name('forum.reply.report');
+    Route::delete('forum/reply/{reply}', [ThreadInteractionController::class, 'destroyReply'])->name('forum.reply.destroy');
     
     // Settings
     Route::get('/settings', [UserController::class, 'edit'])->name('settings.edit');

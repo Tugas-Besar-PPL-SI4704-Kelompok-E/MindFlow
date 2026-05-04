@@ -1,249 +1,80 @@
-@extends('layouts.dashboard')
+@extends('layouts.app')
 
 @section('title', 'History Lengkap - MindFlow')
 
-@section('styles')
-    .history-section {
-        max-width: 900px;
-        margin: 0 auto;
-    }
-
-    .section-header {
-        margin-bottom: 24px;
-    }
-
-    .section-title {
-        font-size: 20px;
-        font-weight: 700;
-        color: #111827;
-        margin-bottom: 8px;
-    }
-
-    .section-subtitle {
-        font-size: 14px;
-        color: #6B7280;
-    }
-
-    /* History Table Card */
-    .history-card {
-        background: #FFFFFF;
-        border: 1px solid #E5E7EB;
-        border-radius: 16px;
-        box-shadow: 0 4px 6px -1px rgba(0, 0, 0, 0.05), 0 2px 4px -1px rgba(0, 0, 0, 0.03);
-        overflow: hidden;
-    }
-
-    .history-table {
-        width: 100%;
-        border-collapse: collapse;
-        text-align: left;
-    }
-
-    .history-table th {
-        background-color: #F9FAFB;
-        padding: 16px 24px;
-        font-size: 12px;
-        font-weight: 600;
-        color: #6B7280;
-        text-transform: uppercase;
-        letter-spacing: 0.05em;
-        border-bottom: 1px solid #E5E7EB;
-    }
-
-    .history-table td {
-        padding: 16px 24px;
-        border-bottom: 1px solid #F3F4F6;
-        vertical-align: middle;
-    }
-
-    .history-table tr:last-child td {
-        border-bottom: none;
-    }
-
-    .history-table tr:hover {
-        background-color: #F9FAFB;
-    }
-
-    /* Activity Type Cell */
-    .activity-cell {
-        display: flex;
-        align-items: center;
-        gap: 12px;
-    }
-
-    .icon-wrapper {
-        width: 40px;
-        height: 40px;
-        border-radius: 10px;
-        display: flex;
-        align-items: center;
-        justify-content: center;
-    }
-
-    .icon-wrapper.blue {
-        background-color: #EFF6FF;
-        color: #3B82F6;
-    }
-
-    .icon-wrapper.indigo {
-        background-color: #EEF2FF;
-        color: #6366F1;
-    }
-
-    .icon-wrapper.purple {
-        background-color: #F3E8FF;
-        color: #A855F7;
-    }
-
-    .activity-info .activity-name {
-        font-size: 14px;
-        font-weight: 600;
-        color: #111827;
-        margin-bottom: 2px;
-    }
-
-    /* Date and Time Cell */
-    .datetime-cell .date {
-        font-size: 14px;
-        font-weight: 500;
-        color: #374151;
-        margin-bottom: 2px;
-    }
-
-    .datetime-cell .time {
-        font-size: 12px;
-        color: #6B7280;
-    }
-
-    /* Status Badge */
-    .status-badge {
-        display: inline-flex;
-        align-items: center;
-        padding: 4px 12px;
-        border-radius: 9999px;
-        font-size: 12px;
-        font-weight: 500;
-        background-color: #ECFDF5;
-        color: #047857;
-        border: 1px solid #A7F3D0;
-    }
-
-    /* Empty state */
-    .empty-state {
-        padding: 60px 20px;
-        display: flex;
-        flex-direction: column;
-        align-items: center;
-        justify-content: center;
-        text-align: center;
-    }
-
-    .empty-state svg {
-        margin-bottom: 16px;
-        color: #D1D5DB;
-    }
-
-    .empty-state p {
-        font-size: 14px;
-        font-weight: 500;
-        color: #6B7280;
-    }
-
-    /* Button Kembali */
-    .btn-history {
-        display: inline-flex;
-        align-items: center;
-        font-size: 13px;
-        font-weight: 600;
-        color: #FFFFFF;
-        background-color: var(--primary-purple, #9B76D6);
-        padding: 8px 16px;
-        border-radius: 8px;
-        text-decoration: none;
-        transition: background-color 0.2s, transform 0.1s;
-        box-shadow: 0 2px 8px rgba(155, 118, 214, 0.4);
-    }
-
-    .btn-history:hover {
-        background-color: #875ec2;
-        transform: translateY(-1px);
-    }
-
-    .btn-history svg {
-        width: 16px;
-        height: 16px;
-        margin-right: 6px;
-        stroke: currentColor;
-        stroke-width: 2;
-        fill: none;
-    }
-@endsection
-
 @section('content')
-    <div class="history-section">
-        <div class="section-header">
-            <h1 class="section-title">History Lengkap</h1>
-            <p class="section-subtitle">Daftar riwayat semua aktivitas Anda di MindFlow</p>
+<div class="max-w-4xl mx-auto pb-12">
+    <div class="mb-8 flex items-center justify-between">
+        <div>
+            <h3 class="text-gray-900 font-extrabold text-2xl tracking-tight mb-2">History Lengkap</h3>
+            <p class="text-gray-500 text-[15px] font-medium">Daftar riwayat semua aktivitas Anda di MindFlow</p>
         </div>
+        <a href="{{ route('journals.index') }}" class="w-10 h-10 bg-white border border-gray-100 rounded-full flex items-center justify-center text-gray-400 hover:text-[#A881C2] hover:border-purple-100 hover:bg-purple-50 transition-all shadow-sm">
+            <svg class="w-5 h-5" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2.5" d="M15 19l-7-7 7-7"></path></svg>
+        </a>
+    </div>
 
-        <div class="history-card">
-            @if ($histories->isEmpty())
-                <div class="empty-state">
-                    <svg width="64" height="64" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.5" stroke-linecap="round" stroke-linejoin="round">
-                        <circle cx="12" cy="12" r="10"></circle>
-                        <polyline points="12 6 12 12 16 14"></polyline>
-                    </svg>
-                    <p>Belum ada riwayat aktivitas.</p>
+    <div class="bg-white rounded-[32px] shadow-[0_4px_20px_-4px_rgba(0,0,0,0.03)] border border-gray-100 overflow-hidden">
+        @if ($histories->isEmpty())
+            <div class="p-12 flex flex-col items-center justify-center min-h-[300px]">
+                <div class="w-20 h-20 bg-gray-50 rounded-full flex items-center justify-center mb-5">
+                    <svg class="w-10 h-10 text-gray-300" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="1.5" d="M12 8v4l3 3m6-3a9 9 0 11-18 0 9 9 0 0118 0z"></path></svg>
                 </div>
-            @else
-                <table class="history-table">
+                <h4 class="text-gray-900 font-bold text-lg mb-1">Belum Ada Aktivitas</h4>
+                <p class="text-gray-500 text-sm text-center">Riwayat aktivitas Anda akan muncul di sini.</p>
+            </div>
+        @else
+            <div class="overflow-x-auto">
+                <table class="w-full text-left border-collapse">
                     <thead>
-                        <tr>
-                            <th>Jenis Aktivitas</th>
-                            <th>Tanggal & Waktu</th>
-                            <th>Status</th>
+                        <tr class="bg-gray-50/50 border-b border-gray-100">
+                            <th class="px-8 py-5 text-[12px] font-black text-gray-500 uppercase tracking-widest whitespace-nowrap">Jenis Aktivitas</th>
+                            <th class="px-8 py-5 text-[12px] font-black text-gray-500 uppercase tracking-widest whitespace-nowrap">Tanggal & Waktu</th>
+                            <th class="px-8 py-5 text-[12px] font-black text-gray-500 uppercase tracking-widest whitespace-nowrap">Status</th>
                         </tr>
                     </thead>
-                    <tbody>
+                    <tbody class="divide-y divide-gray-50">
                         @foreach ($histories as $history)
-                            <tr>
-                                <td>
-                                    <div class="activity-cell">
-                                        <div class="icon-wrapper {{ $history->color }}">
+                            <tr class="hover:bg-purple-50/30 transition-colors group">
+                                <td class="px-8 py-5 whitespace-nowrap">
+                                    <div class="flex items-center gap-4">
+                                        @php
+                                            $iconBgClass = match($history->color) {
+                                                'blue' => 'bg-blue-50 text-blue-500 group-hover:bg-blue-100',
+                                                'indigo' => 'bg-indigo-50 text-indigo-500 group-hover:bg-indigo-100',
+                                                'purple' => 'bg-purple-50 text-purple-500 group-hover:bg-purple-100',
+                                                default => 'bg-gray-50 text-gray-500 group-hover:bg-gray-100'
+                                            };
+                                        @endphp
+                                        <div class="w-10 h-10 rounded-xl flex items-center justify-center transition-colors {{ $iconBgClass }}">
                                             @if($history->icon === 'zap')
-                                                <svg width="20" height="20" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><polygon points="13 2 3 14 12 14 11 22 21 10 12 10 13 2"></polygon></svg>
+                                                <svg class="w-5 h-5" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M13 10V3L4 14h7v7l9-11h-7z"></path></svg>
                                             @elseif($history->icon === 'search')
-                                                <svg width="20" height="20" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><circle cx="11" cy="11" r="8"></circle><line x1="21" y1="21" x2="16.65" y2="16.65"></line></svg>
+                                                <svg class="w-5 h-5" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M21 21l-6-6m2-5a7 7 0 11-14 0 7 7 0 0114 0z"></path></svg>
                                             @else
-                                                <svg width="20" height="20" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="M2 3h6a4 4 0 0 1 4 4v14a3 3 0 0 0-3-3H2z"></path><path d="M22 3h-6a4 4 0 0 0-4 4v14a3 3 0 0 1 3-3h7z"></path></svg>
+                                                <svg class="w-5 h-5" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M12 6.253v13m0-13C10.832 5.477 9.246 5 7.5 5S4.168 5.477 3 6.253v13C4.168 18.477 5.754 18 7.5 18s3.332.477 4.5 1.253m0-13C13.168 5.477 14.754 5 16.5 5c1.747 0 3.332.477 4.5 1.253v13C19.832 18.477 18.247 18 16.5 18c-1.746 0-3.332.477-4.5 1.253"></path></svg>
                                             @endif
                                         </div>
-                                        <div class="activity-info">
-                                            <div class="activity-name">{{ $history->type }}</div>
-                                        </div>
+                                        <span class="font-bold text-[14px] text-gray-900">{{ $history->type }}</span>
                                     </div>
                                 </td>
-                                <td>
-                                    <div class="datetime-cell">
-                                        <div class="date">{{ \Carbon\Carbon::parse($history->date)->translatedFormat('d F Y') }}</div>
-                                        <div class="time">{{ \Carbon\Carbon::parse($history->date)->format('H:i') }} WIB</div>
+                                <td class="px-8 py-5 whitespace-nowrap">
+                                    <div class="flex flex-col">
+                                        <span class="font-bold text-[14px] text-gray-900 mb-0.5">{{ \Carbon\Carbon::parse($history->date)->translatedFormat('d F Y') }}</span>
+                                        <span class="text-[12px] font-medium text-gray-500">{{ \Carbon\Carbon::parse($history->date)->format('H:i') }} WIB</span>
                                     </div>
                                 </td>
-                                <td>
-                                    <span class="status-badge">{{ $history->status }}</span>
+                                <td class="px-8 py-5 whitespace-nowrap">
+                                    <span class="inline-flex items-center px-3 py-1 bg-emerald-50 text-emerald-600 border border-emerald-100 rounded-lg text-[10px] font-black uppercase tracking-widest">
+                                        {{ $history->status }}
+                                    </span>
                                 </td>
                             </tr>
                         @endforeach
                     </tbody>
                 </table>
-            @endif
-        </div>
-
-        <div style="margin-top: 24px; display: flex; justify-content: flex-end;">
-            <a href="{{ route('journals.index') }}" class="btn-history">
-                <svg viewBox="0 0 24 24"><line x1="19" y1="12" x2="5" y2="12"></line><polyline points="12 19 5 12 12 5"></polyline></svg>
-                Kembali
-            </a>
-        </div>
+            </div>
+        @endif
     </div>
+</div>
 @endsection
