@@ -74,6 +74,17 @@
         font-weight: 500;
     }
 
+    .flash-error {
+        background: #FEF2F2;
+        border: 1px solid #FECACA;
+        color: #DC2626;
+        padding: 16px;
+        border-radius: 12px;
+        margin-bottom: 16px;
+        font-size: 14px;
+        font-weight: 500;
+    }
+
     /* Journal grid */
     .journal-grid {
         display: grid;
@@ -331,6 +342,12 @@
         @if (session('success'))
             <div class="flash-success" role="alert">
                 <p>{{ session('success') }}</p>
+            </div>
+        @endif
+
+        @if (session('error'))
+            <div class="flash-error" role="alert">
+                <p>{{ session('error') }}</p>
             </div>
         @endif
 
