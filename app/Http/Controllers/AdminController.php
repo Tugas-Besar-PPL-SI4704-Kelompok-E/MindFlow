@@ -14,12 +14,32 @@ class AdminController extends Controller
      */
     public function index()
     {
-        $data = [
-            'totalUsers'      => User::where('role', 'user')->count(),
-            'totalArticles'   => 0, // Tabel artikels belum ada modelnya, dummy
-            'totalApplicants' => 0, // Tabel calon_konselors — dummy
-            'totalReports'    => \App\Models\ThreadReport::count() + \App\Models\ReplyReport::count(),
-        ];
+        $totalUsers      = User::where('role', 'user')->count();
+        $totalKonselor   = User::where('role', 'konselor')->count();
+        $totalReports    = \App\Models\ThreadReport::count() + \App\Models\ReplyReport::count();
+        $totalThreads    = \App\Models\Thread::count();
+        $totalSessions   = \App\Models\SesiKonseling::count();
+        $totalJournals   = \App\Models\Journal::count();
+
+        // Pengguna baru per hari (7 hari terakhir)
+        $userGrowth = [];
+        for ($i = 6; $i >= 0; $i--) {
+            $date = now()->subDays($i);
+            $userGrowth[] = [
+                'label' => $date->translatedFormat('D'),
+                'count' => User::whereDate('created_at', $date->toDateString())->count(),
+            ];
+        }
+
+        // Aktivitas terbaru (gabungan thread & sesi terbaru)
+        $recentThreads = \App\Models\Thread::with('user')->latest()->take(5)->get();
+        $recentReports = \App\Models\ThreadReport::with(['thread', 'user'])->latest()->take(5)->get();
+
+        $data = compact(
+            'totalUsers', 'totalKonselor', 'totalReports',
+            'totalThreads', 'totalSessions', 'totalJournals',
+            'userGrowth', 'recentThreads', 'recentReports'
+        );
 
         return view('admin.dashboard', $data);
     }
