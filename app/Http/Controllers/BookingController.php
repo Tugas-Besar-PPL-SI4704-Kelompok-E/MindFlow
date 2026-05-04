@@ -12,7 +12,7 @@ class BookingController extends Controller
     public function store(Request $request) 
     {
         $request->validate([
-            'konselor_id' => 'required|exists:profil_konselors,profil_konselor_id',
+            'konselor_id' => 'required|exists:profil_konselor,profil_konselor_id',
             'jadwal' => 'required',
         ]);
 
