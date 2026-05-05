@@ -10,12 +10,11 @@ use Tests\DuskTestCase;
 
 class JournalTest extends DuskTestCase
 {
+    use DatabaseMigrations;
+
     public function test_user_can_create_a_journal()
     {
-        $user = User::firstOrCreate(
-            ['email' => 'test@example.com'],
-            ['name' => 'Test User', 'password' => bcrypt('password')]
-        );
+        $user = User::factory()->create();
 
         $this->browse(function (Browser $browser) use ($user) {
             $browser->loginAs($user)
@@ -33,8 +32,11 @@ class JournalTest extends DuskTestCase
 
     public function test_user_cannot_create_empty_journal()
     {
-        $this->browse(function (Browser $browser) {
-            $browser->visit('/journals/create')
+        $user = User::factory()->create();
+
+        $this->browse(function (Browser $browser) use ($user) {
+            $browser->loginAs($user)
+                    ->visit('/journals/create')
                     ->pause(500)
                     ->type('content', '')
                     ->press('Simpan Jurnal')
@@ -45,7 +47,7 @@ class JournalTest extends DuskTestCase
 
     public function test_user_can_edit_a_journal()
     {
-        $user = User::first();
+        $user = User::factory()->create();
         $journal = Journal::create([
             'user_id' => $user->id,
             'content' => 'Teks awal jurnal sebelum diubah',
@@ -70,7 +72,7 @@ class JournalTest extends DuskTestCase
 
     public function test_user_can_delete_a_journal()
     {
-        $user = User::first();
+        $user = User::factory()->create();
         $journal = Journal::create([
             'user_id' => $user->id,
             'content' => 'Jurnal sementara untuk dihapus',
@@ -92,10 +94,12 @@ class JournalTest extends DuskTestCase
 
     public function test_user_can_save_stress_trigger_story()
     {
+        $user = User::factory()->create();
         $longText = 'Hari ini saya sangat stres karena revisi yang menumpuk. Kejadian ini dipicu oleh deadline yang sangat mepet. Saya harap ini segera selesai.';
         
-        $this->browse(function (Browser $browser) use ($longText) {
-            $browser->visit('/journals/create')
+        $this->browse(function (Browser $browser) use ($user, $longText) {
+            $browser->loginAs($user)
+                    ->visit('/journals/create')
                     ->pause(500)
                     ->type('content', $longText)
                     ->press('Simpan Jurnal')
@@ -107,8 +111,11 @@ class JournalTest extends DuskTestCase
 
     public function test_user_can_navigate_to_history_page()
     {
-        $this->browse(function (Browser $browser) {
-            $browser->visit('/journals')
+        $user = User::factory()->create();
+
+        $this->browse(function (Browser $browser) use ($user) {
+            $browser->loginAs($user)
+                    ->visit('/journals')
                     ->pause(500)
                     ->clickLink('Lihat History Lengkap')
                     ->pause(1000)
