@@ -22,13 +22,21 @@ class PBI29PemesananKonselorTest extends DuskTestCase
             $konselor = ProfilKonselor::factory()->create();
 
             $browser->loginAs($user)
-                    ->visit("/konseling/{$konselor->profil_konselor_id}");
+                    ->visit("/konseling/{$konselor->profil_konselor_id}")
+                    ->pause(1000);
 
-            $browser->script("document.getElementById('jadwal-picker').value = '2026-05-10 10:00';");
-            $browser->type('deskripsi', 'Topik konsultasi mengenai stres akademik');
+            // Set jadwal value dan dispatch change event agar form mengirim nilainya
+            $browser->script([
+                'document.getElementById("jadwal-picker").value = "2026-05-10 10:00";',
+                'document.getElementById("jadwal-picker").dispatchEvent(new Event("change", { bubbles: true }));'
+            ]);
+            $browser->type('deskripsi', 'Topik konsultasi mengenai stres akademik')
+                    ->pause(500);
 
             $browser->press('Konfirmasi Reservasi')
-                    ->assertSee('Reservasi berhasil dibuat!');
+                    ->pause(500)
+                    ->waitForText('Sesi konsultasi berhasil direservasi. Menunggu konfirmasi.', 10)
+                    ->assertSee('Sesi konsultasi berhasil direservasi. Menunggu konfirmasi.');
             
             $this->assertDatabaseHas('sesi_konselings', [
                 'profil_konselor_id' => $konselor->profil_konselor_id,
