@@ -34,17 +34,22 @@
             @csrf
             @method('PUT')
             
-            <div class="mb-12">
+            <div class="mb-8">
                 <label class="block text-[11px] font-black text-gray-400 uppercase tracking-[0.2em] mb-4 ml-1">Jadwal Konsultasi Baru</label>
                 <div class="relative">
                     <input type="datetime-local" name="jadwal" value="{{ old('jadwal', \Carbon\Carbon::parse($sesi->jadwal)->format('Y-m-d\TH:i')) }}" class="w-full bg-gray-50 border border-gray-200 rounded-[24px] px-6 py-5 focus:outline-none focus:ring-4 focus:ring-[#A881C2]/10 focus:border-[#A881C2] focus:bg-white text-base text-gray-700 font-bold shadow-sm transition-all" required>
                 </div>
             </div>
 
+            <div class="mb-12">
+                <label class="block text-[11px] font-black text-gray-400 uppercase tracking-[0.2em] mb-4 ml-1">Alasan Perubahan (Opsional)</label>
+                <textarea name="reason" rows="4" class="w-full bg-gray-50 border border-gray-200 rounded-[24px] px-6 py-5 focus:outline-none focus:ring-4 focus:ring-[#A881C2]/10 focus:border-[#A881C2] focus:bg-white text-base text-gray-700 font-bold shadow-sm transition-all" placeholder="Jelaskan singkat alasan Anda ingin mengubah jadwal">{{ old('reason') }}</textarea>
+            </div>
+
             <div class="flex flex-col sm:flex-row gap-4">
                 <button type="submit" class="flex-[2] bg-[#A881C2] hover:bg-[#8A64A4] text-white px-8 py-5 rounded-[24px] font-extrabold shadow-xl shadow-purple-100 transition-all duration-300 flex items-center justify-center gap-3 active:scale-[0.98] text-base">
                     <svg class="w-6 h-6" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2.5" d="M5 13l4 4L19 7"></path></svg>
-                    Simpan Perubahan
+                    Kirim Pengajuan
                 </button>
                 <a href="{{ route('konseling.show', $sesi->profil_konselor_id) }}" class="flex-1 px-8 py-5 border-2 border-gray-100 text-gray-500 hover:bg-gray-50 hover:text-gray-700 hover:border-gray-200 rounded-[24px] font-bold transition-all duration-300 text-center text-base">
                     Batal

@@ -1,0 +1,27 @@
+﻿Warning: TTY mode is not supported on Windows platform.
+
+  [39;41;1m FAIL [39;49;22m[39m Tests\Browser\ExampleTest[39m
+  [31;1mΓ¿»[39;22m[90m [39m[90mbasic example[39m[90m                                                                                               [39m [90m6.42s[39m  
+  [31mΓöÇΓöÇΓöÇΓöÇΓöÇΓöÇΓöÇΓöÇΓöÇΓöÇΓöÇΓöÇΓöÇΓöÇΓöÇΓöÇΓöÇΓöÇΓöÇΓöÇΓöÇΓöÇΓöÇΓöÇΓöÇΓöÇΓöÇΓöÇΓöÇΓöÇΓöÇΓöÇΓöÇΓöÇΓöÇΓöÇΓöÇΓöÇΓöÇΓöÇΓöÇΓöÇΓöÇΓöÇΓöÇΓöÇΓöÇΓöÇΓöÇΓöÇΓöÇΓöÇΓöÇΓöÇΓöÇΓöÇΓöÇΓöÇΓöÇΓöÇΓöÇΓöÇΓöÇΓöÇΓöÇΓöÇΓöÇΓöÇΓöÇΓöÇΓöÇΓöÇΓöÇΓöÇΓöÇΓöÇΓöÇΓöÇΓöÇΓöÇΓöÇΓöÇΓöÇΓöÇΓöÇΓöÇΓöÇΓöÇΓöÇΓöÇΓöÇΓöÇΓöÇΓöÇΓöÇΓöÇΓöÇΓöÇΓöÇΓöÇΓöÇΓöÇΓöÇΓöÇΓöÇΓöÇΓöÇΓöÇΓöÇΓöÇΓöÇΓöÇΓöÇΓöÇΓöÇΓöÇ[39m  
+  [41;1m FAILED [49;22m [1mTests\Browser\ExampleTest[22m [90m>[39m basic example                                      [41;1m SessionNotCreatedException [49;22m  
+[39;1m  session not created: This version of ChromeDriver only supports Chrome version 148
+Current browser version is 147.0.7727.102 with binary path C:\Program Files\Google\Chrome\Application\chrome.exe[39;22m
+
+  at [32mvendor\php-webdriver\webdriver\lib\Exception\WebDriverException.php[39m:[32m130[39m
+    126Γûò                     throw new NoSuchShadowRootException($message, $results);
+    127Γûò                 case 'script timeout':
+    128Γûò                     throw new ScriptTimeoutException($message, $results);
+    129Γûò                 case 'session not created':
+  Γ₧£ 130Γûò                     throw new SessionNotCreatedException($message, $results);
+    131Γûò                 case 'stale element reference':
+    132Γûò                     throw new StaleElementReferenceException($message, $results);
+    133Γûò                 case 'detached shadow root':
+    134Γûò                     throw new DetachedShadowRootException($message, $results);
+
+  [33m1   [39m[39;1mvendor\php-webdriver\webdriver\lib\Exception\WebDriverException.php[39;22m:[39;1m130[39;22m
+  [33m2   [39m[39;1mvendor\php-webdriver\webdriver\lib\Remote\HttpCommandExecutor.php[39;22m:[39;1m361[39;22m
+
+
+  [90mTests:[39m    [31;1m1 failed[39;22m[90m (0 assertions)[39m
+  [90mDuration:[39m [39m7.62s[39m
+
