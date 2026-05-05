@@ -20,6 +20,7 @@ class SesiKonselingFactory extends Factory
             'user_id' => $user->id,
             'profil_konselor_id' => $konselor->profil_konselor_id,
             'jadwal' => $this->faker->dateTimeBetween('+1 week', '+1 month')->format('Y-m-d H:i:s'),
+            'deskripsi' => $this->faker->sentence(6),
             'status' => 'pending'
         ];
     }

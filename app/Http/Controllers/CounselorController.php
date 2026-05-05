@@ -70,27 +70,42 @@ class CounselorController extends Controller
     {
         $sesi = SesiKonseling::findOrFail($id);
         
-        // Ensure the session belongs to the logged in counselor
         if ($sesi->profil_konselor_id !== Auth::user()->profilKonselor->profil_konselor_id) {
             abort(403);
         }
 
-        $sesi->update(['status' => 'confirmed']);
+        if ($sesi->status === 'change_requested' && $sesi->requested_jadwal) {
+            $sesi->update([
+                'jadwal' => $sesi->requested_jadwal,
+                'requested_jadwal' => null,
+                'request_reason' => null,
+                'status' => 'confirmed'
+            ]);
+        } else {
+            $sesi->update(['status' => 'confirmed']);
+        }
 
-        return redirect()->back()->with('success', 'Jadwal sesi berhasil diterima.');
+        return redirect()->back()->with('success', 'Perubahan jadwal berhasil dikonfirmasi.');
     }
 
     public function rejectSession($id)
     {
         $sesi = SesiKonseling::findOrFail($id);
         
-        // Ensure the session belongs to the logged in counselor
         if ($sesi->profil_konselor_id !== Auth::user()->profilKonselor->profil_konselor_id) {
             abort(403);
         }
 
-        $sesi->update(['status' => 'cancelled']);
+        if ($sesi->status === 'change_requested') {
+            $sesi->update([
+                'requested_jadwal' => null,
+                'request_reason' => null,
+                'status' => 'rejected'
+            ]);
+        } else {
+            $sesi->update(['status' => 'cancelled']);
+        }
 
-        return redirect()->back()->with('success', 'Jadwal sesi telah ditolak.');
+        return redirect()->back()->with('success', 'Pengajuan perubahan jadwal telah ditolak.');
     }
 }

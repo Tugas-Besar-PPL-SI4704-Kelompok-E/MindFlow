@@ -9,7 +9,7 @@
     </div>
 
     @if(session('success'))
-        <div class="bg-emerald-50 border border-emerald-100 text-emerald-800 px-6 py-4 rounded-2xl mb-8 flex justify-between items-center shadow-sm animate-in fade-in slide-in-from-top-4 duration-500">
+        <div class="auto-dismiss-notification bg-emerald-50 border border-emerald-100 text-emerald-800 px-6 py-4 rounded-2xl mb-8 flex justify-between items-center shadow-sm animate-in fade-in slide-in-from-top-4 duration-500">
             <div class="flex items-center gap-3">
                 <div class="w-8 h-8 bg-emerald-500 rounded-full flex items-center justify-center text-white shadow-sm shadow-emerald-200">
                     <svg class="w-5 h-5" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="3" d="M5 13l4 4L19 7"></path></svg>
@@ -17,6 +17,20 @@
                 <span class="font-bold text-sm">{{ session('success') }}</span>
             </div>
             <button type="button" class="text-emerald-400 hover:text-emerald-600 transition-colors" onclick="this.parentElement.style.display='none'">
+                <svg class="w-5 h-5" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2.5" d="M6 18L18 6M6 6l12 12"></path></svg>
+            </button>
+        </div>
+    @endif
+
+    @if(session('info'))
+        <div class="auto-dismiss-notification bg-blue-50 border border-blue-100 text-blue-800 px-6 py-4 rounded-2xl mb-8 flex justify-between items-center shadow-sm animate-in fade-in slide-in-from-top-4 duration-500">
+            <div class="flex items-center gap-3">
+                <div class="w-8 h-8 bg-blue-500 rounded-full flex items-center justify-center text-white shadow-sm shadow-blue-200">
+                    <svg class="w-5 h-5" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="3" d="M13 16h-1v-4h-1m1-4h.01M12 19a7 7 0 110-14 7 7 0 010 14z"></path></svg>
+                </div>
+                <span class="font-bold text-sm">{{ session('info') }}</span>
+            </div>
+            <button type="button" class="text-blue-400 hover:text-blue-600 transition-colors" onclick="this.parentElement.style.display='none'">
                 <svg class="w-5 h-5" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2.5" d="M6 18L18 6M6 6l12 12"></path></svg>
             </button>
         </div>
@@ -60,7 +74,7 @@
                                     <span class="w-2 h-2 rounded-full bg-[#A881C2]"></span>
                                     Biografi
                                 </h4>
-                                <p class="text-gray-600 leading-relaxed text-[15px] font-medium">{{ $konselor->biografi }}</p>
+                                <p class="text-gray-600 leading-relaxed text-[15px] font-medium">{{ $konselor->biografi ?: 'Informasi belum tersedia' }}</p>
                             </div>
                             <div>
                                 <h4 class="text-xs font-black text-gray-400 uppercase tracking-[0.2em] mb-3 flex items-center gap-2">
@@ -68,11 +82,15 @@
                                     Keahlian
                                 </h4>
                                 <div class="flex flex-wrap gap-2">
-                                    @foreach(explode(',', $konselor->keahlian) as $skill)
-                                        <span class="px-3 py-1.5 bg-gray-50 text-gray-600 rounded-xl text-xs font-bold border border-gray-100">
-                                            {{ trim($skill) }}
-                                        </span>
-                                    @endforeach
+                                    @if(!empty(trim($konselor->keahlian)))
+                                        @foreach(explode(',', $konselor->keahlian) as $skill)
+                                            <span class="px-3 py-1.5 bg-gray-50 text-gray-600 rounded-xl text-xs font-bold border border-gray-100">
+                                                {{ trim($skill) }}
+                                            </span>
+                                        @endforeach
+                                    @else
+                                        <p class="text-gray-500 italic text-[15px] font-medium">Informasi belum tersedia</p>
+                                    @endif
                                 </div>
                             </div>
                         </div>
@@ -97,16 +115,39 @@
                 <form action="{{ route('booking.store') }}" method="POST" class="flex flex-col h-full">
                     @csrf
                     <input type="hidden" name="konselor_id" value="{{ $konselor->profil_konselor_id }}">
+
+                    @if(session('error'))
+                        <div class="auto-dismiss-notification mb-5 rounded-2xl bg-red-50 border border-red-100 px-4 py-3 text-sm text-red-700">
+                            {{ session('error') }}
+                        </div>
+                    @endif
+
+                    @if($errors->any())
+                        <div class="auto-dismiss-notification mb-5 rounded-2xl bg-red-50 border border-red-100 px-4 py-3 text-sm text-red-700">
+                            <ul class="list-disc list-inside">
+                                @foreach($errors->all() as $error)
+                                    <li>{{ $error }}</li>
+                                @endforeach
+                            </ul>
+                        </div>
+                    @endif
                     
                     <div class="space-y-5">
                         <div class="space-y-2">
                             <label class="block text-[11px] font-black text-gray-400 uppercase tracking-widest ml-1">Jadwal Konsultasi</label>
                             <div class="relative group">
-                                <input type="text" name="jadwal" id="jadwal-picker" class="w-full bg-gray-50 border border-gray-100 rounded-[14px] px-4 py-3 focus:outline-none focus:ring-4 focus:ring-[#A881C2]/10 focus:border-[#A881C2] focus:bg-white text-[13px] text-gray-700 font-bold shadow-sm transition-all cursor-pointer pr-12 placeholder-gray-400" placeholder="Pilih tanggal & waktu" required readonly>
+                                <input type="text" name="jadwal" id="jadwal-picker" value="{{ old('jadwal') }}" class="w-full bg-gray-50 border @error('jadwal') border-red-500 @else border-gray-100 @enderror rounded-[14px] px-4 py-3 focus:outline-none focus:ring-4 focus:ring-[#A881C2]/10 focus:border-[#A881C2] focus:bg-white text-[13px] text-gray-700 font-bold shadow-sm transition-all cursor-pointer pr-12 placeholder-gray-400" placeholder="Pilih tanggal & waktu" required readonly>
                                 <div class="absolute right-4 top-1/2 -translate-y-1/2 text-gray-400 group-hover:text-[#A881C2] transition-colors pointer-events-none">
                                     <svg class="w-4 h-4" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2.5" d="M19 9l-7 7-7-7"></path></svg>
                                 </div>
                             </div>
+                            @error('jadwal')<p class="text-sm text-red-600">{{ $message }}</p>@enderror
+                        </div>
+
+                        <div class="space-y-2">
+                            <label for="deskripsi" class="block text-[11px] font-black text-gray-400 uppercase tracking-widest ml-1">Deskripsi Topik</label>
+                            <textarea name="deskripsi" id="deskripsi" rows="4" class="w-full bg-gray-50 border @error('deskripsi') border-red-500 @else border-gray-100 @enderror rounded-[14px] px-4 py-3 focus:outline-none focus:ring-4 focus:ring-[#A881C2]/10 focus:border-[#A881C2] focus:bg-white text-[13px] text-gray-700 font-bold shadow-sm transition-all" placeholder="Jelaskan topik konsultasi Anda" required>{{ old('deskripsi') }}</textarea>
+                            @error('deskripsi')<p class="text-sm text-red-600">{{ $message }}</p>@enderror
                         </div>
 
                         <button type="submit" class="w-full bg-[#A881C2] hover:bg-[#8A64A4] text-white py-3 rounded-[14px] font-bold text-[14px] shadow-lg shadow-[#A881C2]/20 transition-all duration-300 flex items-center justify-center gap-2 active:scale-[0.98]">
@@ -123,7 +164,7 @@
                 $contohSesi = \App\Models\SesiKonseling::with('profilKonselor')
                     ->where('profil_konselor_id', $konselor->profil_konselor_id)
                     ->where('user_id', Auth::id())
-                    ->whereIn('status', ['pending', 'rescheduled', 'confirmed'])
+                    ->whereIn('status', ['pending', 'rescheduled', 'confirmed', 'change_requested'])
                     ->first();
             @endphp
 
@@ -203,12 +244,16 @@
      <script src="https://npmcdn.com/flatpickr/dist/l10n/id.js"></script>
      <script>
          document.addEventListener('DOMContentLoaded', function() {
+             const bookedSlots = @json($bookedSchedules ?? []);
+
              flatpickr("#jadwal-picker", {
                  enableTime: true,
                  dateFormat: "Y-m-d H:i",
                  minDate: "today",
                  time_24hr: true,
                  locale: "id",
+                 disable: bookedSlots,
+                 defaultDate: "{{ old('jadwal') }}",
                  plugins: [
                      new confirmDatePlugin({
                          confirmText: "OK, Simpan Jadwal",

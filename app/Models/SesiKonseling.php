@@ -15,6 +15,9 @@ class SesiKonseling extends Model
         'user_id',
         'profil_konselor_id',
         'jadwal',
+        'deskripsi',
+        'requested_jadwal',
+        'request_reason',
         'status',
     ];
     public function user()

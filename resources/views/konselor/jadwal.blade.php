@@ -51,8 +51,10 @@
                             @php
                                 $statusColor = match($item->status) {
                                     'pending' => 'bg-amber-100 text-amber-800',
+                                    'change_requested' => 'bg-blue-100 text-blue-800',
                                     'rescheduled' => 'bg-blue-100 text-blue-800',
                                     'confirmed' => 'bg-emerald-100 text-emerald-800',
+                                    'rejected' => 'bg-red-100 text-red-800',
                                     'cancelled' => 'bg-red-100 text-red-800',
                                     default => 'bg-gray-100 text-gray-800'
                                 };
@@ -62,7 +64,7 @@
                             </span>
                         </td>
                         <td class="px-6 py-4 whitespace-nowrap text-sm font-medium">
-                            @if(in_array($item->status, ['pending', 'rescheduled']))
+                            @if(in_array($item->status, ['pending', 'change_requested']))
                                 <div class="flex space-x-2">
                                     <form action="{{ route('konselor.jadwal.accept', $item->sesi_konseling_id) }}" method="POST">
                                         @csrf

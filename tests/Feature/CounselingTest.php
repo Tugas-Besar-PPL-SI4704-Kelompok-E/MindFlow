@@ -56,9 +56,10 @@ class CounselingTest extends TestCase
         $user = User::factory()->create();
         $konselor = ProfilKonselor::factory()->create();
 
-        $response = $this->post(route('booking.store'), [
+        $response = $this->actingAs($user)->post(route('booking.store'), [
             'konselor_id' => $konselor->profil_konselor_id,
-            'jadwal' => '2026-05-10 10:00:00'
+            'jadwal' => '2026-05-10 10:00:00',
+            'deskripsi' => 'Diskusi topik stres akademik',
         ]);
 
         $response->assertRedirect();
@@ -74,11 +75,13 @@ class CounselingTest extends TestCase
      */
     public function test_pbi_30_menampilkan_notifikasi_sukses_setelah_reservasi()
     {
+        $user = User::factory()->create();
         $konselor = ProfilKonselor::factory()->create();
 
-        $response = $this->post(route('booking.store'), [
+        $response = $this->actingAs($user)->post(route('booking.store'), [
             'konselor_id' => $konselor->profil_konselor_id,
-            'jadwal' => '2026-05-10 10:00:00'
+            'jadwal' => '2026-05-10 10:00:00',
+            'deskripsi' => 'Diskusi topik stres akademik',
         ]);
 
         $response->assertSessionHas('success');
@@ -89,6 +92,7 @@ class CounselingTest extends TestCase
      */
     public function test_pbi_30_menampilkan_notifikasi_info_setelah_perubahan_jadwal()
     {
+        $user = User::factory()->create();
         $konselor = ProfilKonselor::factory()->create();
         $sesi = SesiKonseling::factory()->create([
             'profil_konselor_id' => $konselor->profil_konselor_id,
@@ -96,11 +100,11 @@ class CounselingTest extends TestCase
             'status' => 'pending'
         ]);
 
-        $response = $this->put(route('booking.update', $sesi->sesi_konseling_id), [
+        $response = $this->actingAs($user)->put(route('booking.update', $sesi->sesi_konseling_id), [
             'jadwal' => '2026-05-11 14:00:00'
         ]);
 
-        $response->assertSessionHas('info');
+        $response->assertSessionHas('success');
     }
 
     /**
@@ -108,13 +112,14 @@ class CounselingTest extends TestCase
      */
     public function test_pbi_30_menampilkan_notifikasi_error_setelah_pembatalan()
     {
+        $user = User::factory()->create();
         $konselor = ProfilKonselor::factory()->create();
         $sesi = SesiKonseling::factory()->create([
             'profil_konselor_id' => $konselor->profil_konselor_id,
             'status' => 'pending'
         ]);
 
-        $response = $this->delete(route('booking.cancel', $sesi->sesi_konseling_id));
+        $response = $this->actingAs($user)->delete(route('booking.cancel', $sesi->sesi_konseling_id));
 
         $response->assertSessionHas('error');
     }
@@ -124,6 +129,7 @@ class CounselingTest extends TestCase
      */
     public function test_pbi_31_memperbarui_jadwal_sesi_konseling_di_database()
     {
+        $user = User::factory()->create();
         $konselor = ProfilKonselor::factory()->create();
         $sesi = SesiKonseling::factory()->create([
             'profil_konselor_id' => $konselor->profil_konselor_id,
@@ -131,15 +137,15 @@ class CounselingTest extends TestCase
             'status' => 'pending'
         ]);
 
-        $response = $this->put(route('booking.update', $sesi->sesi_konseling_id), [
+        $response = $this->actingAs($user)->put(route('booking.update', $sesi->sesi_konseling_id), [
             'jadwal' => '2026-05-11 14:00:00'
         ]);
 
         $response->assertRedirect();
         $this->assertDatabaseHas('sesi_konselings', [
             'sesi_konseling_id' => $sesi->sesi_konseling_id,
-            'jadwal' => '2026-05-11 14:00:00',
-            'status' => 'rescheduled'
+            'requested_jadwal' => '2026-05-11 14:00:00',
+            'status' => 'change_requested'
         ]);
     }
 
@@ -148,13 +154,14 @@ class CounselingTest extends TestCase
      */
     public function test_pbi_31_membatalkan_sesi_konseling_dengan_status_cancelled()
     {
+        $user = User::factory()->create();
         $konselor = ProfilKonselor::factory()->create();
         $sesi = SesiKonseling::factory()->create([
             'profil_konselor_id' => $konselor->profil_konselor_id,
             'status' => 'pending'
         ]);
 
-        $response = $this->delete(route('booking.cancel', $sesi->sesi_konseling_id));
+        $response = $this->actingAs($user)->delete(route('booking.cancel', $sesi->sesi_konseling_id));
 
         $response->assertRedirect();
         $this->assertDatabaseHas('sesi_konselings', [

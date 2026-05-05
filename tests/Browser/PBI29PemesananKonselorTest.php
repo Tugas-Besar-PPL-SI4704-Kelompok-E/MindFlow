@@ -22,9 +22,11 @@ class PBI29PemesananKonselorTest extends DuskTestCase
             $konselor = ProfilKonselor::factory()->create();
 
             $browser->loginAs($user)
-                    ->visit("/konseling/{$konselor->profil_konselor_id}")
-                    ->script("document.getElementById('jadwal-picker').value = '2026-05-10 10:00';");
-            
+                    ->visit("/konseling/{$konselor->profil_konselor_id}");
+
+            $browser->script("document.getElementById('jadwal-picker').value = '2026-05-10 10:00';");
+            $browser->type('deskripsi', 'Topik konsultasi mengenai stres akademik');
+
             $browser->press('Konfirmasi Reservasi')
                     ->assertSee('Reservasi berhasil dibuat!');
             

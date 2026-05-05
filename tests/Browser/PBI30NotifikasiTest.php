@@ -35,22 +35,23 @@ class PBI30NotifikasiTest extends DuskTestCase
                     ->pause(1000) // Wait untuk page load
                     ->screenshot('pre-condition');
 
-            // Steps: Set date value menggunakan JavaScript
+            // Steps: Set date value dan deskripsi pesan
             $browser->script([
-                'document.getElementById("jadwal-picker").value = "05/10/2026 10:00";',
+                'document.getElementById("jadwal-picker").value = "2026-05-10 10:00";',
                 'document.getElementById("jadwal-picker").dispatchEvent(new Event("change", { bubbles: true }));'
             ]);
-            
-            $browser->pause(500)
+            $browser->type('deskripsi', 'Topik konsultasi mengenai stres akademik')
+                    ->pause(500)
                     ->screenshot('step-1');
 
             // Submit form
             $browser->press('Konfirmasi Reservasi')
                     ->pause(500)
+                    ->waitForText('Sesi konsultasi berhasil direservasi. Menunggu konfirmasi.', 10)
                     ->screenshot('step-2');
 
             // Expected Result: Notifikasi sukses muncul
-            $browser->assertSee('Reservasi berhasil dibuat! Menunggu konfirmasi.')
+            $browser->assertSee('Sesi konsultasi berhasil direservasi. Menunggu konfirmasi.')
                     ->screenshot('result');
         });
     }
@@ -89,12 +90,13 @@ class PBI30NotifikasiTest extends DuskTestCase
                     ->screenshot('step-1');
 
             // Submit form
-            $browser->press('Simpan Perubahan')
+            $browser->press('Kirim Pengajuan')
                     ->pause(500)
+                    ->waitForText('Pengajuan perubahan jadwal berhasil dikirim! Menunggu konfirmasi konselor.', 10)
                     ->screenshot('step-2');
 
             // Expected Result: Notifikasi perubahan jadwal muncul
-            $browser->assertSee('Jadwal sesi telah berhasil diubah!')
+            $browser->assertSee('Pengajuan perubahan jadwal berhasil dikirim! Menunggu konfirmasi konselor.')
                     ->screenshot('result');
         });
     }
@@ -129,10 +131,12 @@ class PBI30NotifikasiTest extends DuskTestCase
             // Steps: Klik button batalkan sesi dan confirm dialog
             $browser->press('Batalkan Sesi')
                     ->acceptDialog()
+                    ->pause(500)
+                    ->waitForText('Sesi konsultasi Anda telah dibatalkan.', 10)
                     ->screenshot('step-1');
 
             // Expected Result: Notifikasi pembatalan muncul
-            $browser->assertSee('Reservasi telah dibatalkan.')
+            $browser->assertSee('Sesi konsultasi Anda telah dibatalkan.')
                     ->screenshot('result');
         });
     }

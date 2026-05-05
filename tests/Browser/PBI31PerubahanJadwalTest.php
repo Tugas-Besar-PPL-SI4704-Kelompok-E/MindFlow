@@ -30,15 +30,20 @@ class PBI31PerubahanJadwalTest extends DuskTestCase
 
             $browser->loginAs($user)
                     ->visit("/booking/edit/{$sesi->sesi_konseling_id}")
-                    ->waitFor('input[name="jadwal"]', 5)
-                    ->type('input[name="jadwal"]', '2026-05-11T14:00')
-                    ->press('Simpan Perubahan')
+                    ->waitFor('input[name="jadwal"]', 5);
+
+            $browser->script([
+                'document.querySelector("input[name=\"jadwal\"]").value = "2026-05-11T14:00";',
+                'document.querySelector("input[name=\"jadwal\"]").dispatchEvent(new Event("change", { bubbles: true }));'
+            ]);
+
+            $browser->press('Kirim Pengajuan')
                     ->pause(1000); // Wait for form submission
             
             $this->assertDatabaseHas('sesi_konselings', [
                 'sesi_konseling_id' => $sesi->sesi_konseling_id,
-                'jadwal' => '60511-02-20T14:00',
-                'status' => 'rescheduled'
+                'requested_jadwal' => '2026-05-11T14:00',
+                'status' => 'change_requested'
             ]);
         });
     }
