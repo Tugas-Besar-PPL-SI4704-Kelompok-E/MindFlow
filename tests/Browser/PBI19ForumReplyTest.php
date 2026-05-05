@@ -8,8 +8,27 @@ use Illuminate\Foundation\Testing\DatabaseMigrations;
 use Laravel\Dusk\Browser;
 use Tests\DuskTestCase;
 
-class ForumReplyAnonimTest extends DuskTestCase
+class PBI19ForumReplyTest extends DuskTestCase
 {
+    /**
+     * Pastikan akun dummy selalu ada sebelum test dijalankan.
+     */
+    protected function setUp(): void
+    {
+        parent::setUp();
+
+        User::firstOrCreate(
+            ['email' => 'asep@example.com'],
+            [
+                'nama_asli'    => 'Asep',
+                'nama_samaran' => 'Asep',
+                'password'     => \Illuminate\Support\Facades\Hash::make('password'),
+                'role'         => 'user',
+                'status'       => 'approved',
+            ]
+        );
+    }
+
     /**
      * Test Komentar/Reply Forum (Positif - Anonim)
      */
@@ -19,7 +38,7 @@ class ForumReplyAnonimTest extends DuskTestCase
             // Pastikan ada minimal 1 thread untuk direply
             $thread = Thread::first();
             if (!$thread) {
-                $user = User::where('email', 'apis@gmail.com')->first();
+                $user = User::where('email', 'asep@example.com')->first();
                 $thread = Thread::create([
                     'user_id' => $user->id,
                     'content' => 'Thread untuk test reply',
@@ -29,8 +48,8 @@ class ForumReplyAnonimTest extends DuskTestCase
 
             // Login terlebih dahulu sebagai user anonim
             $browser->visit('/login')
-                    ->type('email', 'apis@gmail.com')
-                    ->type('password', '12345678')
+                    ->type('email', 'asep@example.com')
+                    ->type('password', 'password')
                     ->press('Masuk')
                     ->pause(2000)
                     
@@ -40,14 +59,14 @@ class ForumReplyAnonimTest extends DuskTestCase
                     
                     // Isi input komentar/reply
                     ->with('.pt-6 form', function ($form) {
-                        $form->type('content', 'hi')
+                        $form->type('content', 'Thread untuk test reply')
                              ->press('Balas');
                     })
                     ->pause(2000) // Tunggu proses selesai
                     
                     // Ekspektasi: Muncul komentar baru di halaman thread
                     ->assertPathIs('/forum/' . $thread->id)
-                    ->assertSee('hi');
+                    ->assertSee('Thread untuk test reply');
         });
     }
 
@@ -60,8 +79,8 @@ class ForumReplyAnonimTest extends DuskTestCase
             $thread = Thread::first();
 
             $browser->visit('/login')
-                    ->type('email', 'apis@gmail.com')
-                    ->type('password', '12345678')
+                    ->type('email', 'asep@example.com')
+                    ->type('password', 'password')
                     ->press('Masuk')
                     ->pause(2000)
 

@@ -6,7 +6,7 @@ use Illuminate\Foundation\Testing\DatabaseMigrations;
 use Laravel\Dusk\Browser;
 use Tests\DuskTestCase;
 
-class ForumDokterTest extends DuskTestCase
+class PBI18ForumDokterTest extends DuskTestCase
 {
     /**
      * Test PBI-18: Posting Forum (Positif - Dokter/Konselor)

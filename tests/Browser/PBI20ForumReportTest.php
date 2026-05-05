@@ -8,8 +8,40 @@ use Illuminate\Foundation\Testing\DatabaseMigrations;
 use Laravel\Dusk\Browser;
 use Tests\DuskTestCase;
 
-class ForumReportAnonimTest extends DuskTestCase
+class PBI20ForumReportTest extends DuskTestCase
 {
+    /**
+     * Pastikan akun dummy selalu ada sebelum test dijalankan.
+     * Aman dijalankan di device manapun — tidak akan duplikat karena pakai firstOrCreate.
+     */
+    protected function setUp(): void
+    {
+        parent::setUp();
+
+        User::firstOrCreate(
+            ['email' => 'asep@example.com'],
+            [
+                'nama_asli'    => 'Asep',
+                'nama_samaran' => 'Asep',
+                'password'     => \Illuminate\Support\Facades\Hash::make('password'),
+                'role'         => 'user',
+                'status'       => 'approved',
+            ]
+        );
+
+        // Pastikan akun Konselor juga ada untuk thread test
+        User::firstOrCreate(
+            ['email' => 'rania@example.com'],
+            [
+                'nama_asli'    => 'Rania',
+                'nama_samaran' => 'Rania',
+                'password'     => \Illuminate\Support\Facades\Hash::make('password'),
+                'role'         => 'konselor',
+                'status'       => 'approved',
+            ]
+        );
+    }
+
     /**
      * Test Laporan Postingan Forum (Positif - Anonim)
      */
@@ -30,8 +62,8 @@ class ForumReportAnonimTest extends DuskTestCase
 
             // Login sebagai user anonim
             $browser->visit('/login')
-                    ->type('email', 'apis@gmail.com')
-                    ->type('password', '12345678')
+                    ->type('email', 'asep@example.com')
+                    ->type('password', 'password')
                     ->press('Masuk')
                     ->pause(2000)
                     
@@ -67,8 +99,8 @@ class ForumReportAnonimTest extends DuskTestCase
             $thread = Thread::where('user_id', $konselor->id)->first();
 
             $browser->visit('/login')
-                    ->type('email', 'apis@gmail.com')
-                    ->type('password', '12345678')
+                    ->type('email', 'asep@example.com')
+                    ->type('password', 'password')
                     ->press('Masuk')
                     ->pause(2000)
 
