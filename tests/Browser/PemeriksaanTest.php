@@ -10,7 +10,7 @@ class PemeriksaanTest extends DuskTestCase
 {
     public function testMendalam1(): void
     {
-        $user = User::first();
+        $user = User::where('email', 'asep@example.com')->first();
 
         $this->browse(function (Browser $browser) use ($user) {
             $browser->loginAs($user)
@@ -41,7 +41,7 @@ class PemeriksaanTest extends DuskTestCase
 
     public function testMendalam2(): void
     {
-        $user = User::first();
+        $user = User::where('email', 'asep@example.com')->first();
 
         $this->browse(function (Browser $browser) use ($user) {
             $browser->loginAs($user)
@@ -67,7 +67,7 @@ class PemeriksaanTest extends DuskTestCase
 
     public function testOpenQuestion1(): void
     {
-        $user = User::first();
+        $user = User::where('email', 'asep@example.com')->first();
 
         $this->browse(function (Browser $browser) use ($user) {
             $browser->loginAs($user)
@@ -100,7 +100,7 @@ class PemeriksaanTest extends DuskTestCase
 
     public function testOpenQuestion2(): void
     {
-        $user = User::first();
+        $user = User::where('email', 'asep@example.com')->first();
 
         $this->browse(function (Browser $browser) use ($user) {
             $browser->loginAs($user)
@@ -132,7 +132,7 @@ class PemeriksaanTest extends DuskTestCase
 
     public function testSingkat1(): void
     {
-        $user = User::first();
+        $user = User::where('email', 'asep@example.com')->first();
 
         $this->browse(function (Browser $browser) use ($user) {
             $browser->loginAs($user)
@@ -158,7 +158,7 @@ class PemeriksaanTest extends DuskTestCase
 
     public function testSingkat2(): void
     {
-        $user = User::first();
+        $user = User::where('email', 'asep@example.com')->first();
 
         $this->browse(function (Browser $browser) use ($user) {
             $browser->loginAs($user)
@@ -181,7 +181,7 @@ class PemeriksaanTest extends DuskTestCase
 
     public function testPoin1(): void
     {
-        $user = User::first();
+        $user = User::where('email', 'asep@example.com')->first();
 
         $this->browse(function (Browser $browser) use ($user) {
             $browser->loginAs($user)
@@ -208,7 +208,7 @@ class PemeriksaanTest extends DuskTestCase
 
     public function testPoin2(): void
     {
-        $user = User::first();
+        $user = User::where('email', 'asep@example.com')->first();
 
         $this->browse(function (Browser $browser) use ($user) {
             $browser->loginAs($user)
