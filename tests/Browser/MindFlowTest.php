@@ -13,16 +13,13 @@ class MindFlowTest extends DuskTestCase
     use DatabaseMigrations;
 
     /**
-     * Helper untuk login manual agar sesi benar-benar terbentuk di browser
+     * Helper untuk login — menggunakan loginAs agar session langsung terbentuk
+     * tanpa bergantung pada form browser (menghindari stale session issue).
      */
     protected function loginUser(Browser $browser, User $user, string $password = 'password123')
     {
-        return $browser->visit('/login')
-                       ->waitFor('#email')
-                       ->type('#email', $user->email)
-                       ->type('#password', $password)
-                       ->press('Masuk')
-                       ->pause(1000)
+        return $browser->loginAs($user)
+                       ->visit('/home')
                        ->assertPathIs('/home');
     }
 
@@ -212,13 +209,8 @@ class MindFlowTest extends DuskTestCase
         ]);
 
         $this->browse(function (Browser $browser) use ($user) {
-            $browser->logout()
-                    ->visit('/login')
-                    ->waitFor('#email')
-                    ->type('#email', $user->email)
-                    ->type('#password', 'password123')
-                    ->press('Masuk')
-                    ->pause(1000)
+            $browser->loginAs($user)
+                    ->visit('/home')
                     ->assertPathIs('/home')
                     ->click('#profileBtn')
                     ->waitFor('#btn-logout', 5)
@@ -237,12 +229,8 @@ class MindFlowTest extends DuskTestCase
         ]);
 
         $this->browse(function (Browser $browser) use ($user) {
-            $browser->logout()
-                    ->visit('/login')
-                    ->type('#email', $user->email)
-                    ->type('#password', 'password123')
-                    ->press('Masuk')
-                    ->pause(1000)
+            $browser->loginAs($user)
+                    ->visit('/home')
                     ->assertPathIs('/home')
                     ->click('#profileBtn')
                     ->waitFor('#btn-logout', 5)

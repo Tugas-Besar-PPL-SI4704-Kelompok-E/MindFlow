@@ -3,11 +3,31 @@
 namespace Tests\Browser;
 
 use App\Models\User;
+use Illuminate\Foundation\Testing\DatabaseMigrations;
+use Illuminate\Support\Facades\Hash;
 use Laravel\Dusk\Browser;
 use Tests\DuskTestCase;
 
 class PemeriksaanTest extends DuskTestCase
 {
+    use DatabaseMigrations;
+
+    protected function setUp(): void
+    {
+        parent::setUp();
+
+        User::firstOrCreate(
+            ['email' => 'asep@example.com'],
+            [
+                'nama_asli'    => 'Asep',
+                'nama_samaran' => 'Asep',
+                'password'     => Hash::make('password'),
+                'role'         => 'user',
+                'status'       => 'approved',
+            ]
+        );
+    }
+
     public function testMendalam1(): void
     {
         $user = User::where('email', 'asep@example.com')->first();

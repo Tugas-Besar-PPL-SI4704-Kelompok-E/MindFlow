@@ -8,6 +8,8 @@ use Tests\DuskTestCase;
 
 class LandingTest extends DuskTestCase
 {
+    use DatabaseMigrations;
+
    /**
      * TC.Land.001: Menguji navigasi menu utama
      */
@@ -15,7 +17,9 @@ class LandingTest extends DuskTestCase
     {
         $this->browse(function (Browser $browser) {
             $browser->visit('/')
-                    ->clickLink('Fitur') 
+                    ->waitFor('.navbar', 5)
+                    ->click('a[href="#features"]')
+                    ->pause(500)
                     ->assertSee('Semua yang Anda Butuhkan');
         });
     }
@@ -27,8 +31,9 @@ class LandingTest extends DuskTestCase
     {
         $this->browse(function (Browser $browser) {
             $browser->visit('/')
-                    ->clickLink('Masuk') 
-                    ->assertPathIs('/login'); 
+                    ->waitFor('.navbar', 5)
+                    ->click('.btn-login')
+                    ->assertPathIs('/login');
         });
     }
 
@@ -39,8 +44,9 @@ class LandingTest extends DuskTestCase
     {
         $this->browse(function (Browser $browser) {
             $browser->visit('/')
-                    ->clickLink('Daftar Gratis') 
-                    ->assertPathIs('/register'); 
+                    ->waitFor('.navbar', 5)
+                    ->click('.btn-signup')
+                    ->assertPathIs('/register');
         });
     }
 
@@ -51,8 +57,9 @@ class LandingTest extends DuskTestCase
     {
         $this->browse(function (Browser $browser) {
             $browser->visit('/')
-                    ->clickLink('Cek Kesehatan Mental Gratis') 
-                    ->assertPathIs('/mood-tracker/mendalam'); 
+                    ->waitFor('.hero-actions', 5)
+                    ->click('.btn-hero-accent')
+                    ->assertPathIs('/mood-tracker/mendalam');
         });
     }
 }

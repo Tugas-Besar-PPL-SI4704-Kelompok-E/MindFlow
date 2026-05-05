@@ -2,67 +2,62 @@
 
 namespace Tests\Browser;
 
+use App\Models\User;
 use Illuminate\Foundation\Testing\DatabaseMigrations;
+use Illuminate\Support\Facades\Hash;
 use Laravel\Dusk\Browser;
 use Tests\DuskTestCase;
 
 class PBI18ForumAdminTest extends DuskTestCase
 {
-    /**
-     * Test PBI-18: Posting Forum (Positif - Admin)
-     */
+    use DatabaseMigrations;
+
+    protected function setUp(): void
+    {
+        parent::setUp();
+
+        User::firstOrCreate(
+            ['email' => 'admin@mindflow.id'],
+            [
+                'nama_asli'    => 'Admin MindFlow',
+                'nama_samaran' => 'AdminMF',
+                'password'     => Hash::make('admin123'),
+                'role'         => 'admin',
+                'status'       => 'approved',
+            ]
+        );
+    }
+
+    /** Test PBI-18: Posting Forum (Positif - Admin) */
     public function test_posting_forum_positif_admin(): void
     {
-        $this->browse(function (Browser $browser) {
-            // Login terlebih dahulu sebagai admin
-            $browser->visit('/login')
-                    ->type('email', 'admin@mindflow.id')
-                    ->type('password', 'admin123')
-                    ->press('Masuk')
-                    ->pause(2000) 
-                    
-                    // Skenario 1: Buka /forum
+        $user = User::where('email', 'admin@mindflow.id')->first();
+
+        $this->browse(function (Browser $browser) use ($user) {
+            $browser->loginAs($user)
                     ->visit('/forum')
                     ->assertPathIs('/forum')
-                    
-                    // Skenario 2: Isi input content
-                    ->type('content', 'Ini adalah pengumuman test dari admin menggunakan Laravel Dusk pada ' . now()->format('Y-m-d H:i:s'))
-                    
-                    // Skenario 3: Klik tombol Posting
+                    ->type('content', 'Pengumuman test admin via Dusk ' . now()->format('Y-m-d H:i:s'))
                     ->press('Posting')
                     ->pause(2000)
-                    
-                    // Ekspektasi: Path saat ini /forum dan muncul postingan baru dengan label ADMIN
                     ->assertPathIs('/forum')
                     ->assertSee('ADMIN');
         });
     }
 
-    /**
-     * Test PBI-18: Posting Forum (Negatif - Admin)
-     */
+    /** Test PBI-18: Posting Forum (Negatif - Admin) */
     public function test_posting_forum_negatif_admin(): void
     {
-        $this->browse(function (Browser $browser) {
-            $browser->visit('/login')
-                    ->type('email', 'admin@mindflow.id')
-                    ->type('password', 'admin123')
-                    ->press('Masuk')
-                    ->pause(2000)
+        $user = User::where('email', 'admin@mindflow.id')->first();
 
-            // Langkah 1: Buka /forum
+        $this->browse(function (Browser $browser) use ($user) {
+            $browser->loginAs($user)
                     ->visit('/forum')
                     ->assertPathIs('/forum')
-                    
-            // Langkah 2: Kosongkan input content
                     ->clear('content')
-                    
-            // Langkah 3: Klik tombol Posting
                     ->press('Posting')
-                    ->pause(1500);
-                    
-            // Ekspektasi: Postingan tidak terbit, tetap di halaman form
-            $browser->assertPathIs('/forum');
+                    ->pause(1500)
+                    ->assertPathIs('/forum');
         });
     }
 }
