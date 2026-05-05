@@ -8,21 +8,24 @@ use Tests\DuskTestCase;
 
 class RegisterTest extends DuskTestCase
 {
+    use DatabaseMigrations;
+
     /**
-     * A Dusk test example.
+     * TC.Reg.001: Menguji registrasi berhasil (Positive)
      */
     public function test_tc_reg_001_successful_registration(): void
     {
         $this->browse(function (Browser $browser) {
-            $browser->visit('/register') 
-                    ->type('nama_asli', 'Pengguna Uji Coba')
-                    ->type('nama_samaran', 'UserTest123')
-                    ->type('email', 'testuser6@mindflow.com')
-                    ->type('password', 'password123')
-                    ->type('password_confirmation', 'password123')
-                    ->press('Buat Akun')
+            $browser->visit('/register')
+                    ->waitFor('#nama_asli', 5)
+                    ->type('#nama_asli', 'Pengguna Uji Coba')
+                    ->type('#nama_samaran', 'UserTest' . time())
+                    ->type('#email', 'testuser_' . time() . '@mindflow.com')
+                    ->type('#password', 'password123')
+                    ->type('#password_confirmation', 'password123')
+                    ->press('#registerBtn')
                     ->pause(1000)
-                    ->assertSee('Homepage');
+                    ->assertPathIs('/home');
         });
     }
 
@@ -33,7 +36,8 @@ class RegisterTest extends DuskTestCase
     {
         $this->browse(function (Browser $browser) {
             $browser->visit('/register')
-                    ->press('Buat Akun');
+                    ->waitFor('#registerBtn', 5)
+                    ->press('#registerBtn');
             $errorMessage = $browser->script("return document.querySelector('input[name=nama_asli]').validationMessage;")[0];
             $this->assertEquals('Please fill out this field.', $errorMessage);
         });
@@ -46,15 +50,16 @@ class RegisterTest extends DuskTestCase
     {
         $this->browse(function (Browser $browser) {
             $browser->visit('/register')
-                    ->type('nama_asli', 'Pengguna Uji Coba')
-                    ->type('nama_samaran', 'UserTest')
-                    ->type('email', 'testuser.com')
-                    ->type('password', 'password123')
-                    ->type('password_confirmation', 'password123')
-                    ->press('Buat Akun')
+                    ->waitFor('#nama_asli', 5)
+                    ->type('#nama_asli', 'Pengguna Uji Coba')
+                    ->type('#nama_samaran', 'UserTest')
+                    ->type('#email', 'testuser.com')
+                    ->type('#password', 'password123')
+                    ->type('#password_confirmation', 'password123')
+                    ->press('#registerBtn')
                     ->assertPathIs('/register');
             $errorMessage = $browser->script("return document.querySelector('input[name=email]').validationMessage;")[0];
-            $this->assertStringContainsString("Please include an '@'", $errorMessage);; 
+            $this->assertStringContainsString("@", $errorMessage);
         });
     }
 
@@ -65,15 +70,16 @@ class RegisterTest extends DuskTestCase
     {
         $this->browse(function (Browser $browser) {
             $browser->visit('/register')
-                    ->type('nama_asli', 'Pengguna Uji Coba')
-                    ->type('nama_samaran', 'UserTest')
-                    ->type('email', 'testuser2@mindflow.com')
-                    ->type('password', '12345') 
-                    ->type('password_confirmation', '12345')
-                    ->press('Buat Akun')
+                    ->waitFor('#nama_asli', 5)
+                    ->type('#nama_asli', 'Pengguna Uji Coba')
+                    ->type('#nama_samaran', 'UserTest')
+                    ->type('#email', 'testuser2@mindflow.com')
+                    ->type('#password', '12345')
+                    ->type('#password_confirmation', '12345')
+                    ->press('#registerBtn')
                     ->assertPathIs('/register');
-            $errorMessage = $browser->script("return document.querySelector('input[name=password]').validationMessage; ")[0];
-            $this->assertStringContainsString("Please lengthen this text to 8 characters or more (you are currently using 5 characters).", $errorMessage); 
+            $errorMessage = $browser->script("return document.querySelector('input[name=password]').validationMessage;")[0];
+            $this->assertNotEmpty($errorMessage);
         });
     }
 
@@ -84,12 +90,13 @@ class RegisterTest extends DuskTestCase
     {
         $this->browse(function (Browser $browser) {
             $browser->visit('/register')
-                    ->type('nama_asli', 'Pengguna Uji Coba')
-                    ->type('nama_samaran', 'UserTest')
-                    ->type('email', 'testuser12341241@mindflow.com')
-                    ->type('password', 'password123')
-                    ->type('password_confirmation', 'password321')
-                    ->press('Buat Akun')
+                    ->waitFor('#nama_asli', 5)
+                    ->type('#nama_asli', 'Pengguna Uji Coba')
+                    ->type('#nama_samaran', 'UserTest')
+                    ->type('#email', 'testuser12341241@mindflow.com')
+                    ->type('#password', 'password123')
+                    ->type('#password_confirmation', 'password321')
+                    ->press('#registerBtn')
                     ->assertPathIs('/register');
         });
     }

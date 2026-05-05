@@ -2,23 +2,44 @@
 
 namespace Tests\Browser;
 
+use App\Models\User;
 use Illuminate\Foundation\Testing\DatabaseMigrations;
+use Illuminate\Support\Facades\Hash;
 use Laravel\Dusk\Browser;
 use Tests\DuskTestCase;
 
 class LoginTest extends DuskTestCase
 {
+    use DatabaseMigrations;
+
+    protected function setUp(): void
+    {
+        parent::setUp();
+
+        // Pastikan user test selalu ada di database dusk
+        User::firstOrCreate(
+            ['email' => 'test@example.com'],
+            [
+                'nama_asli'    => 'Test User',
+                'nama_samaran' => 'TestUser123',
+                'password'     => Hash::make('password'),
+                'role'         => 'user',
+                'status'       => 'approved',
+            ]
+        );
+    }
+
     /**
      * TC.Log.001: Menguji fungsionalitas login dengan kredensial valid (Positive)
      */
     public function test_tc_log_001_successful_login(): void
     {
-
         $this->browse(function (Browser $browser) {
             $browser->visit('/login')
-                    ->type('email', 'test123@test.com')
-                    ->type('password', '12345678')
-                    ->press('Masuk')
+                    ->waitFor('#email', 5)
+                    ->type('#email', 'test@example.com')
+                    ->type('#password', 'password')
+                    ->press('#loginBtn')
                     ->pause(1000)
                     ->assertPathIs('/home');
         });
@@ -31,7 +52,8 @@ class LoginTest extends DuskTestCase
     {
         $this->browse(function (Browser $browser) {
             $browser->visit('/login')
-                    ->press('Masuk');
+                    ->waitFor('#loginBtn', 5)
+                    ->press('#loginBtn');
             $errorMessage = $browser->script("return document.querySelector('input[name=email]').validationMessage;")[0];
             $this->assertNotEmpty($errorMessage);
         });
@@ -44,11 +66,12 @@ class LoginTest extends DuskTestCase
     {
         $this->browse(function (Browser $browser) {
             $browser->visit('/login')
-                    ->type('email', 'formatemailsalah') 
-                    ->type('password', 'password123')
-                    ->press('Masuk')
+                    ->waitFor('#email', 5)
+                    ->type('#email', 'formatemailsalah')
+                    ->type('#password', 'password123')
+                    ->press('#loginBtn')
                     ->pause(2000);
-                    
+
             $errorMessage = $browser->script("return document.querySelector('input[name=email]').validationMessage;")[0];
             $this->assertStringContainsString('@', $errorMessage);
         });
@@ -61,12 +84,13 @@ class LoginTest extends DuskTestCase
     {
         $this->browse(function (Browser $browser) {
             $browser->visit('/login')
-                    ->type('email', 'woiwowioiw@test.com')
-                    ->type('password', '12345678')
-                    ->press('Masuk')
+                    ->waitFor('#email', 5)
+                    ->type('#email', 'woiwowioiw@test.com')
+                    ->type('#password', '12345678')
+                    ->press('#loginBtn')
                     ->pause(2000)
                     ->assertPathIs('/login')
-                    ->assertSee('Email atau password yang Anda masukkan salah.'); 
+                    ->assertSee('Email atau password yang Anda masukkan salah.');
         });
     }
 
@@ -77,9 +101,10 @@ class LoginTest extends DuskTestCase
     {
         $this->browse(function (Browser $browser) {
             $browser->visit('/login')
-                    ->type('email', 'test123@test.com')
-                    ->type('password', 'passwordsalah') 
-                    ->press('Masuk')
+                    ->waitFor('#email', 5)
+                    ->type('#email', 'test@example.com')
+                    ->type('#password', 'passwordsalah')
+                    ->press('#loginBtn')
                     ->pause(2000)
                     ->assertPathIs('/login')
                     ->assertSee('Email atau password yang Anda masukkan salah.');

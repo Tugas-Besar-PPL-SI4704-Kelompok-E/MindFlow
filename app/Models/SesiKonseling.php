@@ -2,16 +2,22 @@
 
 namespace App\Models;
 
+use Illuminate\Database\Eloquent\Factories\HasFactory;
 use Illuminate\Database\Eloquent\Model;
 
 class SesiKonseling extends Model
 {
+    use HasFactory;
+
     protected $table = 'sesi_konselings';
     protected $primaryKey = 'sesi_konseling_id';
     protected $fillable = [
         'user_id',
         'profil_konselor_id',
         'jadwal',
+        'deskripsi',
+        'requested_jadwal',
+        'request_reason',
         'status',
     ];
     public function user()
