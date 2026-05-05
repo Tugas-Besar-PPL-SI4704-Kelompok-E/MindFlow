@@ -46,7 +46,7 @@ class BookingController extends Controller
         ]);
 
         return redirect()->route('konseling.show', $sesi->profil_konselor_id)
-            ->with('info', 'Jadwal sesi telah berhasil diubah!');
+            ->with('success', 'Jadwal sesi telah berhasil diubah!');
     }
 
     public function cancel($id)

@@ -123,7 +123,7 @@
                 $contohSesi = \App\Models\SesiKonseling::with('profilKonselor')
                     ->where('profil_konselor_id', $konselor->profil_konselor_id)
                     ->where('user_id', Auth::id())
-                    ->whereIn('status', ['pending', 'rescheduled'])
+                    ->whereIn('status', ['pending', 'rescheduled', 'confirmed'])
                     ->first();
             @endphp
 

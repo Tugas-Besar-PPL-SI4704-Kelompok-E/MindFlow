@@ -18,11 +18,14 @@ class PBI27FilterKonselorTest extends DuskTestCase
     public function test_menampilkan_konselor_berdasarkan_spesialisasi_yang_dipilih()
     {
         $this->browse(function (Browser $browser) {
+            $user = User::factory()->create();
+
             $konselor1 = ProfilKonselor::factory()->create(['spesialisasi' => 'Kesehatan Mental']);
             $konselor2 = ProfilKonselor::factory()->create(['spesialisasi' => 'Konseling Akademik']);
             $konselor3 = ProfilKonselor::factory()->create(['spesialisasi' => 'Karir']);
 
-            $browser->visit('/konseling')
+            $browser->loginAs($user)
+                    ->visit('/konseling')
                     ->assertSee($konselor1->nama)
                     ->assertSee($konselor2->nama)
                     ->assertSee($konselor3->nama)

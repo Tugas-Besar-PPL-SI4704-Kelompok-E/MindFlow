@@ -98,6 +98,10 @@ Route::middleware('auth')->group(function () {
     // Konselor Routes
     Route::prefix('konselor')->name('konselor.')->middleware('role:konselor')->group(function () {
         Route::get('/dashboard', [CounselorController::class, 'index'])->name('dashboard');
+        Route::get('/jadwal', [CounselorController::class, 'jadwal'])->name('jadwal');
+        Route::get('/pasien', [CounselorController::class, 'pasien'])->name('pasien');
+        Route::post('/jadwal/{id}/accept', [CounselorController::class, 'acceptSession'])->name('jadwal.accept');
+        Route::post('/jadwal/{id}/reject', [CounselorController::class, 'rejectSession'])->name('jadwal.reject');
     });
 
     // Journal Routes (PBI 15, 16, 17)

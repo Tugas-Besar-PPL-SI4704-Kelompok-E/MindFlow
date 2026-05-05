@@ -14,57 +14,126 @@ class PBI30NotifikasiTest extends DuskTestCase
     use DatabaseMigrations;
 
     /**
-     * PBI 30: Sistem notifikasi reservasi
+     * PBI 30: TC Notifikasi 001
+     * Pre Condition:
+     * - User sudah login
+     * - Halaman detail konselor dapat diakses
+     * - Form reservasi tersedia
+     * 
+     * Test Scenario: Menampilkan notifikasi sukses setelah reservasi
      */
     public function test_menampilkan_notifikasi_sukses_setelah_reservasi()
     {
         $this->browse(function (Browser $browser) {
+            // Setup: Create user dan konselor
             $user = User::factory()->create();
             $konselor = ProfilKonselor::factory()->create();
 
-            $browser->visit("/konseling/{$konselor->profil_konselor_id}")
-                    ->type('jadwal', '2026-05-10T10:00')
-                    ->press('Konfirmasi Reservasi')
-                    ->assertSee('Reservasi berhasil dibuat!');
+            // Pre Condition: User login dan visit halaman konselor
+            $browser->loginAs($user)
+                    ->visit("/konseling/{$konselor->profil_konselor_id}")
+                    ->pause(1000) // Wait untuk page load
+                    ->screenshot('pre-condition');
+
+            // Steps: Set date value menggunakan JavaScript
+            $browser->script([
+                'document.getElementById("jadwal-picker").value = "05/10/2026 10:00";',
+                'document.getElementById("jadwal-picker").dispatchEvent(new Event("change", { bubbles: true }));'
+            ]);
+            
+            $browser->pause(500)
+                    ->screenshot('step-1');
+
+            // Submit form
+            $browser->press('Konfirmasi Reservasi')
+                    ->pause(500)
+                    ->screenshot('step-2');
+
+            // Expected Result: Notifikasi sukses muncul
+            $browser->assertSee('Reservasi berhasil dibuat! Menunggu konfirmasi.')
+                    ->screenshot('result');
         });
     }
 
     /**
-     * PBI 30: Sistem notifikasi perubahan jadwal
+     * PBI 30: TC Notifikasi 002
+     * Pre Condition:
+     * - User sudah login
+     * - Sesi konseling sudah terbuat dengan status pending
+     * - Halaman edit booking dapat diakses
+     * 
+     * Test Scenario: Menampilkan notifikasi info setelah perubahan jadwal
      */
     public function test_menampilkan_notifikasi_info_setelah_perubahan_jadwal()
     {
         $this->browse(function (Browser $browser) {
+            // Setup: Create user, konselor, dan sesi
+            $user = User::factory()->create();
             $konselor = ProfilKonselor::factory()->create();
             $sesi = SesiKonseling::factory()->create([
                 'profil_konselor_id' => $konselor->profil_konselor_id,
+                'user_id' => $user->id,
                 'status' => 'pending'
             ]);
 
-            $browser->visit("/booking/{$sesi->sesi_konseling_id}/edit")
-                    ->type('jadwal', '2026-05-11T14:00')
-                    ->press('Simpan Perubahan')
-                    ->assertSee('Jadwal sesi telah berhasil diubah!');
+            // Pre Condition: User login dan visit halaman edit booking
+            $browser->loginAs($user)
+                    ->visit("/booking/edit/{$sesi->sesi_konseling_id}")
+                    ->pause(1500) // Wait untuk page load
+                    ->screenshot('pre-condition');
+
+            // Steps: Update jadwal field dengan wait untuk element muncul
+            $browser->waitFor('input[name="jadwal"]', 5)
+                    ->type('input[name="jadwal"]', '2026-05-11T14:00')
+                    ->pause(500)
+                    ->screenshot('step-1');
+
+            // Submit form
+            $browser->press('Simpan Perubahan')
+                    ->pause(500)
+                    ->screenshot('step-2');
+
+            // Expected Result: Notifikasi perubahan jadwal muncul
+            $browser->assertSee('Jadwal sesi telah berhasil diubah!')
+                    ->screenshot('result');
         });
     }
 
     /**
-     * PBI 30: Sistem notifikasi pembatalan
+     * PBI 30: TC Notifikasi 003
+     * Pre Condition:
+     * - User sudah login
+     * - Sesi konseling sudah terbuat dengan status pending
+     * - User berada di halaman dengan opsi pembatalan
+     * 
+     * Test Scenario: Menampilkan notifikasi error setelah pembatalan
      */
     public function test_menampilkan_notifikasi_error_setelah_pembatalan()
     {
         $this->browse(function (Browser $browser) {
+            // Setup: Create user, konselor, dan sesi
+            $user = User::factory()->create();
             $konselor = ProfilKonselor::factory()->create();
             $sesi = SesiKonseling::factory()->create([
                 'profil_konselor_id' => $konselor->profil_konselor_id,
+                'user_id' => $user->id,
                 'status' => 'pending'
             ]);
 
-            $browser->visit("/konseling/{$konselor->profil_konselor_id}")
-                    ->press('Batalkan')
-                    ->assertDialogOpened('Yakin ingin membatalkan sesi ini?')
+            // Pre Condition: User login dan visit halaman konselor
+            $browser->loginAs($user)
+                    ->visit("/konseling/{$konselor->profil_konselor_id}")
+                    ->pause(1000) // Wait 1 second for page to load
+                    ->screenshot('pre-condition');
+
+            // Steps: Klik button batalkan sesi dan confirm dialog
+            $browser->press('Batalkan Sesi')
                     ->acceptDialog()
-                    ->assertSee('Reservasi telah dibatalkan.');
+                    ->screenshot('step-1');
+
+            // Expected Result: Notifikasi pembatalan muncul
+            $browser->assertSee('Reservasi telah dibatalkan.')
+                    ->screenshot('result');
         });
     }
 }

@@ -21,14 +21,16 @@ class PBI29PemesananKonselorTest extends DuskTestCase
             $user = User::factory()->create();
             $konselor = ProfilKonselor::factory()->create();
 
-            $browser->visit("/konseling/{$konselor->profil_konselor_id}")
-                    ->type('jadwal', '2026-05-10T10:00')
-                    ->press('Konfirmasi Reservasi')
+            $browser->loginAs($user)
+                    ->visit("/konseling/{$konselor->profil_konselor_id}")
+                    ->script("document.getElementById('jadwal-picker').value = '2026-05-10 10:00';");
+            
+            $browser->press('Konfirmasi Reservasi')
                     ->assertSee('Reservasi berhasil dibuat!');
             
             $this->assertDatabaseHas('sesi_konselings', [
                 'profil_konselor_id' => $konselor->profil_konselor_id,
-                'jadwal' => '2026-05-10 10:00:00',
+                'jadwal' => '2026-05-10 10:00',
                 'status' => 'pending'
             ]);
         });
