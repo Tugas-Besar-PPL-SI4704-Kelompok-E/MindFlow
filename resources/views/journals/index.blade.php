@@ -2,6 +2,7 @@
 
 @section('title', 'Jurnal Refleksi Mandiri - MindFlow')
 
+
 @section('content')
 <div class="max-w-4xl mx-auto pb-12">
 
@@ -27,6 +28,12 @@
                 Lihat History Lengkap
             </a>
         </div>
+
+        @if (session('error'))
+            <div class="flash-error" role="alert">
+                <p>{{ session('error') }}</p>
+            </div>
+        @endif
 
         @if ($journals->isEmpty())
             <div class="bg-white rounded-[32px] shadow-[0_4px_20px_-4px_rgba(0,0,0,0.03)] border border-gray-100 p-12 flex flex-col items-center justify-center min-h-[300px]">

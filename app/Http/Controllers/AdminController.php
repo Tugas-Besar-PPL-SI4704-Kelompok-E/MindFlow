@@ -136,10 +136,67 @@ class AdminController extends Controller
     }
 
     /**
-     * PBI 39: Pengelolaan kategori spesialisasi konselor.
+     * PBI 39: Pengelolaan kategori spesialisasi konselor — tampilkan data dari database.
      */
     public function spesialisasi()
     {
-        return view('admin.spesialisasi');
+        $spesialisasis = \App\Models\Spesialisasi::orderBy('nama')->get();
+
+        return view('admin.spesialisasi', compact('spesialisasis'));
+    }
+
+    /**
+     * PBI 39: Tambah spesialisasi baru.
+     */
+    public function storeSpesialisasi(Request $request)
+    {
+        $request->validate([
+            'nama' => 'required|string|max:100|unique:spesialisasis,nama',
+        ]);
+
+        \App\Models\Spesialisasi::create(['nama' => $request->nama]);
+
+        return back()->with('success', 'Spesialisasi "' . $request->nama . '" berhasil ditambahkan!');
+    }
+
+    /**
+     * PBI 39: Update nama spesialisasi.
+     */
+    public function updateSpesialisasi(Request $request, $id)
+    {
+        $spesialisasi = \App\Models\Spesialisasi::findOrFail($id);
+
+        $request->validate([
+            'nama' => 'required|string|max:100|unique:spesialisasis,nama,' . $id,
+        ]);
+
+        $spesialisasi->update(['nama' => $request->nama]);
+
+        return back()->with('success', 'Spesialisasi berhasil diperbarui!');
+    }
+
+    /**
+     * PBI 39: Toggle status aktif/nonaktif spesialisasi.
+     */
+    public function toggleSpesialisasi($id)
+    {
+        $spesialisasi = \App\Models\Spesialisasi::findOrFail($id);
+        $spesialisasi->update(['is_active' => !$spesialisasi->is_active]);
+
+        $status = $spesialisasi->is_active ? 'diaktifkan' : 'dinonaktifkan';
+
+        return back()->with('success', 'Spesialisasi "' . $spesialisasi->nama . '" berhasil ' . $status . '!');
+    }
+
+    /**
+     * PBI 39: Hapus spesialisasi.
+     */
+    public function destroySpesialisasi($id)
+    {
+        $spesialisasi = \App\Models\Spesialisasi::findOrFail($id);
+        $nama = $spesialisasi->nama;
+        $spesialisasi->delete();
+
+        return back()->with('success', 'Spesialisasi "' . $nama . '" berhasil dihapus!');
     }
 }

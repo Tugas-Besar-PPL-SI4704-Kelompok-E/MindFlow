@@ -93,6 +93,10 @@ Route::middleware('auth')->group(function () {
         Route::get('/laporan', [AdminController::class, 'laporan'])->name('laporan');
         Route::delete('/forum/{id}/delete', [AdminController::class, 'hapusPostingan'])->name('forum.delete');
         Route::get('/spesialisasi', [AdminController::class, 'spesialisasi'])->name('spesialisasi');
+        Route::post('/spesialisasi', [AdminController::class, 'storeSpesialisasi'])->name('spesialisasi.store');
+        Route::put('/spesialisasi/{id}', [AdminController::class, 'updateSpesialisasi'])->name('spesialisasi.update');
+        Route::post('/spesialisasi/{id}/toggle', [AdminController::class, 'toggleSpesialisasi'])->name('spesialisasi.toggle');
+        Route::delete('/spesialisasi/{id}', [AdminController::class, 'destroySpesialisasi'])->name('spesialisasi.destroy');
     });
 
     // Konselor Routes
