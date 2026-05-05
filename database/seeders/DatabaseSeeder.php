@@ -97,6 +97,7 @@ class DatabaseSeeder extends Seeder
                 'jadwal' => '2026-05-10 10:00:00'
             ],
             [
+                'deskripsi' => 'Sesi konsultasi awal untuk pengenalan masalah dan tujuan terapi.',
                 'status' => 'pending'
             ]
         );
