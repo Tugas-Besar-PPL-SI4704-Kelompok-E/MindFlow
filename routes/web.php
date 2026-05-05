@@ -85,7 +85,7 @@ Route::middleware('auth')->group(function () {
         ->name('mood-tracker.open-question.store');
 
     // Admin Routes
-    Route::prefix('admin')->name('admin.')->group(function () {
+    Route::prefix('admin')->name('admin.')->middleware('role:admin')->group(function () {
         Route::get('/dashboard', [AdminController::class, 'index'])->name('dashboard');
         Route::get('/rekrutmen', [AdminController::class, 'rekrutmen'])->name('rekrutmen');
         Route::post('/rekrutmen/{id}/approve', [AdminController::class, 'approveKonselor'])->name('rekrutmen.approve');
@@ -93,11 +93,19 @@ Route::middleware('auth')->group(function () {
         Route::get('/laporan', [AdminController::class, 'laporan'])->name('laporan');
         Route::delete('/forum/{id}/delete', [AdminController::class, 'hapusPostingan'])->name('forum.delete');
         Route::get('/spesialisasi', [AdminController::class, 'spesialisasi'])->name('spesialisasi');
+        Route::post('/spesialisasi', [AdminController::class, 'storeSpesialisasi'])->name('spesialisasi.store');
+        Route::put('/spesialisasi/{id}', [AdminController::class, 'updateSpesialisasi'])->name('spesialisasi.update');
+        Route::post('/spesialisasi/{id}/toggle', [AdminController::class, 'toggleSpesialisasi'])->name('spesialisasi.toggle');
+        Route::delete('/spesialisasi/{id}', [AdminController::class, 'destroySpesialisasi'])->name('spesialisasi.destroy');
     });
 
     // Konselor Routes
-    Route::prefix('konselor')->name('konselor.')->group(function () {
+    Route::prefix('konselor')->name('konselor.')->middleware('role:konselor')->group(function () {
         Route::get('/dashboard', [CounselorController::class, 'index'])->name('dashboard');
+        Route::get('/jadwal', [CounselorController::class, 'jadwal'])->name('jadwal');
+        Route::get('/pasien', [CounselorController::class, 'pasien'])->name('pasien');
+        Route::post('/jadwal/{id}/accept', [CounselorController::class, 'acceptSession'])->name('jadwal.accept');
+        Route::post('/jadwal/{id}/reject', [CounselorController::class, 'rejectSession'])->name('jadwal.reject');
     });
 
     // Journal Routes (PBI 15, 16, 17)

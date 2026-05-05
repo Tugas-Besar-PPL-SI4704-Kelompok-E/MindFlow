@@ -3,32 +3,23 @@
 namespace Database\Seeders;
 
 use App\Models\User;
+use App\Models\ProfilKonselor;
+use App\Models\SesiKonseling;
 use Illuminate\Database\Console\Seeds\WithoutModelEvents;
 use Illuminate\Database\Seeder;
+use Illuminate\Support\Facades\Hash;
 
 class DatabaseSeeder extends Seeder
 {
-    use WithoutModelEvents;
-
     /**
-     * Seed the application's database.
+     * Run the database seeds.
      */
     public function run(): void
     {
         $this->call([
             AdminSeeder::class,
+            SpesialisasiSeeder::class,
             ProfilKonselorSeeder::class,
         ]);
-
-        // User::factory(10)->create();
-
-        $email = 'test@example.com';
-        if (!User::where('email', $email)->exists()) {
-            User::factory()->create([
-                'nama_asli' => 'Test User',
-                'nama_samaran' => 'tester',
-                'email' => $email,
-            ]);
-        }
     }
 }
