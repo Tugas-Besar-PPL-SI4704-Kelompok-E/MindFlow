@@ -67,12 +67,45 @@ class HistoryController extends Controller
                     'status' => 'Selesai',
                     'sort_date' => $item->updated_at,
                     'icon' => 'book-open',
-                    'color' => 'purple'
+                    'color' => 'purple',
+                    'note' => null,
+                    'sesi_id' => null
                 ];
             });
 
+        // Ambil data Sesi Konseling (PBI 36)
+        $sesiKonselings = \App\Models\SesiKonseling::where('user_id', $userId)
+            ->where('status', 'completed')
+            ->orderBy('updated_at', 'desc')
+            ->get()
+            ->map(function ($item) {
+                return (object)[
+                    'type' => 'Sesi Konseling',
+                    'date' => $item->updated_at,
+                    'status' => 'Selesai',
+                    'sort_date' => $item->updated_at,
+                    'icon' => 'users',
+                    'color' => 'emerald',
+                    'note' => $item->catatan_konselor,
+                    'sesi_id' => $item->sesi_konseling_id
+                ];
+            });
+
+        // Pastikan model lama memiliki key 'note' dan 'sesi_id'
+        $checkInstans = $checkInstans->map(function ($item) {
+            $item->note = null;
+            $item->sesi_id = null;
+            return $item;
+        });
+
+        $checkMendalams = $checkMendalams->map(function ($item) {
+            $item->note = null;
+            $item->sesi_id = null;
+            return $item;
+        });
+
         // Gabungkan semua collection
-        $histories = $checkInstans->concat($checkMendalams)->concat($journals);
+        $histories = $checkInstans->concat($checkMendalams)->concat($journals)->concat($sesiKonselings);
 
         // Urutkan berdasarkan tanggal terbaru (desc)
         $histories = $histories->sortByDesc('sort_date')->values();

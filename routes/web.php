@@ -106,6 +106,7 @@ Route::middleware('auth')->group(function () {
         Route::get('/pasien', [CounselorController::class, 'pasien'])->name('pasien');
         Route::post('/jadwal/{id}/accept', [CounselorController::class, 'acceptSession'])->name('jadwal.accept');
         Route::post('/jadwal/{id}/reject', [CounselorController::class, 'rejectSession'])->name('jadwal.reject');
+        Route::post('/jadwal/{id}/evaluasi', [CounselorController::class, 'submitEvaluasi'])->name('jadwal.evaluasi');
     });
 
     // Journal Routes (PBI 15, 16, 17)

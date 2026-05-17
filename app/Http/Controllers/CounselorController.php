@@ -108,4 +108,24 @@ class CounselorController extends Controller
 
         return redirect()->back()->with('success', 'Pengajuan perubahan jadwal telah ditolak.');
     }
+
+    public function submitEvaluasi(Request $request, $id)
+    {
+        $request->validate([
+            'catatan_konselor' => 'required|string',
+        ]);
+
+        $sesi = SesiKonseling::findOrFail($id);
+        
+        if ($sesi->profil_konselor_id !== Auth::user()->profilKonselor->profil_konselor_id) {
+            abort(403);
+        }
+
+        $sesi->update([
+            'catatan_konselor' => $request->catatan_konselor,
+            'status' => 'completed'
+        ]);
+
+        return redirect()->back()->with('success', 'Catatan evaluasi berhasil disimpan dan sesi telah selesai.');
+    }
 }
