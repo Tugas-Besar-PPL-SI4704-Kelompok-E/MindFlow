@@ -8,14 +8,14 @@ use Illuminate\Foundation\Testing\DatabaseMigrations;
 use Laravel\Dusk\Browser;
 use Tests\DuskTestCase;
 
-class PBI29PemesananKonselorTest extends DuskTestCase
+class PBI59MemilihTipeKonselingTest extends DuskTestCase
 {
     use DatabaseMigrations;
 
     /**
-     * PBI 29: Logika dan alur pemesanan konselor
+     * PBI 59: Memilih tipe konseling (Video Call, Voice Call, Chat)
      */
-    public function test_menyimpan_data_pemesanan_sesi_konseling_ke_database()
+    public function test_memilih_media_konseling_chat()
     {
         $this->browse(function (Browser $browser) {
             $user = User::factory()->create();
@@ -27,11 +27,13 @@ class PBI29PemesananKonselorTest extends DuskTestCase
 
             // Set jadwal value dan dispatch change event agar form mengirim nilainya
             $browser->script([
-                'document.getElementById("jadwal-picker").value = "2026-05-10 10:00";',
+                'document.getElementById("jadwal-picker").value = "2026-06-15 14:00";',
                 'document.getElementById("jadwal-picker").dispatchEvent(new Event("change", { bubbles: true }));'
             ]);
-            $browser->click('input[name="media_konseling"][value="video_call"] + div')
-                    ->type('deskripsi', 'Topik konsultasi mengenai stres akademik')
+            
+            // Memilih media konseling 'chat'
+            $browser->click('input[name="media_konseling"][value="chat"] + div')
+                    ->type('deskripsi', 'Saya ingin konseling lewat chat karena lebih nyaman')
                     ->pause(500);
 
             $browser->press('Konfirmasi Reservasi')
@@ -39,10 +41,11 @@ class PBI29PemesananKonselorTest extends DuskTestCase
                     ->waitForText('Sesi konsultasi berhasil direservasi. Menunggu konfirmasi.', 10)
                     ->assertSee('Sesi konsultasi berhasil direservasi. Menunggu konfirmasi.');
             
+            // Memastikan data tersimpan di database dengan media_konseling yang benar
             $this->assertDatabaseHas('sesi_konselings', [
                 'profil_konselor_id' => $konselor->profil_konselor_id,
-                'jadwal' => '2026-05-10 10:00',
-                'media_konseling' => 'video_call',
+                'jadwal' => '2026-06-15 14:00',
+                'media_konseling' => 'chat',
                 'status' => 'pending'
             ]);
         });
