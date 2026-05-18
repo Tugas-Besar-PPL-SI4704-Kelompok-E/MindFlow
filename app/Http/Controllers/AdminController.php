@@ -6,6 +6,8 @@ use App\Models\Forum;
 use App\Models\LaporanForum;
 use App\Models\User;
 use Illuminate\Http\Request;
+use Illuminate\Support\Facades\Auth;
+use Illuminate\Support\Facades\Hash;
 
 class AdminController extends Controller
 {
@@ -198,5 +200,36 @@ class AdminController extends Controller
         $spesialisasi->delete();
 
         return back()->with('success', 'Spesialisasi "' . $nama . '" berhasil dihapus!');
+    }
+
+    /**
+     * PBI 62: Pengaturan Akun dan Sistem Admin
+     */
+    public function settings()
+    {
+        $user = Auth::user();
+        return view('admin.settings', compact('user'));
+    }
+
+    public function updateSettings(Request $request)
+    {
+        $user = Auth::user();
+
+        $request->validate([
+            'nama_asli' => 'required|string|max:255',
+            'nama_samaran' => 'required|string|max:255|unique:users,nama_samaran,' . $user->id,
+            'password' => 'nullable|min:8|confirmed',
+        ]);
+
+        $user->nama_asli = $request->nama_asli;
+        $user->nama_samaran = $request->nama_samaran;
+
+        if ($request->filled('password')) {
+            $user->password = Hash::make($request->password);
+        }
+
+        $user->save();
+
+        return back()->with('success', 'Pengaturan admin berhasil diperbarui!');
     }
 }

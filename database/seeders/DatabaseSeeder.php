@@ -20,6 +20,7 @@ class DatabaseSeeder extends Seeder
             AdminSeeder::class,
             SpesialisasiSeeder::class,
             ProfilKonselorSeeder::class,
+            ArtikelSeeder::class,
         ]);
     }
 }
