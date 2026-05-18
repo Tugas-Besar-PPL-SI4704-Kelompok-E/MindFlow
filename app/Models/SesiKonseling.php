@@ -37,4 +37,14 @@ class SesiKonseling extends Model
     {
         return $query->whereDate('jadwal', $date);
     }
+
+    /**
+     * Membatalkan sesi yang berstatus pending jika waktunya sudah lewat (PBI-45).
+     */
+    public static function cancelExpiredPendingSessions()
+    {
+        self::where('status', 'pending')
+            ->where('jadwal', '<', now())
+            ->update(['status' => 'cancelled']);
+    }
 }
