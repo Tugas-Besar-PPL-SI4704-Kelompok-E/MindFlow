@@ -16,6 +16,9 @@ class CounselorController extends Controller
      */
     public function index()
     {
+        // PBI-45: Batalkan sesi yang sudah kedaluwarsa secara otomatis
+        \App\Models\SesiKonseling::cancelExpiredPendingSessions();
+
         $konselorId = Auth::user()->profilKonselor->profil_konselor_id ?? null;
 
         $sesiHariIni = 0;
@@ -36,6 +39,9 @@ class CounselorController extends Controller
 
     public function jadwal()
     {
+        // PBI-45: Batalkan sesi yang sudah kedaluwarsa secara otomatis
+        \App\Models\SesiKonseling::cancelExpiredPendingSessions();
+
         $konselorId = Auth::user()->profilKonselor->profil_konselor_id ?? null;
         
         $sesi = [];
@@ -51,6 +57,9 @@ class CounselorController extends Controller
 
     public function pasien()
     {
+        // PBI-45: Batalkan sesi yang sudah kedaluwarsa secara otomatis
+        \App\Models\SesiKonseling::cancelExpiredPendingSessions();
+
         $konselorId = Auth::user()->profilKonselor->profil_konselor_id ?? null;
         
         $pasien = [];
