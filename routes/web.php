@@ -14,6 +14,7 @@ use App\Http\Controllers\AdminController;
 use App\Http\Controllers\CounselorController;
 use App\Http\Controllers\CounselorRecruitmentController;
 use App\Http\Controllers\ThreadInteractionController;
+use App\Http\Controllers\ArtikelController;
 
 // ──────────────────── Landing Page (Guest) ────────────────────
 Route::get('/', function () {
@@ -91,12 +92,15 @@ Route::middleware('auth')->group(function () {
         Route::post('/rekrutmen/{id}/approve', [AdminController::class, 'approveKonselor'])->name('rekrutmen.approve');
         Route::post('/rekrutmen/{id}/reject', [AdminController::class, 'rejectKonselor'])->name('rekrutmen.reject');
         Route::get('/laporan', [AdminController::class, 'laporan'])->name('laporan');
+        Route::post('/laporan/{id}/punish', [AdminController::class, 'punishUser'])->name('laporan.punish');
         Route::delete('/forum/{id}/delete', [AdminController::class, 'hapusPostingan'])->name('forum.delete');
         Route::get('/spesialisasi', [AdminController::class, 'spesialisasi'])->name('spesialisasi');
         Route::post('/spesialisasi', [AdminController::class, 'storeSpesialisasi'])->name('spesialisasi.store');
         Route::put('/spesialisasi/{id}', [AdminController::class, 'updateSpesialisasi'])->name('spesialisasi.update');
         Route::post('/spesialisasi/{id}/toggle', [AdminController::class, 'toggleSpesialisasi'])->name('spesialisasi.toggle');
         Route::delete('/spesialisasi/{id}', [AdminController::class, 'destroySpesialisasi'])->name('spesialisasi.destroy');
+        Route::get('/settings', [AdminController::class, 'settings'])->name('settings');
+        Route::put('/settings', [AdminController::class, 'updateSettings'])->name('settings.update');
     });
 
     // Konselor Routes
@@ -107,6 +111,8 @@ Route::middleware('auth')->group(function () {
         Route::post('/jadwal/{id}/accept', [CounselorController::class, 'acceptSession'])->name('jadwal.accept');
         Route::post('/jadwal/{id}/reject', [CounselorController::class, 'rejectSession'])->name('jadwal.reject');
         Route::post('/jadwal/{id}/evaluasi', [CounselorController::class, 'submitEvaluasi'])->name('jadwal.evaluasi');
+        Route::get('/settings', [CounselorController::class, 'settings'])->name('settings');
+        Route::put('/settings', [CounselorController::class, 'updateSettings'])->name('settings.update');
     });
 
     // Journal Routes (PBI 15, 16, 17)
@@ -121,6 +127,11 @@ Route::middleware('auth')->group(function () {
     Route::post('forum/{thread}/report', [ThreadInteractionController::class, 'reportThread'])->name('forum.report');
     Route::post('forum/reply/{reply}/report', [ThreadInteractionController::class, 'reportReply'])->name('forum.reply.report');
     Route::delete('forum/reply/{reply}', [ThreadInteractionController::class, 'destroyReply'])->name('forum.reply.destroy');
+
+    // ──────────────────── Artikel Routes ────────────────────
+    Route::prefix('artikel')->name('artikel.')->group(function () {
+        Route::get('/', [ArtikelController::class, 'index'])->name('index');
+    });
     
     // Settings
     Route::get('/settings', [UserController::class, 'edit'])->name('settings.edit');

@@ -11,55 +11,25 @@
         </a>
     </div>
 
-<style>
-    .edit-post {
-        background: var(--card-bg);
-        padding: 24px;
-        border-radius: 16px;
-        box-shadow: 0 4px 6px -1px rgba(0, 0, 0, 0.05);
-        border: 1px solid var(--border);
-    }
-    
-    .edit-header {
-        margin-bottom: 20px;
-        padding-bottom: 16px;
-        border-bottom: 1px solid var(--border);
-    }
-    
-    .edit-header h2 {
-        font-size: 1.2rem;
-        font-weight: 600;
-        margin: 0;
-    }
-    
-    .form-actions {
-        display: flex;
-        justify-content: flex-end;
-        gap: 12px;
-        margin-top: 20px;
-    }
-</style>
-
-<div class="edit-post">
-    <div class="edit-header">
-        <h2>Edit Post #{{ $thread->id }}</h2>
+<div class="bg-white rounded-[32px] p-6 md:p-8 shadow-[0_4px_20px_-4px_rgba(0,0,0,0.03)] border border-gray-100">
+    <div class="mb-6 pb-4 border-b border-gray-100">
+        <h2 class="text-xl font-bold text-gray-900">Edit Postingan</h2>
     </div>
 
     <form action="{{ route('forum.update', $thread->id) }}" method="POST">
         @csrf
         @method('PUT')
         
-        <div class="form-group">
-            <textarea name="content" class="form-control" rows="5" required>{{ old('content', $thread->content) }}</textarea>
+        <div class="mb-6">
+            <textarea name="content" class="w-full bg-gray-50 border border-gray-200 rounded-2xl px-5 py-4 focus:outline-none focus:ring-4 focus:ring-[#A881C2]/10 focus:border-[#A881C2] focus:bg-white text-[15px] text-gray-800 font-medium transition-all resize-y min-h-[150px]" required>{{ old('content', $thread->content) }}</textarea>
             @error('content')
-                <div style="color: var(--danger); font-size: 0.85rem; margin-top: 4px;">{{ $message }}</div>
+                <div class="text-red-500 text-sm mt-2 font-medium">{{ $message }}</div>
             @enderror
         </div>
         
-                
-        <div class="form-actions">
-            <a href="{{ route('forum.index') }}" class="btn btn-outline">Batal</a>
-            <button type="submit" class="btn btn-primary">Simpan Perubahan</button>
+        <div class="flex justify-end gap-3">
+            <a href="{{ route('forum.index') }}" class="px-6 py-2.5 rounded-full font-bold text-[14px] text-gray-500 hover:text-gray-700 hover:bg-gray-100 transition-all">Batal</a>
+            <button type="submit" class="bg-[#A881C2] hover:bg-[#8A64A4] text-white px-8 py-2.5 rounded-full font-bold text-[14px] shadow-md shadow-[#A881C2]/20 transition-all active:scale-95 tracking-wide">Simpan Perubahan</button>
         </div>
     </form>
 </div>

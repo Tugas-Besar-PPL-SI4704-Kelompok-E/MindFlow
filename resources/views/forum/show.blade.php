@@ -29,7 +29,12 @@
                  alt="Avatar" class="w-12 h-12 rounded-full object-cover border border-gray-100">
             <div>
                 <div class="font-bold text-gray-900 text-[16px] mb-0.5">{{ $authorName }} <span class="px-2 py-0.5 rounded-md text-[10px] font-black uppercase tracking-widest {{ $badgeClass }} ml-1">{{ $badgeText }}</span></div>
-                <div class="text-gray-400 text-[13px] font-medium">{{ $thread->created_at->format('h:i A · M d, Y') }}</div>
+                <div class="text-gray-400 text-[13px] font-medium">
+                    {{ $thread->created_at->format('h:i A · M d, Y') }}
+                    @if($thread->created_at != $thread->updated_at)
+                        <span class="italic text-[11px] ml-1">(Edited)</span>
+                    @endif
+                </div>
             </div>
         </div>
 
@@ -40,12 +45,11 @@
             
             <!-- Dropdown Content -->
             <div id="dropdown-show-{{ $thread->id }}" class="hidden absolute right-0 top-full mt-1 w-40 bg-white border border-gray-100 rounded-xl shadow-lg py-1.5 z-10">
-                @if(Auth::user()->role === 'admin' || $thread->user_id === (Auth::id() ?? 1))
-                    <form action="{{ route('forum.destroy', $thread->id) }}" method="POST" class="m-0" onsubmit="return confirm('Hapus post ini?');">
-                        @csrf
-                        @method('DELETE')
-                        <button type="submit" class="w-full text-left px-4 py-2.5 text-sm text-red-500 hover:bg-red-50 font-semibold transition-colors">Hapus Post</button>
-                    </form>
+                @if($thread->user_id === (Auth::id() ?? 1) && $thread->created_at->diffInMinutes(now()) <= 15)
+                    <a href="{{ route('forum.edit', $thread->id) }}" class="block w-full text-left px-4 py-2.5 text-sm text-gray-700 hover:bg-gray-50 font-semibold transition-colors">Edit Post</a>
+                @endif
+                @if($thread->user_id === (Auth::id() ?? 1) || (Auth::user() && Auth::user()->role === 'admin'))
+                    <button type="button" onclick="openDeleteModal('{{ route('forum.destroy', $thread->id) }}')" class="w-full text-left px-4 py-2.5 text-sm text-red-500 hover:bg-red-50 font-semibold transition-colors">Hapus Post</button>
                 @endif
                 @if(Auth::user()->role !== 'admin' && $thread->user_id !== (Auth::id() ?? 1))
                     <button onclick="document.getElementById('report-post-show-{{ $thread->id }}').classList.remove('hidden'); document.getElementById('dropdown-show-{{ $thread->id }}').classList.add('hidden');" class="w-full text-left px-4 py-2.5 text-sm text-gray-700 hover:bg-gray-50 font-semibold transition-colors">Laporkan</button>
@@ -94,6 +98,45 @@
     @endforeach
 </div>
 
+<!-- Delete Confirm Modal -->
+<div id="deleteConfirmModal" class="hidden fixed inset-0 bg-gray-900/50 backdrop-blur-sm z-[100] flex items-center justify-center">
+    <div class="bg-white rounded-3xl w-full max-w-sm shadow-2xl overflow-hidden transform transition-all scale-100">
+        <div class="px-6 py-5 border-b border-gray-100 flex justify-between items-center bg-gray-50/50">
+            <h3 class="font-bold text-gray-800 flex items-center gap-2">
+                <svg class="w-5 h-5 text-red-500" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M12 9v2m0 4h.01m-6.938 4h13.856c1.54 0 2.502-1.667 1.732-3L13.732 4c-.77-1.333-2.694-1.333-3.464 0L3.34 16c-.77 1.333.192 3 1.732 3z"></path></svg>
+                Konfirmasi Hapus
+            </h3>
+            <button onclick="closeDeleteModal()" class="text-gray-400 hover:text-gray-600 p-1.5 rounded-xl hover:bg-gray-100 transition-colors">
+                <svg class="w-5 h-5" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M6 18L18 6M6 6l12 12"></path></svg>
+            </button>
+        </div>
+        <div class="p-6 text-center">
+            <div class="w-16 h-16 bg-red-50 text-red-500 rounded-full flex items-center justify-center mx-auto mb-4">
+                <svg class="w-8 h-8" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M19 7l-.867 12.142A2 2 0 0116.138 21H7.862a2 2 0 01-1.995-1.858L5 7m5 4v6m4-6v6m1-10V4a1 1 0 00-1-1h-4a1 1 0 00-1 1v3M4 7h16"></path></svg>
+            </div>
+            <h4 class="text-lg font-bold text-gray-800 mb-2">Hapus Post Ini?</h4>
+            <p class="text-sm text-gray-500">Postingan ini akan dihapus dan tidak bisa dikembalikan lagi.</p>
+        </div>
+        <div class="px-6 py-4 border-t border-gray-100 bg-gray-50 flex justify-center gap-3">
+            <button type="button" onclick="closeDeleteModal()" class="px-5 py-2.5 text-sm font-bold text-gray-600 hover:bg-gray-200 bg-gray-100 rounded-xl transition-colors">Batal</button>
+            <form id="deleteConfirmForm" method="POST" action="" class="m-0">
+                @csrf @method('DELETE')
+                <button type="submit" class="px-5 py-2.5 text-sm font-bold text-white bg-red-500 hover:bg-red-600 rounded-xl transition-colors shadow-sm shadow-red-500/30">Ya, Hapus</button>
+            </form>
+        </div>
+    </div>
+</div>
+
+<script>
+    function openDeleteModal(actionUrl) {
+        document.getElementById('deleteConfirmForm').action = actionUrl;
+        document.getElementById('deleteConfirmModal').classList.remove('hidden');
+    }
+    function closeDeleteModal() {
+        document.getElementById('deleteConfirmModal').classList.add('hidden');
+        document.getElementById('deleteConfirmForm').action = '';
+    }
+</script>
 @endsection
 
 @push('scripts')

@@ -6,6 +6,8 @@ use App\Models\Forum;
 use App\Models\LaporanForum;
 use App\Models\User;
 use Illuminate\Http\Request;
+use Illuminate\Support\Facades\Auth;
+use Illuminate\Support\Facades\Hash;
 
 class AdminController extends Controller
 {
@@ -49,31 +51,66 @@ class AdminController extends Controller
      */
     public function laporan()
     {
-        $threadReports = \App\Models\ThreadReport::with(['thread', 'user'])->get()->map(function($r) {
-            return (object)[
-                'type' => 'thread',
-                'id' => $r->id,
-                'target_id' => $r->thread_id,
-                'pelapor' => $r->user,
-                'konten' => $r->thread ? $r->thread->content : 'Postingan telah dihapus',
-                'alasan' => $r->reason,
-                'created_at' => $r->created_at,
-                'is_deleted' => !$r->thread
-            ];
-        });
+        $threadReports = \App\Models\ThreadReport::with(['thread' => function($q) { $q->withTrashed(); }, 'thread.user', 'user'])
+            ->get()
+            ->filter(function($r) {
+                $isTrashed = $r->thread && $r->thread->trashed();
+                $isMuted = $r->thread && $r->thread->user && $r->thread->user->status === 'muted' && \Carbon\Carbon::parse($r->thread->user->muted_until)->isFuture();
+                
+                // Hapus laporan dan postingan dari DB secara PERMANEN jika postingan sudah di-soft-delete dan user tidak di-mute
+                if ($isTrashed && !$isMuted) {
+                    if ($r->thread) {
+                        $r->thread->forceDelete(); // Ini akan memicu cascade delete pada laporan
+                    } else {
+                        $r->delete();
+                    }
+                    return false;
+                }
+                return true;
+            })
+            ->map(function($r) {
+                return (object)[
+                    'type' => 'thread',
+                    'id' => $r->id,
+                    'target_id' => $r->thread_id,
+                    'pelapor' => $r->user,
+                    'pelanggar' => $r->thread ? $r->thread->user : null,
+                    'konten' => $r->thread ? $r->thread->content : 'Postingan telah dihapus',
+                    'alasan' => $r->reason,
+                    'created_at' => $r->created_at,
+                    'is_deleted' => $r->thread ? $r->thread->trashed() : true
+                ];
+            });
 
-        $replyReports = \App\Models\ReplyReport::with(['reply', 'user'])->get()->map(function($r) {
-            return (object)[
-                'type' => 'reply',
-                'id' => $r->id,
-                'target_id' => $r->thread_reply_id,
-                'pelapor' => $r->user,
-                'konten' => $r->reply ? $r->reply->content : 'Balasan telah dihapus',
-                'alasan' => $r->reason,
-                'created_at' => $r->created_at,
-                'is_deleted' => !$r->reply
-            ];
-        });
+        $replyReports = \App\Models\ReplyReport::with(['reply' => function($q) { $q->withTrashed(); }, 'reply.user', 'user'])
+            ->get()
+            ->filter(function($r) {
+                $isTrashed = $r->reply && $r->reply->trashed();
+                $isMuted = $r->reply && $r->reply->user && $r->reply->user->status === 'muted' && \Carbon\Carbon::parse($r->reply->user->muted_until)->isFuture();
+                
+                if ($isTrashed && !$isMuted) {
+                    if ($r->reply) {
+                        $r->reply->forceDelete();
+                    } else {
+                        $r->delete();
+                    }
+                    return false;
+                }
+                return true;
+            })
+            ->map(function($r) {
+                return (object)[
+                    'type' => 'reply',
+                    'id' => $r->id,
+                    'target_id' => $r->thread_reply_id,
+                    'pelapor' => $r->user,
+                    'pelanggar' => $r->reply ? $r->reply->user : null,
+                    'konten' => $r->reply ? $r->reply->content : 'Balasan telah dihapus',
+                    'alasan' => $r->reason,
+                    'created_at' => $r->created_at,
+                    'is_deleted' => $r->reply ? $r->reply->trashed() : true
+                ];
+            });
 
         $reports = $threadReports->concat($replyReports)->sortByDesc('created_at');
 
@@ -96,6 +133,30 @@ class AdminController extends Controller
             $thread->delete();
             return back()->with('success', "Postingan telah dihapus secara permanen.");
         }
+    }
+
+    /**
+     * PBI 41: Menjatuhkan hukuman kepada pengguna.
+     */
+    public function punishUser(Request $request, $id)
+    {
+        $request->validate([
+            'punishment_type' => 'required|in:mute',
+            'duration' => 'required|integer|min:1',
+            'reason' => 'required|string|max:1000'
+        ]);
+
+        $user = \App\Models\User::findOrFail($id);
+        
+        if ($request->punishment_type === 'mute') {
+            $user->update([
+                'status' => 'muted',
+                'muted_until' => now()->addHours((int) $request->duration),
+                'punishment_reason' => $request->reason
+            ]);
+        }
+
+        return back()->with('success', 'Hukuman berhasil dijatuhkan kepada pengguna');
     }
 
     /**
@@ -198,5 +259,36 @@ class AdminController extends Controller
         $spesialisasi->delete();
 
         return back()->with('success', 'Spesialisasi "' . $nama . '" berhasil dihapus!');
+    }
+
+    /**
+     * PBI 62: Pengaturan Akun dan Sistem Admin
+     */
+    public function settings()
+    {
+        $user = Auth::user();
+        return view('admin.settings', compact('user'));
+    }
+
+    public function updateSettings(Request $request)
+    {
+        $user = Auth::user();
+
+        $request->validate([
+            'nama_asli' => 'required|string|max:255',
+            'nama_samaran' => 'required|string|max:255|unique:users,nama_samaran,' . $user->id,
+            'password' => 'nullable|min:8|confirmed',
+        ]);
+
+        $user->nama_asli = $request->nama_asli;
+        $user->nama_samaran = $request->nama_samaran;
+
+        if ($request->filled('password')) {
+            $user->password = Hash::make($request->password);
+        }
+
+        $user->save();
+
+        return back()->with('success', 'Pengaturan admin berhasil diperbarui!');
     }
 }

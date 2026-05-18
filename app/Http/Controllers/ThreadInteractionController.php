@@ -42,6 +42,14 @@ class ThreadInteractionController extends Controller
             'parent_id' => 'nullable|exists:thread_replies,id',
         ]);
 
+        $user = Auth::user();
+        if ($user && $user->status === 'muted' && $user->muted_until && now()->lessThan($user->muted_until)) {
+            return back()->with([
+                'mute_error' => true,
+                'mute_until' => $user->muted_until->toIso8601String()
+            ]);
+        }
+
         ThreadReply::create([
             'user_id' => Auth::id() ?? 1,
             'thread_id' => $thread->id,
