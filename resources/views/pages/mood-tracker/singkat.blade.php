@@ -288,6 +288,7 @@
         <form action="{{ route('mood-tracker.singkat.store') }}" method="POST" id="moodForm">
             @csrf
             <input type="hidden" name="mood_score" id="moodScore" required>
+            <input type="hidden" name="wants_to_tell_story" id="wantsToTellStory" value="0">
             
             <div class="emoji-row">
                 <div class="emoji-item">
@@ -350,7 +351,7 @@
             <p class="modal-text">Kami perhatikan suasana hatimu sedang kurang baik. Maukah kamu menceritakan lebih detail apa yang mengganggu pikiranmu agar kami bisa membantu?</p>
             <div class="modal-actions">
                 <button type="button" class="btn-secondary" id="btnSkipModal">Lewati</button>
-                <a href="{{ route('mood-tracker.open-question') }}" class="btn-primary">Ya, Ceritakan</a>
+                <button type="button" class="btn-primary" id="btnTellStory">Ya, Ceritakan</button>
             </div>
         </div>
     </div>
@@ -386,6 +387,13 @@
     btnSkipModal.addEventListener('click', function() {
         modal.classList.remove('show');
         moodForm.submit(); 
+    });
+
+    const btnTellStory = document.getElementById('btnTellStory');
+    btnTellStory.addEventListener('click', function() {
+        document.getElementById('wantsToTellStory').value = '1';
+        modal.classList.remove('show');
+        moodForm.submit();
     });
 </script>
 @endsection
