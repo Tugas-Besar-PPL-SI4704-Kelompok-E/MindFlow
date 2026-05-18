@@ -25,6 +25,8 @@ class User extends Authenticatable
         'password',
         'status',
         'role',
+        'muted_until',
+        'punishment_reason',
     ];
 
     /**
@@ -47,6 +49,7 @@ class User extends Authenticatable
         return [
             'email_verified_at' => 'datetime',
             'password' => 'hashed',
+            'muted_until' => 'datetime',
         ];
     }
     public function profilKonselor()

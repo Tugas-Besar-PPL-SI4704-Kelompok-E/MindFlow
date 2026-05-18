@@ -11,22 +11,35 @@ class CounselingController extends Controller
 {
     public function index(Request $request)
     {
-        $query = ProfilKonselor::with(['user', 'sesiKonseling']);
+        $search = $request->input('search');
+        $selectedSpesialisasi = $request->input('spesialisasi');
+        $availability = $request->input('ketersediaan');
 
-        $spesialisasi = $request->input('spesialisasi');
-        
-        // Menggunakan pencarian 'like' untuk lebih fleksibel seperti di HEAD
-        if ($request->has('spesialisasi') && $request->spesialisasi != '') {
-            $query->where('spesialisasi', 'like', '%' . $request->spesialisasi . '%');
+        $query = ProfilKonselor::with(['user', 'sesiKonseling'])
+            ->whereHas('user', fn ($q) => $q->where('status', 'approved'));
+
+        if ($search) {
+            $query->search($search);
         }
-        
-        $query->whereHas('user', function ($q) {
-            $q->where('status', 'approved');
-        });
-        
-        $konselors = $query->paginate(10);
 
-        return view('konseling.index', compact('konselors', 'spesialisasi'));
+        if ($selectedSpesialisasi && $selectedSpesialisasi !== 'semua') {
+            $query->filterSpecialization($selectedSpesialisasi);
+        }
+
+        if ($availability === 'tersedia') {
+            $query->hasAvailability();
+        }
+
+        $konselors = $query->paginate(12)->withQueryString();
+        $spesialisasiList = ProfilKonselor::distinct()->pluck('spesialisasi')->filter()->toArray();
+
+        return view('konseling.index', compact(
+            'konselors',
+            'spesialisasiList',
+            'search',
+            'selectedSpesialisasi',
+            'availability'
+        ));
     }
 
     /**
