@@ -145,6 +145,34 @@
                         </div>
 
                         <div class="space-y-2">
+                            <label class="block text-[11px] font-black text-gray-400 uppercase tracking-widest ml-1">Media Konseling</label>
+                            <div class="grid grid-cols-3 gap-3">
+                                <label class="relative cursor-pointer">
+                                    <input type="radio" name="media_konseling" value="video_call" class="peer sr-only" required {{ old('media_konseling') == 'video_call' ? 'checked' : '' }}>
+                                    <div class="p-3 bg-gray-50 border @error('media_konseling') border-red-500 @else border-gray-100 @enderror rounded-xl hover:bg-purple-50 transition-all peer-checked:border-[#A881C2] peer-checked:bg-purple-50 peer-checked:ring-2 peer-checked:ring-[#A881C2]/30 flex flex-col items-center justify-center gap-1.5 h-full text-center">
+                                        <svg class="w-6 h-6 text-gray-500 peer-checked:text-[#A881C2]" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M15 10l4.553-2.276A1 1 0 0121 8.618v6.764a1 1 0 01-1.447.894L15 14M5 18h8a2 2 0 002-2V8a2 2 0 00-2-2H5a2 2 0 00-2 2v8a2 2 0 002 2z"></path></svg>
+                                        <span class="text-xs font-bold text-gray-600 peer-checked:text-[#A881C2]">Video Call</span>
+                                    </div>
+                                </label>
+                                <label class="relative cursor-pointer">
+                                    <input type="radio" name="media_konseling" value="voice_call" class="peer sr-only" {{ old('media_konseling') == 'voice_call' ? 'checked' : '' }}>
+                                    <div class="p-3 bg-gray-50 border border-gray-100 rounded-xl hover:bg-purple-50 transition-all peer-checked:border-[#A881C2] peer-checked:bg-purple-50 peer-checked:ring-2 peer-checked:ring-[#A881C2]/30 flex flex-col items-center justify-center gap-1.5 h-full text-center">
+                                        <svg class="w-6 h-6 text-gray-500 peer-checked:text-[#A881C2]" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M3 5a2 2 0 012-2h3.28a1 1 0 01.948.684l1.498 4.493a1 1 0 01-.502 1.21l-2.257 1.13a11.042 11.042 0 005.516 5.516l1.13-2.257a1 1 0 011.21-.502l4.493 1.498a1 1 0 01.684.949V19a2 2 0 01-2 2h-1C9.716 21 3 14.284 3 6V5z"></path></svg>
+                                        <span class="text-xs font-bold text-gray-600 peer-checked:text-[#A881C2]">Voice Call</span>
+                                    </div>
+                                </label>
+                                <label class="relative cursor-pointer">
+                                    <input type="radio" name="media_konseling" value="chat" class="peer sr-only" {{ old('media_konseling') == 'chat' ? 'checked' : '' }}>
+                                    <div class="p-3 bg-gray-50 border border-gray-100 rounded-xl hover:bg-purple-50 transition-all peer-checked:border-[#A881C2] peer-checked:bg-purple-50 peer-checked:ring-2 peer-checked:ring-[#A881C2]/30 flex flex-col items-center justify-center gap-1.5 h-full text-center">
+                                        <svg class="w-6 h-6 text-gray-500 peer-checked:text-[#A881C2]" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M8 12h.01M12 12h.01M16 12h.01M21 12c0 4.418-4.03 8-9 8a9.863 9.863 0 01-4.255-.949L3 20l1.395-3.72C3.512 15.042 3 13.574 3 12c0-4.418 4.03-8 9-8s9 3.582 9 8z"></path></svg>
+                                        <span class="text-xs font-bold text-gray-600 peer-checked:text-[#A881C2]">Chat</span>
+                                    </div>
+                                </label>
+                            </div>
+                            @error('media_konseling')<p class="text-sm text-red-600 mt-1">{{ $message }}</p>@enderror
+                        </div>
+
+                        <div class="space-y-2">
                             <label for="deskripsi" class="block text-[11px] font-black text-gray-400 uppercase tracking-widest ml-1">Deskripsi Topik</label>
                             <textarea name="deskripsi" id="deskripsi" rows="4" class="w-full bg-gray-50 border @error('deskripsi') border-red-500 @else border-gray-100 @enderror rounded-[14px] px-4 py-3 focus:outline-none focus:ring-4 focus:ring-[#A881C2]/10 focus:border-[#A881C2] focus:bg-white text-[13px] text-gray-700 font-bold shadow-sm transition-all" placeholder="Jelaskan topik konsultasi Anda" required>{{ old('deskripsi') }}</textarea>
                             @error('deskripsi')<p class="text-sm text-red-600">{{ $message }}</p>@enderror
@@ -176,12 +204,30 @@
                     </div>
                     Sesi Aktif Kamu
                 </h6>
-                <div class="p-5 bg-gray-50 rounded-[20px] mb-6 border border-gray-100">
+                <div class="p-5 bg-gray-50 rounded-[20px] mb-6 border border-gray-100 relative overflow-hidden">
+                    <div class="absolute right-0 top-0 w-2 h-full bg-[#A881C2]"></div>
                     <p class="text-[11px] font-black text-gray-400 uppercase tracking-widest mb-2">Jadwal Terdaftar</p>
                     <p class="font-bold text-gray-900 text-base mb-3">{{ \Carbon\Carbon::parse($contohSesi->jadwal)->translatedFormat('d F Y, H:i') }}</p>
-                    <span class="inline-flex items-center px-3 py-1 bg-amber-100 text-amber-700 text-[11px] font-black uppercase tracking-wider rounded-lg">
-                        {{ $contohSesi->status }}
-                    </span>
+                    
+                    <div class="flex flex-wrap gap-2">
+                        <span class="inline-flex items-center gap-1.5 px-3 py-1 bg-amber-100 text-amber-700 text-[11px] font-black uppercase tracking-wider rounded-lg">
+                            <span class="w-1.5 h-1.5 rounded-full bg-amber-500"></span>
+                            {{ $contohSesi->status }}
+                        </span>
+                        
+                        <span class="inline-flex items-center gap-1.5 px-3 py-1 bg-purple-50 text-[#A881C2] text-[11px] font-black uppercase tracking-wider rounded-lg border border-purple-100">
+                            @if($contohSesi->media_konseling == 'video_call')
+                                <svg class="w-3.5 h-3.5" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M15 10l4.553-2.276A1 1 0 0121 8.618v6.764a1 1 0 01-1.447.894L15 14M5 18h8a2 2 0 002-2V8a2 2 0 00-2-2H5a2 2 0 00-2 2v8a2 2 0 002 2z"></path></svg>
+                                Video Call
+                            @elseif($contohSesi->media_konseling == 'voice_call')
+                                <svg class="w-3.5 h-3.5" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M3 5a2 2 0 012-2h3.28a1 1 0 01.948.684l1.498 4.493a1 1 0 01-.502 1.21l-2.257 1.13a11.042 11.042 0 005.516 5.516l1.13-2.257a1 1 0 011.21-.502l4.493 1.498a1 1 0 01.684.949V19a2 2 0 01-2 2h-1C9.716 21 3 14.284 3 6V5z"></path></svg>
+                                Voice Call
+                            @else
+                                <svg class="w-3.5 h-3.5" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M8 12h.01M12 12h.01M16 12h.01M21 12c0 4.418-4.03 8-9 8a9.863 9.863 0 01-4.255-.949L3 20l1.395-3.72C3.512 15.042 3 13.574 3 12c0-4.418 4.03-8 9-8s9 3.582 9 8z"></path></svg>
+                                Chat
+                            @endif
+                        </span>
+                    </div>
                 </div>
                 <div class="flex flex-col gap-3">
                     <a href="{{ route('booking.edit', $contohSesi->sesi_konseling_id) }}" class="w-full text-center bg-purple-50 text-[#A881C2] hover:bg-purple-100 py-3.5 rounded-2xl text-sm font-bold transition-all duration-300">
