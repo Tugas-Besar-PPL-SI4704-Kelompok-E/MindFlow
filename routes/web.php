@@ -14,6 +14,7 @@ use App\Http\Controllers\AdminController;
 use App\Http\Controllers\CounselorController;
 use App\Http\Controllers\CounselorRecruitmentController;
 use App\Http\Controllers\ThreadInteractionController;
+use App\Http\Controllers\ArtikelController;
 
 // ──────────────────── Landing Page (Guest) ────────────────────
 Route::get('/', function () {
@@ -120,6 +121,11 @@ Route::middleware('auth')->group(function () {
     Route::post('forum/{thread}/report', [ThreadInteractionController::class, 'reportThread'])->name('forum.report');
     Route::post('forum/reply/{reply}/report', [ThreadInteractionController::class, 'reportReply'])->name('forum.reply.report');
     Route::delete('forum/reply/{reply}', [ThreadInteractionController::class, 'destroyReply'])->name('forum.reply.destroy');
+
+    // ──────────────────── Artikel Routes ────────────────────
+    Route::prefix('artikel')->name('artikel.')->group(function () {
+        Route::get('/', [ArtikelController::class, 'index'])->name('index');
+    });
     
     // Settings
     Route::get('/settings', [UserController::class, 'edit'])->name('settings.edit');

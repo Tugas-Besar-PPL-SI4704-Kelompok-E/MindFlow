@@ -289,6 +289,7 @@
         /* --- MAIN CONTENT --- */
         .main-content {
             flex: 1;
+            min-width: 0;
             padding: 50px 60px;
             overflow-y: auto;
             border-right: 1px solid var(--border-dark);
@@ -474,13 +475,13 @@
                         Jurnal
                     </a>
                 </li>
+                @endif
                 <li>
-                    <a href="#" class="menu-item {{ request()->is('artikel*') ? 'active' : '' }}">
-                        <svg viewBox="0 0 24 24"><path d="M4 4h16c1.1 0 2 .9 2 2v12c0 1.1-.9 2-2 2H4c-1.1 0-2-.9-2-2V6c0-1.1.9-2 2-2z"></path><polyline points="22,6 12,13 2,6"></polyline></svg>
+                    <a href="{{ route('artikel.index') }}" class="menu-item {{ request()->is('artikel*') ? 'active' : '' }}">
+                        <svg viewBox="0 0 24 24"><path d="M19 20H5a2 2 0 0 1-2-2V6a2 2 0 0 1 2-2h10a2 2 0 0 1 2 2v1m2 13a2 2 0 0 1-2-2V7m2 13a2 2 0 0 0 2-2V9a2 2 0 0 0-2-2h-2m-4-3H9M7 16h6M7 12h10"></path></svg>
                         Artikel
                     </a>
                 </li>
-                @endif
             </ul>
 
             <!-- Spacer to push profile to bottom -->
@@ -572,6 +573,7 @@
         </main>
 
         <!-- Sidebar Kanan -->
+        @unless(request()->routeIs('artikel.*'))
         <aside class="sidebar-right">
             <div class="right-header">
                 <h3 class="text-gray-900 font-bold">Jadwal Konsultasi</h3>
@@ -637,6 +639,7 @@
                 </div>
             @endif
         </aside>
+        @endunless
     </div>
 
     <!-- Profile Popup Toggle Script -->
