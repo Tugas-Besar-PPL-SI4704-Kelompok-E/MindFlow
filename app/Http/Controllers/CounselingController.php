@@ -48,6 +48,9 @@ class CounselingController extends Controller
      */
     public function show($id)
     {
+        // PBI-45: Batalkan sesi yang sudah kedaluwarsa secara otomatis
+        \App\Models\SesiKonseling::cancelExpiredPendingSessions();
+
         $konselor = ProfilKonselor::with(['user', 'sesiKonseling'])
             ->findOrFail($id);
 
