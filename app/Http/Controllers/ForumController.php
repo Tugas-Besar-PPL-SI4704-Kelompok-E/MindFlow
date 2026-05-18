@@ -33,6 +33,14 @@ class ForumController extends Controller
             'content' => 'required|string|max:1000',
         ]);
 
+        $user = Auth::user();
+        if ($user && $user->status === 'muted' && $user->muted_until && now()->lessThan($user->muted_until)) {
+            return back()->with([
+                'mute_error' => true,
+                'mute_until' => $user->muted_until->toIso8601String()
+            ]);
+        }
+
         Thread::query()->create([
             'user_id' => Auth::id() ?? 1, // Fallback to 1 for dummy auth
             'content' => $request->content,
@@ -79,7 +87,10 @@ class ForumController extends Controller
 
     public function destroy(Thread $forum)
     {
-        if ($forum->user_id !== (Auth::id() ?? 1)) {
+        $user = Auth::user();
+        $isAdmin = $user && $user->role === 'admin';
+        
+        if (!$isAdmin && $forum->user_id !== (Auth::id() ?? 1)) {
             abort(403, 'Unauthorized action.');
         }
 
