@@ -24,7 +24,8 @@ class ProfilKonselorFactory extends Factory
             'nama' => $this->faker->name . ', M.Psi.',
             'spesialisasi' => $this->faker->randomElement($spesialisasi),
             'biografi' => $this->faker->paragraph,
-            'keahlian' => $this->faker->sentence
+            'keahlian' => $this->faker->sentence,
+            'gejala' => $this->faker->randomElement(['Stres', 'Depresi', 'Kecemasan', 'Kesepian', 'Trauma'])
         ];
     }
 }

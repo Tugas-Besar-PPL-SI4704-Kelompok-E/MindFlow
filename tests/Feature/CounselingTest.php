@@ -31,6 +31,48 @@ class CounselingTest extends TestCase
     }
 
     /**
+     * PBI 64: Search konselor berdasarkan nama, keahlian, atau gejala
+     */
+    public function test_pbi_64_mencari_konselor_berdasarkan_keyword_search()
+    {
+        $user = User::factory()->create();
+        $konselor1 = ProfilKonselor::factory()->create(['nama' => 'Riana Ar-Zahra, M.Psi.', 'keahlian' => 'Terapi Kognitif', 'gejala' => 'Depresi']);
+        $konselor2 = ProfilKonselor::factory()->create(['nama' => 'Budi Rahardjo, S.Psi.', 'keahlian' => 'Konseling Akademik', 'gejala' => 'Stres']);
+
+        $response = $this->actingAs($user)->get('/konseling?search=Depresi');
+
+        $response->assertStatus(200);
+        $response->assertSee($konselor1->nama);
+        $response->assertDontSee($konselor2->nama);
+    }
+
+    /**
+     * PBI 64: Filter konselor berdasarkan ketersediaan sesi
+     */
+    public function test_pbi_64_filter_konselor_tersedia_hanya_menampilkan_konselor_dengan_sesi_tersedia()
+    {
+        $user = User::factory()->create();
+        $konselor1 = ProfilKonselor::factory()->create(['spesialisasi' => 'Kesehatan Mental']);
+        $konselor2 = ProfilKonselor::factory()->create(['spesialisasi' => 'Karir']);
+
+        SesiKonseling::factory()->create([
+            'profil_konselor_id' => $konselor1->profil_konselor_id,
+            'status' => 'pending'
+        ]);
+
+        SesiKonseling::factory()->create([
+            'profil_konselor_id' => $konselor2->profil_konselor_id,
+            'status' => 'penuh'
+        ]);
+
+        $response = $this->actingAs($user)->get('/konseling?ketersediaan=tersedia');
+
+        $response->assertStatus(200);
+        $response->assertSee($konselor1->nama);
+        $response->assertDontSee($konselor2->nama);
+    }
+
+    /**
      * PBI 28: Halaman profil detail konselor (biografi & keahlian)
      */
     public function test_pbi_28_menampilkan_profil_detail_konselor_dengan_biografi_dan_keahlian()

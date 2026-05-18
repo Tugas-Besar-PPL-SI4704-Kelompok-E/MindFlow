@@ -18,12 +18,34 @@ class ProfilKonselor extends Model
         'spesialisasi',
         'biografi',
         'keahlian',
+        'gejala',
         'nomor_whatsapp',
         'no_sipp',
         'berkas_ktp',
         'berkas_sipp',
         'berkas_cv',
     ];
+
+    public function scopeSearch($query, $search)
+    {
+        return $query->where(function ($q) use ($search) {
+            $q->where('nama', 'like', "%{$search}%")
+                ->orWhere('keahlian', 'like', "%{$search}%")
+                ->orWhere('spesialisasi', 'like', "%{$search}%")
+                ->orWhere('gejala', 'like', "%{$search}%");
+        });
+    }
+
+    public function scopeFilterSpecialization($query, $spesialisasi)
+    {
+        return $query->where('spesialisasi', $spesialisasi);
+    }
+
+    public function scopeHasAvailability($query)
+    {
+        return $query->whereHas('sesiKonseling', fn ($q) => $q->where('status', '!=', 'penuh'));
+    }
+
     public function user()
     {
         return $this->belongsTo(User::class);
