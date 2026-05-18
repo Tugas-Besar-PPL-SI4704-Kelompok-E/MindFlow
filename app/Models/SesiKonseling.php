@@ -19,6 +19,7 @@ class SesiKonseling extends Model
         'requested_jadwal',
         'request_reason',
         'status',
+        'catatan_konselor',
     ];
     public function user()
     {

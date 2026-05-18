@@ -54,6 +54,7 @@
                                     'change_requested' => 'bg-blue-100 text-blue-800',
                                     'rescheduled' => 'bg-blue-100 text-blue-800',
                                     'confirmed' => 'bg-emerald-100 text-emerald-800',
+                                    'completed' => 'bg-purple-100 text-purple-800',
                                     'rejected' => 'bg-red-100 text-red-800',
                                     'cancelled' => 'bg-red-100 text-red-800',
                                     default => 'bg-gray-100 text-gray-800'
@@ -81,6 +82,16 @@
                                         </button>
                                     </form>
                                 </div>
+                            @elseif($item->status === 'confirmed')
+                                <button onclick="document.getElementById('modal-eval-{{ $item->sesi_konseling_id }}').classList.remove('hidden')" class="text-white bg-purple-500 hover:bg-purple-600 focus:ring-4 focus:outline-none focus:ring-purple-300 font-medium rounded-lg text-xs px-3 py-1.5 text-center inline-flex items-center transition-colors">
+                                    <svg class="w-3.5 h-3.5 mr-1" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M15.232 5.232l3.536 3.536m-2.036-5.036a2.5 2.5 0 113.536 3.536L6.5 21.036H3v-3.572L16.732 3.732z"></path></svg>
+                                    Beri Catatan
+                                </button>
+                            @elseif($item->status === 'completed')
+                                <button onclick="document.getElementById('modal-view-{{ $item->sesi_konseling_id }}').classList.remove('hidden')" class="text-purple-600 bg-purple-50 border border-purple-200 hover:bg-purple-100 focus:ring-4 focus:outline-none focus:ring-purple-300 font-medium rounded-lg text-xs px-3 py-1.5 text-center inline-flex items-center transition-colors">
+                                    <svg class="w-3.5 h-3.5 mr-1" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M15 12a3 3 0 11-6 0 3 3 0 016 0z"></path><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M2.458 12C3.732 7.943 7.523 5 12 5c4.478 0 8.268 2.943 9.542 7-1.274 4.057-5.064 7-9.542 7-4.477 0-8.268-2.943-9.542-7z"></path></svg>
+                                    Lihat Catatan
+                                </button>
                             @else
                                 <span class="text-gray-400 text-xs italic">-</span>
                             @endif
@@ -97,4 +108,81 @@
         </div>
     @endif
 </div>
+</div>
+
+@foreach($sesi as $item)
+    @if($item->status === 'confirmed')
+    <!-- Modal Beri Catatan -->
+    <div id="modal-eval-{{ $item->sesi_konseling_id }}" class="fixed inset-0 z-50 hidden overflow-y-auto" aria-labelledby="modal-title" role="dialog" aria-modal="true">
+        <div class="flex items-end justify-center min-h-screen pt-4 px-4 pb-20 text-center sm:block sm:p-0">
+            <div class="fixed inset-0 bg-gray-500 bg-opacity-75 transition-opacity" aria-hidden="true" onclick="document.getElementById('modal-eval-{{ $item->sesi_konseling_id }}').classList.add('hidden')"></div>
+            <span class="hidden sm:inline-block sm:align-middle sm:h-screen" aria-hidden="true">&#8203;</span>
+            <div class="inline-block align-bottom bg-white rounded-2xl text-left overflow-hidden shadow-xl transform transition-all sm:my-8 sm:align-middle sm:max-w-lg sm:w-full">
+                <form action="{{ route('konselor.jadwal.evaluasi', $item->sesi_konseling_id) }}" method="POST">
+                    @csrf
+                    <div class="bg-white px-4 pt-5 pb-4 sm:p-6 sm:pb-4">
+                        <div class="sm:flex sm:items-start">
+                            <div class="mt-3 text-center sm:mt-0 sm:text-left w-full">
+                                <h3 class="text-lg leading-6 font-bold text-gray-900 mb-4" id="modal-title">
+                                    Catatan Evaluasi Pasca-Sesi
+                                </h3>
+                                <div class="mb-4 bg-gray-50 p-4 rounded-xl border border-gray-100">
+                                    <div class="text-sm text-gray-600 mb-1"><strong>Pasien:</strong> {{ $item->user->nama_asli ?? 'Tidak diketahui' }}</div>
+                                    <div class="text-sm text-gray-600"><strong>Topik:</strong> {{ $item->deskripsi }}</div>
+                                </div>
+                                <div>
+                                    <label for="catatan_konselor" class="block text-sm font-medium text-gray-700 mb-2">Catatan Konselor</label>
+                                    <textarea name="catatan_konselor" id="catatan_konselor" rows="5" class="shadow-sm focus:ring-purple-500 focus:border-purple-500 mt-1 block w-full sm:text-sm border border-gray-300 rounded-xl p-3" placeholder="Tuliskan evaluasi atau catatan untuk pasien setelah sesi selesai..." required></textarea>
+                                    <p class="mt-2 text-xs text-gray-500">Catatan ini dapat dilihat oleh pasien di menu History mereka.</p>
+                                </div>
+                            </div>
+                        </div>
+                    </div>
+                    <div class="bg-gray-50 px-4 py-3 sm:px-6 sm:flex sm:flex-row-reverse border-t border-gray-100">
+                        <button type="submit" class="w-full inline-flex justify-center rounded-xl border border-transparent shadow-sm px-4 py-2 bg-purple-600 text-base font-medium text-white hover:bg-purple-700 focus:outline-none focus:ring-2 focus:ring-offset-2 focus:ring-purple-500 sm:ml-3 sm:w-auto sm:text-sm transition-colors">
+                            Simpan & Selesaikan Sesi
+                        </button>
+                        <button type="button" onclick="document.getElementById('modal-eval-{{ $item->sesi_konseling_id }}').classList.add('hidden')" class="mt-3 w-full inline-flex justify-center rounded-xl border border-gray-300 shadow-sm px-4 py-2 bg-white text-base font-medium text-gray-700 hover:bg-gray-50 focus:outline-none focus:ring-2 focus:ring-offset-2 focus:ring-purple-500 sm:mt-0 sm:ml-3 sm:w-auto sm:text-sm transition-colors">
+                            Batal
+                        </button>
+                    </div>
+                </form>
+            </div>
+        </div>
+    </div>
+    @elseif($item->status === 'completed')
+    <!-- Modal Lihat Catatan -->
+    <div id="modal-view-{{ $item->sesi_konseling_id }}" class="fixed inset-0 z-50 hidden overflow-y-auto" aria-labelledby="modal-title" role="dialog" aria-modal="true">
+        <div class="flex items-end justify-center min-h-screen pt-4 px-4 pb-20 text-center sm:block sm:p-0">
+            <div class="fixed inset-0 bg-gray-500 bg-opacity-75 transition-opacity" aria-hidden="true" onclick="document.getElementById('modal-view-{{ $item->sesi_konseling_id }}').classList.add('hidden')"></div>
+            <span class="hidden sm:inline-block sm:align-middle sm:h-screen" aria-hidden="true">&#8203;</span>
+            <div class="inline-block align-bottom bg-white rounded-2xl text-left overflow-hidden shadow-xl transform transition-all sm:my-8 sm:align-middle sm:max-w-lg sm:w-full">
+                <div class="bg-white px-4 pt-5 pb-4 sm:p-6 sm:pb-4">
+                    <div class="sm:flex sm:items-start">
+                        <div class="mt-3 text-center sm:mt-0 sm:text-left w-full">
+                            <h3 class="text-lg leading-6 font-bold text-gray-900 mb-4" id="modal-title">
+                                Catatan Evaluasi Pasca-Sesi
+                            </h3>
+                            <div class="mb-4 bg-gray-50 p-4 rounded-xl border border-gray-100">
+                                <div class="text-sm text-gray-600 mb-1"><strong>Pasien:</strong> {{ $item->user->nama_asli ?? 'Tidak diketahui' }}</div>
+                                <div class="text-sm text-gray-600"><strong>Waktu Sesi:</strong> {{ \Carbon\Carbon::parse($item->jadwal)->translatedFormat('d F Y, H:i') }} WIB</div>
+                            </div>
+                            <div>
+                                <label class="block text-sm font-medium text-gray-700 mb-2">Isi Catatan</label>
+                                <div class="bg-purple-50 border border-purple-100 p-4 rounded-xl text-sm text-gray-800 whitespace-pre-wrap">{{ $item->catatan_konselor }}</div>
+                            </div>
+                        </div>
+                    </div>
+                </div>
+                <div class="bg-gray-50 px-4 py-3 sm:px-6 flex justify-end border-t border-gray-100">
+                    <button type="button" onclick="document.getElementById('modal-view-{{ $item->sesi_konseling_id }}').classList.add('hidden')" class="w-full inline-flex justify-center rounded-xl border border-gray-300 shadow-sm px-4 py-2 bg-white text-base font-medium text-gray-700 hover:bg-gray-50 focus:outline-none focus:ring-2 focus:ring-offset-2 focus:ring-purple-500 sm:w-auto sm:text-sm transition-colors">
+                        Tutup
+                    </button>
+                </div>
+            </div>
+        </div>
+    </div>
+    @endif
+@endforeach
+
 @endsection

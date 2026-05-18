@@ -110,6 +110,7 @@ Route::middleware('auth')->group(function () {
         Route::get('/pasien', [CounselorController::class, 'pasien'])->name('pasien');
         Route::post('/jadwal/{id}/accept', [CounselorController::class, 'acceptSession'])->name('jadwal.accept');
         Route::post('/jadwal/{id}/reject', [CounselorController::class, 'rejectSession'])->name('jadwal.reject');
+        Route::post('/jadwal/{id}/evaluasi', [CounselorController::class, 'submitEvaluasi'])->name('jadwal.evaluasi');
         Route::get('/settings', [CounselorController::class, 'settings'])->name('settings');
         Route::put('/settings', [CounselorController::class, 'updateSettings'])->name('settings.update');
     });
