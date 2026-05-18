@@ -289,6 +289,7 @@
         /* --- MAIN CONTENT --- */
         .main-content {
             flex: 1;
+            min-width: 0;
             padding: 50px 60px;
             overflow-y: auto;
             border-right: 1px solid var(--border-dark);
@@ -572,6 +573,7 @@
         </main>
 
         <!-- Sidebar Kanan -->
+        @unless(request()->routeIs('artikel.*'))
         <aside class="sidebar-right">
             <div class="right-header">
                 <h3 class="text-gray-900 font-bold">Jadwal Konsultasi</h3>
@@ -637,6 +639,7 @@
                 </div>
             @endif
         </aside>
+        @endunless
     </div>
 
     <!-- Profile Popup Toggle Script -->
