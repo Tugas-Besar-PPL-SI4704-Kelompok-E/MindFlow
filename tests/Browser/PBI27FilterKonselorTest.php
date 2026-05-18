@@ -3,6 +3,7 @@
 namespace Tests\Browser;
 
 use App\Models\ProfilKonselor;
+use App\Models\SesiKonseling;
 use App\Models\User;
 use Illuminate\Foundation\Testing\DatabaseMigrations;
 use Laravel\Dusk\Browser;
@@ -31,6 +32,7 @@ class PBI27FilterKonselorTest extends DuskTestCase
                     ->assertSee($konselor2->nama)
                     ->assertSee($konselor3->nama)
                     ->select('spesialisasi', 'Kesehatan Mental')
+                    ->press('Terapkan Filter')
                     ->pause(2000)
                     ->assertSee($konselor1->nama)
                     ->assertDontSee($konselor2->nama)
@@ -136,8 +138,8 @@ class PBI27FilterKonselorTest extends DuskTestCase
                     ->pause(2000)
                     ->assertSee('Konselor Tidak Ditemukan')
                     
-                    // User klik tombol X untuk reset filter
-                    ->click('a[title="Reset Filter"]')
+                    // User klik tombol reset untuk kembali ke daftar lengkap
+                    ->click('a[href="' . route('konseling.index') . '"]')
                     ->pause(3000)
                     ->assertPathIs('/konseling')
                     

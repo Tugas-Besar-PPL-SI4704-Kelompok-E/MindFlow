@@ -2,31 +2,72 @@
 
 @section('content')
     <!-- Header Page Section -->
-    <div class="flex flex-col md:flex-row justify-between items-start md:items-end mb-12 gap-6">
-        <div>
-            <h2 class="text-3xl font-extrabold text-gray-900 tracking-tight mb-2">Pilih Konselor</h2>
-            <p class="text-gray-500 text-base max-w-md">Temukan tenaga profesional yang tepat untuk membantu perjalanan kesehatan mentalmu.</p>
-        </div>
-        
-        <!-- Filter Section -->
-        <form action="{{ route('konseling.index') }}" method="GET" class="flex items-center gap-3 w-full md:w-auto">
-            <div class="relative group flex-1 md:flex-none">
-                <select name="spesialisasi" onchange="this.form.submit()" class="appearance-none w-full bg-white border border-gray-200 text-gray-700 py-3.5 pl-5 pr-12 rounded-2xl focus:outline-none focus:ring-4 focus:ring-[#A881C2]/10 focus:border-[#A881C2] shadow-sm text-sm font-bold cursor-pointer transition-all hover:border-[#A881C2]/50">
-                    <option value="">Semua Spesialisasi</option>
-                    <option value="Kesehatan Mental" {{ request('spesialisasi') == 'Kesehatan Mental' ? 'selected' : '' }}>Kesehatan Mental</option>
-                    <option value="Konseling Akademik" {{ request('spesialisasi') == 'Konseling Akademik' ? 'selected' : '' }}>Konseling Akademik</option>
-                    <option value="Karir" {{ request('spesialisasi') == 'Karir' ? 'selected' : '' }}>Karir</option>
-                </select>
-                <div class="pointer-events-none absolute inset-y-0 right-0 flex items-center px-4 text-gray-400 group-hover:text-[#A881C2] transition-colors">
-                    <svg class="w-5 h-5" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M19 9l-7 7-7-7"></path></svg>
-                </div>
+    <div class="grid gap-8 xl:grid-cols-[1.4fr_0.9fr] items-start mb-12">
+        <div class="space-y-6">
+            <div>
+                <h2 class="text-3xl font-extrabold text-gray-900 tracking-tight mb-2">Pilih Konselor</h2>
+                <p class="text-gray-500 text-base max-w-md">Temukan tenaga profesional yang tepat untuk membantu perjalanan kesehatan mentalmu.</p>
             </div>
-            @if(request('spesialisasi'))
-                <a href="{{ route('konseling.index') }}" class="bg-purple-50 hover:bg-[#F4EEFB] text-[#A881C2] p-3.5 rounded-2xl transition-all shadow-sm group" title="Reset Filter">
-                    <svg class="w-5 h-5 group-hover:rotate-90 transition-transform duration-300" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M6 18L18 6M6 6l12 12"></path></svg>
-                </a>
-            @endif
-        </form>
+
+            <form action="{{ route('konseling.index') }}" method="GET" class="flex flex-col gap-4">
+                <div class="relative">
+                    <input
+                        type="text"
+                        name="search"
+                        value="{{ old('search', $search ?? request('search')) }}"
+                        placeholder="Cari nama konselor, keahlian, atau gejala..."
+                        class="w-full border border-gray-200 rounded-2xl py-4 px-5 pr-28 text-sm text-gray-700 shadow-sm focus:border-[#A881C2] focus:ring-4 focus:ring-[#A881C2]/10 transition-all"
+                    />
+                    <button type="submit" class="absolute right-2 top-2 bottom-2 bg-[#4F46E5] text-white px-6 rounded-2xl text-sm font-semibold hover:bg-[#4338CA] transition-colors">Cari</button>
+                </div>
+
+                <div class="flex flex-wrap gap-3 items-center">
+                    <span class="text-sm text-gray-500">Gunakan filter di samping untuk mempersempit hasil pencarian.</span>
+                    @if($search || $selectedSpesialisasi || $availability)
+                        <a href="{{ route('konseling.index') }}" class="inline-flex items-center gap-2 text-[#A881C2] font-semibold hover:text-[#7F56D9]">
+                            <svg class="w-4 h-4" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M6 18L18 6M6 6l12 12"></path></svg>
+                            Reset Filter
+                        </a>
+                    @endif
+                </div>
+            </form>
+        </div>
+
+        <aside class="bg-white border border-gray-100 rounded-[32px] p-6 shadow-[0_8px_30px_rgb(0,0,0,0.04)]">
+            <h3 class="text-lg font-bold text-gray-900 mb-5">FILTER PENCARIAN</h3>
+            <form action="{{ route('konseling.index') }}" method="GET" class="space-y-5">
+                <input type="hidden" name="search" value="{{ $search ?? request('search') }}">
+                <div>
+                    <label class="block text-sm font-semibold text-gray-700 mb-2">Kategori Spesialisasi</label>
+                    <div class="relative">
+                        <select name="spesialisasi" class="appearance-none w-full bg-white border border-gray-200 py-3.5 pl-5 pr-12 rounded-2xl text-sm text-gray-700 focus:outline-none focus:ring-4 focus:ring-[#A881C2]/10 focus:border-[#A881C2] transition-all">
+                            <option value="semua">Semua Kategori</option>
+                            @foreach($spesialisasiList as $item)
+                                <option value="{{ $item }}" {{ ($selectedSpesialisasi ?? request('spesialisasi')) == $item ? 'selected' : '' }}>{{ $item }}</option>
+                            @endforeach
+                        </select>
+                        <div class="pointer-events-none absolute inset-y-0 right-0 flex items-center px-4 text-gray-400">
+                            <svg class="w-5 h-5" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M19 9l-7 7-7-7"></path></svg>
+                        </div>
+                    </div>
+                </div>
+
+                <div>
+                    <label class="block text-sm font-semibold text-gray-700 mb-2">Ketersediaan</label>
+                    <div class="relative">
+                        <select name="ketersediaan" class="appearance-none w-full bg-white border border-gray-200 py-3.5 pl-5 pr-12 rounded-2xl text-sm text-gray-700 focus:outline-none focus:ring-4 focus:ring-[#A881C2]/10 focus:border-[#A881C2] transition-all">
+                            <option value="semua">Semua Status</option>
+                            <option value="tersedia" {{ ($availability ?? request('ketersediaan')) == 'tersedia' ? 'selected' : '' }}>Tersedia</option>
+                        </select>
+                        <div class="pointer-events-none absolute inset-y-0 right-0 flex items-center px-4 text-gray-400">
+                            <svg class="w-5 h-5" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M19 9l-7 7-7-7"></path></svg>
+                        </div>
+                    </div>
+                </div>
+
+                <button type="submit" class="w-full bg-[#A881C2] text-white py-3 rounded-2xl font-semibold hover:bg-[#8A64A4] transition-colors">Terapkan Filter</button>
+            </form>
+        </aside>
     </div>
 
     @if($konselors->isEmpty())
