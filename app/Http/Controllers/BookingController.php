@@ -13,9 +13,17 @@ class BookingController extends Controller
     {
         $request->validate([
             'konselor_id' => 'required|exists:profil_konselor,profil_konselor_id',
-            'jadwal' => 'required',
+            'jadwal' => 'required|date',
             'deskripsi' => 'required|string|max:255',
         ]);
+
+        // PBI-46: Mencegah pemesanan mendadak (minimal 24 jam dari sekarang)
+        $jadwalDate = \Carbon\Carbon::parse($request->jadwal);
+        if ($jadwalDate->lt(now()->addHours(24))) {
+            return redirect()->back()
+                ->withInput()
+                ->with('error', 'Pemesanan sesi tidak boleh mendadak. Silakan pilih jadwal minimal 24 jam dari sekarang.');
+        }
 
         $alreadyBooked = SesiKonseling::where('profil_konselor_id', $request->konselor_id)
             ->where('jadwal', $request->jadwal)
@@ -48,9 +56,16 @@ class BookingController extends Controller
     public function update(Request $request, $id)
     {
         $request->validate([
-            'jadwal' => 'required',
+            'jadwal' => 'required|date',
             'reason' => 'nullable|string|max:255',
         ]);
+
+        // PBI-46: Mencegah perubahan mendadak (minimal 24 jam dari sekarang)
+        $jadwalDate = \Carbon\Carbon::parse($request->jadwal);
+        if ($jadwalDate->lt(now()->addHours(24))) {
+            return redirect()->back()
+                ->with('error', 'Pengajuan perubahan jadwal tidak boleh mendadak. Silakan pilih jadwal minimal 24 jam dari sekarang.');
+        }
 
         $sesi = SesiKonseling::findOrFail($id);
 
