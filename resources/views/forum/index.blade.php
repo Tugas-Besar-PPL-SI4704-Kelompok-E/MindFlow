@@ -100,7 +100,12 @@
                         <div class="flex items-center gap-2 flex-wrap">
                             <span class="font-bold text-gray-900 text-[15px]">{{ $authorName }}</span>
                             <span class="px-2 py-0.5 rounded-md text-[10px] font-black uppercase tracking-widest {{ $badgeClass }}">{{ $badgeText }}</span>
-                            <span class="text-gray-400 text-[12px] font-medium ml-1">{{ $thread->created_at->diffForHumans() }}</span>
+                            <span class="text-gray-400 text-[12px] font-medium ml-1">
+                                {{ $thread->created_at->diffForHumans() }}
+                                @if($thread->created_at != $thread->updated_at)
+                                    <span class="italic text-[10px] ml-1">(Edited)</span>
+                                @endif
+                            </span>
                         </div>
                     </div>
                     
@@ -137,6 +142,9 @@
                     
                     <!-- Dropdown Content -->
                     <div id="dropdown-{{ $thread->id }}" class="hidden absolute right-0 top-full mt-1 w-40 bg-white border border-gray-100 rounded-xl shadow-lg py-1.5 z-10">
+                        @if($thread->user_id === (Auth::id() ?? 1) && $thread->created_at->diffInMinutes(now()) <= 15)
+                            <a href="{{ route('forum.edit', $thread->id) }}" class="block w-full text-left px-4 py-2.5 text-sm text-gray-700 hover:bg-gray-50 font-semibold transition-colors">Edit Post</a>
+                        @endif
                         @if(Auth::user()->role === 'admin' || $thread->user_id === (Auth::id() ?? 1))
                             <form action="{{ route('forum.destroy', $thread->id) }}" method="POST" class="m-0" onsubmit="return confirm('Hapus post ini?');">
                                 @csrf
