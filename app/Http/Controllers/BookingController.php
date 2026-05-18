@@ -14,6 +14,7 @@ class BookingController extends Controller
         $request->validate([
             'konselor_id' => 'required|exists:profil_konselor,profil_konselor_id',
             'jadwal' => 'required|date',
+            'media_konseling' => 'required|in:video_call,voice_call,chat',
             'deskripsi' => 'required|string|max:255',
         ]);
 
@@ -40,6 +41,7 @@ class BookingController extends Controller
             'user_id' => Auth::id(),
             'profil_konselor_id' => $request->konselor_id,
             'jadwal' => $request->jadwal,
+            'media_konseling' => $request->media_konseling,
             'deskripsi' => $request->deskripsi,
             'status' => 'pending'
         ]);

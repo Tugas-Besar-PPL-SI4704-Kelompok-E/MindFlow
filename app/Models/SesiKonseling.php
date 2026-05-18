@@ -15,6 +15,7 @@ class SesiKonseling extends Model
         'user_id',
         'profil_konselor_id',
         'jadwal',
+        'media_konseling',
         'deskripsi',
         'requested_jadwal',
         'request_reason',
