@@ -91,6 +91,7 @@ Route::middleware('auth')->group(function () {
         Route::post('/rekrutmen/{id}/approve', [AdminController::class, 'approveKonselor'])->name('rekrutmen.approve');
         Route::post('/rekrutmen/{id}/reject', [AdminController::class, 'rejectKonselor'])->name('rekrutmen.reject');
         Route::get('/laporan', [AdminController::class, 'laporan'])->name('laporan');
+        Route::post('/laporan/{id}/punish', [AdminController::class, 'punishUser'])->name('laporan.punish');
         Route::delete('/forum/{id}/delete', [AdminController::class, 'hapusPostingan'])->name('forum.delete');
         Route::get('/spesialisasi', [AdminController::class, 'spesialisasi'])->name('spesialisasi');
         Route::post('/spesialisasi', [AdminController::class, 'storeSpesialisasi'])->name('spesialisasi.store');

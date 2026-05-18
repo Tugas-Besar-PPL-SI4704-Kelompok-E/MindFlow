@@ -568,6 +568,51 @@
                 </div>
             @endif
 
+            @if(session('mute_error'))
+                <div class="fixed inset-0 bg-gray-900/50 backdrop-blur-sm z-[100] flex items-center justify-center animate-[fadeIn_0.2s_ease-out]" id="muteModal">
+                    <div class="bg-white rounded-[24px] w-full max-w-sm shadow-xl p-8 text-center transform scale-100 mx-4">
+                        <div class="w-20 h-20 bg-purple-50 rounded-full flex items-center justify-center mx-auto mb-5">
+                            <span class="text-4xl">🤫</span>
+                        </div>
+                        <h3 class="text-xl font-bold text-gray-900 mb-2">Akses Dibatasi</h3>
+                        <p class="text-[15px] text-gray-600 mb-2 leading-relaxed font-medium">Anda dalam masa mute selama:</p>
+                        <div class="text-2xl font-black text-[#A881C2] mb-6 tracking-wider" id="muteCountdown">00:00:00</div>
+                        <p class="text-[14px] text-gray-500 mb-8 italic">Berkatalah dengan baik 😊</p>
+                        <button onclick="document.getElementById('muteModal').remove()" class="w-full bg-[#A881C2] hover:bg-[#8A64A4] text-white font-bold py-3.5 px-4 rounded-xl transition-colors shadow-sm shadow-purple-500/30">
+                            Mengerti
+                        </button>
+                    </div>
+                </div>
+                <script>
+                    document.addEventListener('DOMContentLoaded', function() {
+                        const targetDate = new Date("{{ session('mute_until') }}").getTime();
+                        const countdownEl = document.getElementById('muteCountdown');
+                        
+                        function updateCountdown() {
+                            const now = new Date().getTime();
+                            const distance = targetDate - now;
+                            
+                            if (distance <= 0) {
+                                countdownEl.innerHTML = "Waktu habis!";
+                                return;
+                            }
+                            
+                            const hours = Math.floor(distance / (1000 * 60 * 60));
+                            const minutes = Math.floor((distance % (1000 * 60 * 60)) / (1000 * 60));
+                            const seconds = Math.floor((distance % (1000 * 60)) / 1000);
+                            
+                            countdownEl.innerHTML = 
+                                String(hours).padStart(2, '0') + ":" + 
+                                String(minutes).padStart(2, '0') + ":" + 
+                                String(seconds).padStart(2, '0');
+                        }
+                        
+                        updateCountdown();
+                        setInterval(updateCountdown, 1000);
+                    });
+                </script>
+            @endif
+
             @yield('content')
         </main>
 

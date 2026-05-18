@@ -35,12 +35,8 @@
                     </button>
                     <!-- Dropdown -->
                     <div id="dropdown-reply-{{ $reply->id }}" class="hidden absolute right-0 top-full mt-1 w-32 bg-white border border-gray-100 rounded-xl shadow-lg py-1.5 z-10">
-                        @if(Auth::user()->role === 'admin' || $reply->user_id === (Auth::id() ?? 1))
-                             <form action="{{ route('forum.reply.destroy', $reply->id) }}" method="POST" class="m-0" onsubmit="return confirm('Hapus balasan ini?');">
-                                 @csrf
-                                 @method('DELETE')
-                                 <button type="submit" class="w-full text-left px-3 py-2 text-xs text-red-500 hover:bg-red-50 font-semibold transition-colors">Hapus</button>
-                             </form>
+                        @if($reply->user_id === (Auth::id() ?? 1) || (Auth::user() && Auth::user()->role === 'admin'))
+                             <button type="button" onclick="openDeleteModal('{{ route('forum.reply.destroy', $reply->id) }}')" class="w-full text-left px-3 py-2 text-xs text-red-500 hover:bg-red-50 font-semibold transition-colors">Hapus</button>
                         @endif
                         @if(Auth::user()->role !== 'admin' && $reply->user_id !== (Auth::id() ?? 1))
                              <button onclick="document.getElementById('report-form-{{ $reply->id }}').classList.remove('hidden'); document.getElementById('dropdown-reply-{{ $reply->id }}').classList.add('hidden'); document.getElementById('reply-form-{{ $reply->id }}').classList.add('hidden');" class="w-full text-left px-3 py-2 text-xs text-gray-700 hover:bg-gray-50 font-semibold transition-colors">Laporkan</button>
