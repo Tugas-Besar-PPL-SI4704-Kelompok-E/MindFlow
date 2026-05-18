@@ -29,7 +29,12 @@
                  alt="Avatar" class="w-12 h-12 rounded-full object-cover border border-gray-100">
             <div>
                 <div class="font-bold text-gray-900 text-[16px] mb-0.5">{{ $authorName }} <span class="px-2 py-0.5 rounded-md text-[10px] font-black uppercase tracking-widest {{ $badgeClass }} ml-1">{{ $badgeText }}</span></div>
-                <div class="text-gray-400 text-[13px] font-medium">{{ $thread->created_at->format('h:i A · M d, Y') }}</div>
+                <div class="text-gray-400 text-[13px] font-medium">
+                    {{ $thread->created_at->format('h:i A · M d, Y') }}
+                    @if($thread->created_at != $thread->updated_at)
+                        <span class="italic text-[11px] ml-1">(Edited)</span>
+                    @endif
+                </div>
             </div>
         </div>
 
@@ -40,6 +45,9 @@
             
             <!-- Dropdown Content -->
             <div id="dropdown-show-{{ $thread->id }}" class="hidden absolute right-0 top-full mt-1 w-40 bg-white border border-gray-100 rounded-xl shadow-lg py-1.5 z-10">
+                @if($thread->user_id === (Auth::id() ?? 1) && $thread->created_at->diffInMinutes(now()) <= 15)
+                    <a href="{{ route('forum.edit', $thread->id) }}" class="block w-full text-left px-4 py-2.5 text-sm text-gray-700 hover:bg-gray-50 font-semibold transition-colors">Edit Post</a>
+                @endif
                 @if(Auth::user()->role === 'admin' || $thread->user_id === (Auth::id() ?? 1))
                     <form action="{{ route('forum.destroy', $thread->id) }}" method="POST" class="m-0" onsubmit="return confirm('Hapus post ini?');">
                         @csrf

@@ -48,6 +48,10 @@ class ForumController extends Controller
             abort(403, 'Unauthorized action.');
         }
 
+        if ($forum->created_at->diffInMinutes(now()) > 15) {
+            abort(403, 'Batas waktu edit telah habis (15 menit).');
+        }
+
         return view('forum.edit', ['thread' => $forum]);
     }
 
@@ -55,6 +59,10 @@ class ForumController extends Controller
     {
         if ($forum->user_id !== (Auth::id() ?? 1)) {
             abort(403, 'Unauthorized action.');
+        }
+
+        if ($forum->created_at->diffInMinutes(now()) > 15) {
+            abort(403, 'Batas waktu edit telah habis (15 menit).');
         }
 
         $request->validate([
