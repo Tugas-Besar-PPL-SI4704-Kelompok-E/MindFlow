@@ -144,6 +144,7 @@
                     <div id="dropdown-{{ $thread->id }}" class="hidden absolute right-0 top-full mt-1 w-40 bg-white border border-gray-100 rounded-xl shadow-lg py-1.5 z-10">
                         @if($thread->user_id === (Auth::id() ?? 1) && $thread->created_at->diffInMinutes(now()) <= 15)
                             <a href="{{ route('forum.edit', $thread->id) }}" class="block w-full text-left px-4 py-2.5 text-sm text-gray-700 hover:bg-gray-50 font-semibold transition-colors">Edit Post</a>
+
                         @endif
                         @if($thread->user_id === (Auth::id() ?? 1) || (Auth::user() && Auth::user()->role === 'admin'))
                             <button type="button" onclick="openDeleteModal('{{ route('forum.destroy', $thread->id) }}')" class="w-full text-left px-4 py-2.5 text-sm text-red-500 hover:bg-red-50 font-semibold transition-colors">Hapus Post</button>

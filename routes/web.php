@@ -99,6 +99,8 @@ Route::middleware('auth')->group(function () {
         Route::put('/spesialisasi/{id}', [AdminController::class, 'updateSpesialisasi'])->name('spesialisasi.update');
         Route::post('/spesialisasi/{id}/toggle', [AdminController::class, 'toggleSpesialisasi'])->name('spesialisasi.toggle');
         Route::delete('/spesialisasi/{id}', [AdminController::class, 'destroySpesialisasi'])->name('spesialisasi.destroy');
+        Route::get('/settings', [AdminController::class, 'settings'])->name('settings');
+        Route::put('/settings', [AdminController::class, 'updateSettings'])->name('settings.update');
     });
 
     // Konselor Routes
@@ -108,6 +110,8 @@ Route::middleware('auth')->group(function () {
         Route::get('/pasien', [CounselorController::class, 'pasien'])->name('pasien');
         Route::post('/jadwal/{id}/accept', [CounselorController::class, 'acceptSession'])->name('jadwal.accept');
         Route::post('/jadwal/{id}/reject', [CounselorController::class, 'rejectSession'])->name('jadwal.reject');
+        Route::get('/settings', [CounselorController::class, 'settings'])->name('settings');
+        Route::put('/settings', [CounselorController::class, 'updateSettings'])->name('settings.update');
     });
 
     // Journal Routes (PBI 15, 16, 17)

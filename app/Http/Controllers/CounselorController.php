@@ -4,7 +4,9 @@ namespace App\Http\Controllers;
 
 use Illuminate\Http\Request;
 use Illuminate\Support\Facades\Auth;
+use Illuminate\Support\Facades\Hash;
 use App\Models\SesiKonseling;
+use App\Models\Spesialisasi;
 use Carbon\Carbon;
 
 class CounselorController extends Controller
@@ -107,5 +109,59 @@ class CounselorController extends Controller
         }
 
         return redirect()->back()->with('success', 'Pengajuan perubahan jadwal telah ditolak.');
+    }
+
+    /**
+     * PBI 62: Pengaturan Profil dan Jadwal Konselor
+     */
+    public function settings()
+    {
+        $user = Auth::user();
+        $profil = $user->profilKonselor;
+        $spesialisasis = Spesialisasi::where('is_active', true)->orderBy('nama')->get();
+
+        return view('konselor.settings', compact('user', 'profil', 'spesialisasis'));
+    }
+
+    public function updateSettings(Request $request)
+    {
+        $user = Auth::user();
+        $profil = $user->profilKonselor;
+
+        $request->validate([
+            // Validasi Akun
+            'nama_asli' => 'required|string|max:255',
+            'nama_samaran' => 'required|string|max:255|unique:users,nama_samaran,' . $user->id,
+            'password' => 'nullable|min:8|confirmed',
+            // Validasi Profil Profesional
+            'spesialisasi' => 'required|string|max:255',
+            'nomor_whatsapp' => 'required|string|max:20',
+            'no_sipp' => 'required|string|max:100',
+            'biografi' => 'nullable|string',
+            'keahlian' => 'nullable|string',
+        ]);
+
+        // Update Akun
+        $user->nama_asli = $request->nama_asli;
+        $user->nama_samaran = $request->nama_samaran;
+
+        if ($request->filled('password')) {
+            $user->password = Hash::make($request->password);
+        }
+        $user->save();
+
+        // Update Profil Profesional
+        if ($profil) {
+            $profil->update([
+                'nama' => $request->nama_asli, // sinkronisasi nama asli ke tabel profil
+                'spesialisasi' => $request->spesialisasi,
+                'nomor_whatsapp' => $request->nomor_whatsapp,
+                'no_sipp' => $request->no_sipp,
+                'biografi' => $request->biografi,
+                'keahlian' => $request->keahlian,
+            ]);
+        }
+
+        return back()->with('success', 'Pengaturan profil profesional berhasil diperbarui!');
     }
 }
