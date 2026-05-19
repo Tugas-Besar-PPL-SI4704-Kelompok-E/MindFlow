@@ -26,6 +26,9 @@ class HistoryController extends Controller
     {
         $userId = Auth::id() ?? 1;
 
+        // PBI-45: Batalkan sesi yang sudah kedaluwarsa secara otomatis sebelum menampilkan riwayat
+        \App\Models\SesiKonseling::cancelExpiredPendingSessions();
+
         // Ambil data Pengecekan Singkat
         $checkInstans = HasilCheckInstan::where('user_id', $userId)
             ->orderBy('created_at', 'desc')
