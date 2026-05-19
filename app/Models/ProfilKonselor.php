@@ -55,4 +55,9 @@ class ProfilKonselor extends Model
     {
         return $this->hasMany(SesiKonseling::class, 'profil_konselor_id', 'profil_konselor_id');
     }
+
+    public function counselorSchedules()
+    {
+        return $this->hasMany(CounselorSchedule::class, 'profil_konselor_id', 'profil_konselor_id');
+    }
 }

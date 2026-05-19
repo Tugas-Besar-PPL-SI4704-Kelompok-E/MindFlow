@@ -308,6 +308,14 @@
                      })
                  ]
              });
+
+             @if(isset($contohSesi) && $contohSesi->status == 'pending')
+             // Trik simulasi real-time: reload otomatis jika ada sesi pending
+             // agar pengguna bisa langsung melihat pop-up notifikasi saat dibatalkan
+             setTimeout(function() {
+                 window.location.reload();
+             }, 3000); // 3 detik
+             @endif
          });
      </script>
  @endpush

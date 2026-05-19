@@ -38,9 +38,11 @@ class PBI30NotifikasiTest extends DuskTestCase
             // Steps: Set date value dan deskripsi pesan
             $browser->script([
                 'document.getElementById("jadwal-picker").value = "2026-05-10 10:00";',
-                'document.getElementById("jadwal-picker").dispatchEvent(new Event("change", { bubbles: true }));'
+                'document.getElementById("jadwal-picker").dispatchEvent(new Event("change", { bubbles: true }));',
+                'document.querySelector("input[name=\"media_konseling\"][value=\"chat\"]").checked = true;'
             ]);
-            $browser->type('deskripsi', 'Topik konsultasi mengenai stres akademik')
+            $browser->assertChecked('input[name="media_konseling"][value="chat"]')
+                    ->type('deskripsi', 'Topik konsultasi mengenai stres akademik')
                     ->pause(500)
                     ->screenshot('step-1');
 

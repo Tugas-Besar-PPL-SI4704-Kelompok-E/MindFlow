@@ -111,6 +111,12 @@ Route::middleware('auth')->group(function () {
         Route::post('/jadwal/{id}/accept', [CounselorController::class, 'acceptSession'])->name('jadwal.accept');
         Route::post('/jadwal/{id}/reject', [CounselorController::class, 'rejectSession'])->name('jadwal.reject');
         Route::post('/jadwal/{id}/evaluasi', [CounselorController::class, 'submitEvaluasi'])->name('jadwal.evaluasi');
+        
+        // PBI 34: Ketersediaan Jadwal
+        Route::resource('/counselor-schedules', \App\Http\Controllers\CounselorScheduleController::class)
+            ->names('counselor-schedules')
+            ->except(['show', 'create', 'edit']);
+            
         Route::get('/settings', [CounselorController::class, 'settings'])->name('settings');
         Route::put('/settings', [CounselorController::class, 'updateSettings'])->name('settings.update');
     });

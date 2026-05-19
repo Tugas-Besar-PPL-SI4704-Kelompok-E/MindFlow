@@ -48,6 +48,9 @@ class CounselingController extends Controller
      */
     public function show($id)
     {
+        // Auto-cancel expired sessions when patient views profile
+        \Illuminate\Support\Facades\Artisan::call('app:cancel-expired-sessions');
+
         $konselor = ProfilKonselor::with(['user', 'sesiKonseling'])
             ->findOrFail($id);
 
