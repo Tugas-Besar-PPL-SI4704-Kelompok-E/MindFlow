@@ -310,11 +310,29 @@
              });
 
              @if(isset($contohSesi) && $contohSesi->status == 'pending')
-             // Trik simulasi real-time: reload otomatis jika ada sesi pending
-             // agar pengguna bisa langsung melihat pop-up notifikasi saat dibatalkan
+             // Trik simulasi real-time: cek auto-cancel setelah sesi pending sudah lewat batas waktu
              setTimeout(function() {
-                 window.location.reload();
-             }, 3000); // 3 detik
+                 fetch("{{ route('booking.checkExpired') }}", {
+                     method: 'POST',
+                     headers: {
+                         'Content-Type': 'application/json',
+                         'Accept': 'application/json',
+                         'X-CSRF-TOKEN': '{{ csrf_token() }}'
+                     },
+                     body: JSON.stringify({})
+                 })
+                 .then(function(response) {
+                     return response.json();
+                 })
+                 .then(function(data) {
+                     if (data.cancelled) {
+                         window.location.reload();
+                     }
+                 })
+                 .catch(function(error) {
+                     console.error('Auto-cancel request gagal:', error);
+                 });
+             }, {{ env('AUTO_CANCEL_SECONDS', 3) * 1000 }});
              @endif
          });
      </script>

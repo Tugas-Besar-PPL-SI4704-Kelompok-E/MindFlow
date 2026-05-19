@@ -51,10 +51,21 @@ class SessionAutoCancelled extends Notification
      */
     public function toArray(object $notifiable): array
     {
+        $timeout = env('AUTO_CANCEL_SECONDS', 3);
+
+        if ($timeout < 60) {
+            $duration = "$timeout detik";
+        } elseif ($timeout % 3600 === 0) {
+            $duration = ($timeout / 3600) . ' jam';
+        } else {
+            $duration = floor($timeout / 60) . ' menit';
+        }
+
         return [
             'sesi_konseling_id' => $this->session->sesi_konseling_id,
             'title' => 'Sesi Dibatalkan Otomatis',
-            'message' => 'Sesi konseling Anda pada tanggal ' . Carbon::parse($this->session->jadwal)->translatedFormat('d F Y H:i') . ' dengan ' . ($this->session->profilKonselor->nama ?? 'Konselor') . ' telah dibatalkan otomatis karena melebihi 24 jam tanpa respons.',
+            'message' => 'Pesanan Anda dibatalkan oleh sistem karena melebihi ' . $duration . ' tanpa respons pada sesi ' . Carbon::parse($this->session->jadwal)->translatedFormat('d F Y pukul H:i') . ' dengan ' . ($this->session->profilKonselor->nama ?? 'Konselor') . '.',
+            'type' => 'auto_cancelled',
         ];
     }
 }

@@ -18,12 +18,11 @@ class BookingController extends Controller
             'deskripsi' => 'required|string|max:255',
         ]);
 
-        // PBI-46: Mencegah pemesanan mendadak (minimal 24 jam dari sekarang)
         $jadwalDate = \Carbon\Carbon::parse($request->jadwal);
-        if ($jadwalDate->lt(now()->addHours(24))) {
+        if ($jadwalDate->lt(now())) {
             return redirect()->back()
                 ->withInput()
-                ->with('error', 'Pemesanan sesi tidak boleh mendadak. Silakan pilih jadwal minimal 24 jam dari sekarang.');
+                ->with('error', 'Jadwal tidak valid. Silakan pilih jadwal di masa depan.');
         }
 
         $alreadyBooked = SesiKonseling::where('profil_konselor_id', $request->konselor_id)
@@ -62,11 +61,10 @@ class BookingController extends Controller
             'reason' => 'nullable|string|max:255',
         ]);
 
-        // PBI-46: Mencegah perubahan mendadak (minimal 24 jam dari sekarang)
         $jadwalDate = \Carbon\Carbon::parse($request->jadwal);
-        if ($jadwalDate->lt(now()->addHours(24))) {
+        if ($jadwalDate->lt(now())) {
             return redirect()->back()
-                ->with('error', 'Pengajuan perubahan jadwal tidak boleh mendadak. Silakan pilih jadwal minimal 24 jam dari sekarang.');
+                ->with('error', 'Jadwal tidak valid. Silakan pilih jadwal di masa depan.');
         }
 
         $sesi = SesiKonseling::findOrFail($id);
@@ -95,6 +93,16 @@ class BookingController extends Controller
         ]);
 
         return redirect()->route('konseling.show', $konselorId)
-            ->with('error', 'Sesi konsultasi Anda telah dibatalkan.');
+            ->with('success', 'Jadwal konsultasi berhasil dibatalkan.');
+    }
+
+    public function checkExpiredPending(Request $request)
+    {
+        $cancelled = SesiKonseling::cancelExpiredPendingSessions();
+        if ($cancelled) {
+            session()->flash('error', 'Pesanan Anda dibatalkan oleh sistem karena melebihi 24 jam tanpa respon.');
+        }
+
+        return response()->json(['cancelled' => (bool) $cancelled]);
     }
 }

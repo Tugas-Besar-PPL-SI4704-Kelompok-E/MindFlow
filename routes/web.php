@@ -62,6 +62,7 @@ Route::middleware('auth')->group(function () {
 
     // PBI 29 & 30
     Route::post('/booking/store', [BookingController::class, 'store'])->name('booking.store');
+    Route::post('/booking/check-expired', [BookingController::class, 'checkExpiredPending'])->name('booking.checkExpired');
 
     // PBI 31
     Route::get('/booking/edit/{id}', [BookingController::class, 'edit'])->name('booking.edit');
