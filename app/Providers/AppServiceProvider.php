@@ -24,6 +24,10 @@ class AppServiceProvider extends ServiceProvider
     {
         View::composer('*', function ($view) {
             $userId = \Illuminate\Support\Facades\Auth::id();
+            
+            // PBI-45: Pastikan sesi yang kadaluwarsa dibatalkan sebelum ditampilkan di sidebar manapun
+            \App\Models\SesiKonseling::cancelExpiredPendingSessions();
+            
             $jadwalKonsultasi = $userId ? SesiKonseling::with('profilKonselor')
                 ->where('user_id', $userId)
                 ->where('status', '!=', 'cancelled')
