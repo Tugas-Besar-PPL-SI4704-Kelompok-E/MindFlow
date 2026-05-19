@@ -198,7 +198,8 @@
                 $userId = Auth::id();
                 $moodLogsCount = \App\Models\HasilCheckInstan::where('user_id', $userId)->count();
                 $journalCount = \App\Models\Journal::where('user_id', $userId)->count();
-                $avgMood = \App\Models\HasilCheckInstan::where('user_id', $userId)->avg('poin_skor') ?? 0;
+                $avgMoodAllTime = \App\Models\HasilCheckInstan::where('user_id', $userId)->avg('poin_skor') ?? 0;
+                $avgMoodWeekly = \App\Models\HasilCheckInstan::where('user_id', $userId)->where('created_at', '>=', now()->startOfWeek())->avg('poin_skor') ?? 0;
             @endphp
             <div class="stat-box">
                 <div class="stat-icon">
@@ -223,7 +224,7 @@
                     <svg width="24" height="24" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><path d="M3 3v18h18"/><path d="M18.7 8l-5.1 5.2-2.8-2.7L7 14.3"/></svg>
                 </div>
                 <div class="stat-info">
-                    <div class="value">{{ number_format($avgMood, 0) }}/10</div>
+                    <div class="value">{{ number_format($avgMoodAllTime, 0) }}/10</div>
                     <div class="label">Rata-Rata Mood</div>
                 </div>
             </div>
@@ -246,14 +247,14 @@
                         <div style="width: 32px; height: 32px; background: #E8F5E9; border-radius: 8px; display: flex; align-items: center; justify-content: center; color: #4CAF50;">
                             <svg width="18" height="18" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.5"><path d="M18 20V10M12 20V4M6 20v-6"/></svg>
                         </div>
-                        <span style="font-size: 24px; font-weight: 800;">{{ number_format($avgMood, 0) }} <span style="font-size: 14px; font-weight: 600; color: #8E8E93;">/ 10</span></span>
+                        <span style="font-size: 24px; font-weight: 800;">{{ number_format($avgMoodWeekly, 0) }} <span style="font-size: 14px; font-weight: 600; color: #8E8E93;">/ 10</span></span>
                         <span style="color: #4CAF50; font-size: 12px; font-weight: 700; margin-left: auto;">▲ 0.3</span>
                     </div>
                     <p style="font-size: 12px; color: #8E8E93; font-weight: 500;">Rata-rata minggu ini</p>
                 </div>
                 <div class="summary-card">
                     @php
-                        $bestMood = \App\Models\HasilCheckInstan::where('user_id', $userId)->orderBy('poin_skor', 'desc')->first();
+                        $bestMood = \App\Models\HasilCheckInstan::where('user_id', $userId)->orderByDesc('poin_skor')->latest('created_at')->first();
                     @endphp
                     <div style="display: flex; align-items: center; gap: 10px; margin-bottom: 15px;">
                         @php
@@ -295,7 +296,7 @@
             <div class="mood-today-card">
                 <p style="font-size: 11px; font-weight: 800; color: #8E8E93; text-transform: uppercase; letter-spacing: 1px; margin-bottom: 15px;">Mood Hari Ini</p>
                 @php
-                    $todayMood = \App\Models\HasilCheckInstan::where('user_id', $userId)->whereDate('created_at', today())->first();
+                    $todayMood = \App\Models\HasilCheckInstan::where('user_id', $userId)->whereDate('created_at', today())->latest('created_at')->first();
                 @endphp
                 @if($todayMood)
                     <div style="display: flex; align-items: center; gap: 20px;">
@@ -352,6 +353,10 @@
                             $dayMood = $weeklyMoods->get($dayIndex);
                             $avgScore = $dayMood ? $dayMood->avg('poin_skor') : 0;
                             $height = ($avgScore / 10) * 80;
+                            
+                            $barColor = '#90EE90'; // Default Green
+                            if ($avgScore > 0 && $avgScore <= 4) $barColor = '#FF8A8A'; // Red
+                            elseif ($avgScore > 4 && $avgScore <= 6) $barColor = '#FFD54F'; // Yellow
                         @endphp
                         <div style="display: flex; flex-direction: column; align-items: center; gap: 8px; flex: 1;">
                             @if($avgScore > 0)
@@ -364,7 +369,9 @@
                                         &#128522;
                                     @endif
                                 </div>
-                                <div style="width: 35px; height: {{ max($height, 15) }}px; background: #90EE90; border-radius: 10px; transition: all 0.3s;"></div>
+                                <div style="width: 35px; height: {{ max($height, 15) }}px; background: {{ $barColor }}; border-radius: 10px; transition: all 0.3s; display: flex; align-items: flex-start; justify-content: center; padding-top: 4px;">
+                                    <span style="font-size: 10px; font-weight: 800; color: rgba(0,0,0,0.5);">{{ number_format($avgScore, 1) }}</span>
+                                </div>
                             @else
                                 <div style="width: 35px; height: 15px; background: #EAEAEA; border-radius: 10px;"></div>
                             @endif
@@ -415,18 +422,10 @@
                 $upcomingSessions = \App\Models\SesiKonseling::with('profilKonselor')
                     ->where('user_id', $userId)
                     ->where('status', '!=', 'cancelled')
+                    ->where('jadwal', '>=', now()->startOfDay())
                     ->orderBy('jadwal', 'asc')
-                    ->get()
-                    ->filter(function($session) {
-                        // More robust date comparison for inconsistent database formats
-                        try {
-                            $sessionDate = \Carbon\Carbon::parse($session->jadwal);
-                            return $sessionDate->isAfter(now()->startOfDay());
-                        } catch (\Exception $e) {
-                            return false;
-                        }
-                    })
-                    ->take(2);
+                    ->take(2)
+                    ->get();
             @endphp
             @if($upcomingSessions->isNotEmpty())
                 <div style="display: flex; flex-direction: column; gap: 20px;">

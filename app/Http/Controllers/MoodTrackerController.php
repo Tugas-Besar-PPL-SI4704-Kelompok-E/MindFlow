@@ -50,12 +50,11 @@ class MoodTrackerController extends Controller
             'is_mendalam_offered'  => $isBuruk,
         ]);
 
-        // Jika mood buruk dan user memilih untuk bercerita (via modal),
-        // redirect ke open question dengan membawa check_instan_id
-        // agar bisa di-link di tabel hasil_check_mendalams.
-        // Logika redirect ini di-handle oleh JavaScript di frontend:
-        //   - Jika skor <= 4, modal muncul → user klik "Ya, Ceritakan" → ke open-question
-        //   - Jika skor > 4, form submit langsung → masuk ke sini → redirect back with success
+        // Jika user memilih untuk bercerita, arahkan ke halaman open question
+        // sambil membawa ID hasil check instan agar bisa ditautkan.
+        if ($request->input('wants_to_tell_story') == '1') {
+            return redirect()->route('mood-tracker.open-question', ['check_instan_id' => $hasil->check_instan_id]);
+        }
         
         return redirect()->route('mood-tracker.index')
             ->with('success', 'Mood berhasil disimpan! Skor kamu: ' . $skor . ' (' . $kategori . ')');
