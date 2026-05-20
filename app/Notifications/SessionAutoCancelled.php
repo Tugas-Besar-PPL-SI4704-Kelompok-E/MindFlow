@@ -61,10 +61,16 @@ class SessionAutoCancelled extends Notification
             $duration = floor($timeout / 60) . ' menit';
         }
 
+        $message = 'Pesanan Anda dibatalkan oleh sistem karena melebihi ' . $duration . ' tanpa respons pada sesi ' . Carbon::parse($this->session->jadwal)->translatedFormat('d F Y pukul H:i') . ' dengan ' . ($this->session->profilKonselor->nama ?? 'Konselor') . '.';
+        if ($this->session->payment_status === 'refunded') {
+            $message .= ' Pembayaran akan dikembalikan.';
+        }
+
         return [
             'sesi_konseling_id' => $this->session->sesi_konseling_id,
             'title' => 'Sesi Dibatalkan Otomatis',
-            'message' => 'Pesanan Anda dibatalkan oleh sistem karena melebihi ' . $duration . ' tanpa respons pada sesi ' . Carbon::parse($this->session->jadwal)->translatedFormat('d F Y pukul H:i') . ' dengan ' . ($this->session->profilKonselor->nama ?? 'Konselor') . '.',
+            'message' => $message,
+            'payment_status' => $this->session->payment_status,
             'type' => 'auto_cancelled',
         ];
     }

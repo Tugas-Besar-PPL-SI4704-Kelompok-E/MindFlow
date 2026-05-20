@@ -3,30 +3,26 @@
 namespace App\Http\Controllers;
 
 use Illuminate\Http\Request;
+use App\Http\Requests\StoreKonselingRequest;
 use App\Models\SesiKonseling;
 use App\Models\ProfilKonselor;
 use Illuminate\Support\Facades\Auth;
 
 class BookingController extends Controller
 {
-    public function store(Request $request) 
+    public function store(StoreKonselingRequest $request) 
     {
-        $request->validate([
-            'konselor_id' => 'required|exists:profil_konselor,profil_konselor_id',
-            'jadwal' => 'required|date',
-            'media_konseling' => 'required|in:video_call,voice_call,chat',
-            'deskripsi' => 'required|string|max:255',
-        ]);
+        $data = $request->validated();
 
-        $jadwalDate = \Carbon\Carbon::parse($request->jadwal);
+        $jadwalDate = \Carbon\Carbon::parse($data['jadwal']);
         if ($jadwalDate->lt(now())) {
             return redirect()->back()
                 ->withInput()
                 ->with('error', 'Jadwal tidak valid. Silakan pilih jadwal di masa depan.');
         }
 
-        $alreadyBooked = SesiKonseling::where('profil_konselor_id', $request->konselor_id)
-            ->where('jadwal', $request->jadwal)
+        $alreadyBooked = SesiKonseling::where('profil_konselor_id', $data['konselor_id'])
+            ->where('jadwal', $data['jadwal'])
             ->whereIn('status', ['pending', 'confirmed', 'rescheduled'])
             ->exists();
 
@@ -38,10 +34,12 @@ class BookingController extends Controller
 
         SesiKonseling::create([
             'user_id' => Auth::id(),
-            'profil_konselor_id' => $request->konselor_id,
-            'jadwal' => $request->jadwal,
-            'media_konseling' => $request->media_konseling,
-            'deskripsi' => $request->deskripsi,
+            'profil_konselor_id' => $data['konselor_id'],
+            'jadwal' => $data['jadwal'],
+            'media_konseling' => $data['media_konseling'],
+            'deskripsi' => $data['deskripsi'] ?? null,
+            'payment_method' => $data['payment_method'],
+            'payment_status' => 'paid',
             'status' => 'pending'
         ]);
 
@@ -100,7 +98,7 @@ class BookingController extends Controller
     {
         $cancelled = SesiKonseling::cancelExpiredPendingSessions();
         if ($cancelled) {
-            session()->flash('error', 'Pesanan Anda dibatalkan oleh sistem karena melebihi 24 jam tanpa respon.');
+            session()->flash('error', 'Pesanan Anda dibatalkan oleh sistem karena melebihi 24 jam tanpa respon. Pembayaran akan dikembalikan.');
         }
 
         return response()->json(['cancelled' => (bool) $cancelled]);

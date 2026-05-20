@@ -102,6 +102,9 @@ Route::middleware('auth')->group(function () {
         Route::delete('/spesialisasi/{id}', [AdminController::class, 'destroySpesialisasi'])->name('spesialisasi.destroy');
         Route::get('/settings', [AdminController::class, 'settings'])->name('settings');
         Route::put('/settings', [AdminController::class, 'updateSettings'])->name('settings.update');
+        // Konseling admin actions
+        Route::post('/konseling/{id}/confirm', [\App\Http\Controllers\AdminKonselingController::class, 'confirm'])->name('konseling.confirm');
+        Route::post('/konseling/{id}/cancel', [\App\Http\Controllers\AdminKonselingController::class, 'cancel'])->name('konseling.cancel');
     });
 
     // Konselor Routes

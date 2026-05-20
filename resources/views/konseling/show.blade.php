@@ -66,6 +66,13 @@
                             <div class="inline-flex items-center px-4 py-1.5 rounded-full bg-purple-50 text-[#A881C2] text-sm font-bold border border-purple-100">
                                 {{ $konselor->spesialisasi }}
                             </div>
+                            <div class="inline-flex items-center px-4 py-1.5 rounded-full bg-indigo-50 text-[#4338CA] text-sm font-bold border border-indigo-100 mt-3">
+                                @if(!empty($konselor->harga_per_sesi) && $konselor->harga_per_sesi > 0)
+                                    Rp{{ number_format($konselor->harga_per_sesi, 0, ',', '.') }} / sesi
+                                @else
+                                    Harga belum diatur
+                                @endif
+                            </div>
                         </div>
 
                         <div class="grid grid-cols-1 gap-8">
@@ -178,8 +185,56 @@
                             @error('deskripsi')<p class="text-sm text-red-600">{{ $message }}</p>@enderror
                         </div>
 
+                        <div class="space-y-2">
+                            <label class="block text-[11px] font-black text-gray-400 uppercase tracking-widest ml-1">Metode Pembayaran</label>
+                            <div class="grid grid-cols-1 gap-3">
+                                <label class="relative cursor-pointer block">
+                                    <input type="radio" name="payment_method" value="transfer" class="peer sr-only" required {{ old('payment_method') == 'transfer' ? 'checked' : '' }}>
+                                    <div class="relative p-4 pl-5 rounded-[18px] border @error('payment_method') border-red-500 @else border-gray-100 @enderror bg-gray-50 hover:bg-purple-50 transition-all duration-300 ease-out transform hover:-translate-y-[0.5px] peer-checked:border-[#A881C2] peer-checked:bg-purple-50 peer-checked:ring-2 peer-checked:ring-[#A881C2]/30 peer-checked:shadow-[0_0_0_1px_rgba(168,129,194,0.3)]">
+                                        <span class="absolute inset-y-0 left-0 w-1.5 rounded-r-full bg-[#A881C2] opacity-0 transition-all duration-300 peer-checked:opacity-100"></span>
+                                        <div class="flex items-center gap-3">
+                                            <span class="inline-flex w-10 h-10 rounded-2xl bg-white text-[#A881C2] items-center justify-center shadow-sm">
+                                                <svg class="w-5 h-5" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M4 7h16M4 12h16M4 17h16"></path></svg>
+                                            </span>
+                                            <div>
+                                                <p class="font-bold text-gray-900 peer-checked:text-[#3B076E]">Transfer Bank</p>
+                                                <p class="text-xs text-gray-500 peer-checked:text-[#4338CA]">Kirim bukti pembayaran ke admin.</p>
+                                            </div>
+                                        </div>
+                                    </div>
+                                </label>
+                                <label class="relative cursor-pointer block">
+                                    <input type="radio" name="payment_method" value="e-wallet" class="peer sr-only" {{ old('payment_method') == 'e-wallet' ? 'checked' : '' }}>
+                                    <div class="relative p-4 pl-5 rounded-[18px] border @error('payment_method') border-red-500 @else border-gray-100 @enderror bg-gray-50 hover:bg-purple-50 transition-all duration-300 ease-out transform hover:-translate-y-[0.5px] peer-checked:border-[#A881C2] peer-checked:bg-purple-50 peer-checked:ring-2 peer-checked:ring-[#A881C2]/30 peer-checked:shadow-[0_0_0_1px_rgba(168,129,194,0.3)]">
+                                        <span class="absolute inset-y-0 left-0 w-1.5 rounded-r-full bg-[#A881C2] opacity-0 transition-all duration-300 peer-checked:opacity-100"></span>
+                                        <div class="flex items-center gap-3">
+                                            <span class="inline-flex w-10 h-10 rounded-2xl bg-white text-[#A881C2] items-center justify-center shadow-sm">
+                                                <svg class="w-5 h-5" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M8 7h8M8 11h8m-8 4h5"></path></svg>
+                                            </span>
+                                            <div>
+                                                <p class="font-bold text-gray-900 peer-checked:text-[#3B076E]">E-Wallet</p>
+                                                <p class="text-xs text-gray-500 peer-checked:text-[#4338CA]">Bayar cepat melalui e-wallet.</p>
+                                            </div>
+                                        </div>
+                                    </div>
+                                </label>
+                            </div>
+                            @error('payment_method')<p class="text-sm text-red-600">{{ $message }}</p>@enderror
+                        </div>
+
+                        <div class="rounded-[22px] bg-gray-50 border border-gray-100 p-4">
+                            <p class="text-[11px] font-black text-gray-400 uppercase tracking-widest mb-2">Total Pembayaran</p>
+                            <p class="text-2xl font-extrabold text-gray-900">
+                                @if(!empty($konselor->harga_per_sesi) && $konselor->harga_per_sesi > 0)
+                                    Rp{{ number_format($konselor->harga_per_sesi, 0, ',', '.') }}
+                                @else
+                                    Gratis / belum ditentukan
+                                @endif
+                            </p>
+                        </div>
+
                         <button type="submit" class="w-full bg-[#A881C2] hover:bg-[#8A64A4] text-white py-3 rounded-[14px] font-bold text-[14px] shadow-lg shadow-[#A881C2]/20 transition-all duration-300 flex items-center justify-center gap-2 active:scale-[0.98]">
-                            <span>Konfirmasi Reservasi</span>
+                            <span>Konfirmasi Pembayaran</span>
                             <svg class="w-4 h-4" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2.5" d="M9 5l7 7-7 7"></path></svg>
                         </button>
                     </div>
@@ -198,6 +253,19 @@
 
             @if($contohSesi)
             <div class="mt-8 bg-white rounded-[32px] p-8 shadow-[0_4px_20px_-4px_rgba(0,0,0,0.05)] border border-gray-100 animate-in fade-in slide-in-from-bottom-4 duration-700">
+                @if($contohSesi->payment_status === 'refunded')
+                    <div class="mb-6 rounded-[28px] bg-emerald-50 border border-emerald-100 p-5 text-emerald-900">
+                        <div class="flex items-start gap-3">
+                            <div class="w-11 h-11 rounded-3xl bg-emerald-100 text-emerald-700 flex items-center justify-center">
+                                <svg class="w-6 h-6" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M12 8c-1.1 0-2 .9-2 2 0 .62.31 1.16.78 1.48L12 16l1.22-4.52A1.99 1.99 0 0014 10c0-1.1-.9-2-2-2zm0 10v2m0-16V2m4 4l1.5-1.5m-11 0L8 4m8 12l1.5 1.5M5.5 17.5L7 19.5"></path></svg>
+                            </div>
+                            <div class="space-y-2">
+                                <p class="text-sm font-bold">Pembayaran telah dikembalikan</p>
+                                <p class="text-sm text-gray-600">Pembayaran untuk sesi ini sedang diproses kembali ke metode Anda.</p>
+                            </div>
+                        </div>
+                    </div>
+                @endif
                 <h6 class="font-bold text-gray-900 text-lg mb-6 flex items-center gap-3">
                     <div class="p-2 rounded-xl bg-amber-50 text-amber-500">
                         <svg class="w-5 h-5" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M12 8v4l3 3m6-3a9 9 0 11-18 0 9 9 0 0118 0z"></path></svg>
@@ -228,6 +296,12 @@
                             @endif
                         </span>
                     </div>
+                    <div class="mt-4 text-sm text-gray-600 space-y-2">
+                        <p class="font-bold">Metode Pembayaran:</p>
+                        <p>{{ ucfirst(str_replace('-', ' ', $contohSesi->payment_method ?? 'Belum dipilih')) }}</p>
+                        <p class="font-bold">Status Pembayaran:</p>
+                        <p>{{ ucfirst($contohSesi->payment_status ?? 'Belum bayar') }}</p>
+                    </div>
                 </div>
                 <div class="flex flex-col gap-3">
                     <a href="{{ route('booking.edit', $contohSesi->sesi_konseling_id) }}" class="w-full text-center bg-purple-50 text-[#A881C2] hover:bg-purple-100 py-3.5 rounded-2xl text-sm font-bold transition-all duration-300">
@@ -251,6 +325,9 @@
      <link rel="stylesheet" href="https://cdn.jsdelivr.net/npm/flatpickr/dist/plugins/confirmDate/confirmDate.min.css">
      <style>
          .flatpickr-calendar {
+             z-index: 99999 !important;
+             position: absolute !important;
+             pointer-events: auto !important;
              border-radius: 24px !important;
              box-shadow: 0 25px 50px -12px rgba(0, 0, 0, 0.15) !important;
              border: 1px solid #f3f4f6 !important;
@@ -293,11 +370,13 @@
              const bookedSlots = @json($bookedSchedules ?? []);
 
              flatpickr("#jadwal-picker", {
+                 appendTo: document.body,
                  enableTime: true,
                  dateFormat: "Y-m-d H:i",
                  minDate: "today",
                  time_24hr: true,
                  locale: "id",
+                 clickOpens: true,
                  disable: bookedSlots,
                  defaultDate: "{{ old('jadwal') }}",
                  plugins: [

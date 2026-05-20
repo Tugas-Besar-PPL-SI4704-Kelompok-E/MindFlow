@@ -20,6 +20,8 @@ class SesiKonseling extends Model
         'requested_jadwal',
         'request_reason',
         'status',
+        'payment_method',
+        'payment_status',
         'catatan_konselor',
     ];
     public function user()
@@ -48,6 +50,9 @@ class SesiKonseling extends Model
 
         return self::where('status', 'pending')
             ->where('created_at', '<', now()->subSeconds($timeout))
-            ->update(['status' => 'cancelled']);
+            ->update([
+                'status' => 'cancelled',
+                'payment_status' => 'refunded',
+            ]);
     }
 }

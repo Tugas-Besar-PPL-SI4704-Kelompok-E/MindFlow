@@ -24,6 +24,7 @@ class ProfilKonselor extends Model
         'berkas_ktp',
         'berkas_sipp',
         'berkas_cv',
+        'harga_per_sesi',
     ];
 
     public function scopeSearch($query, $search)

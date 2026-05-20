@@ -31,13 +31,14 @@ class CancelExpiredSessions extends Command
         // For testing: cancel after 3 seconds
         // For production: change to subHours(24)
         $expiredSessions = SesiKonseling::where('status', 'pending')
-            ->where('created_at', '<', Carbon::now()->subSeconds(3))
+            ->where('created_at', '<', Carbon::now()->subSeconds(5))
             ->get();
 
         $count = 0;
         foreach ($expiredSessions as $session) {
             $session->update([
                 'status' => 'cancelled',
+                'payment_status' => 'refunded',
                 'catatan_konselor' => 'Sesi dibatalkan otomatis oleh sistem karena melebihi batas waktu respons.',
             ]);
 
