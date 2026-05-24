@@ -655,6 +655,52 @@
                 </script>
             @endif
 
+            @if(session('expired_cancelled_sessions'))
+                <div class="fixed inset-0 bg-gray-900/50 backdrop-blur-sm z-[100] flex items-center justify-center animate-[fadeIn_0.2s_ease-out]" id="expiredCancellationModal">
+                    <div class="bg-white rounded-[24px] w-full max-w-md shadow-xl p-8 text-center transform scale-100 mx-4 border border-red-100">
+                        <div class="w-20 h-20 bg-red-50 rounded-full flex items-center justify-center mx-auto mb-5 shadow-inner">
+                            <span class="text-4xl">⏰</span>
+                        </div>
+                        <h3 class="text-xl font-bold text-gray-900 mb-2">Pembatalan Otomatis</h3>
+                        <p class="text-[14px] text-gray-600 mb-4 leading-relaxed font-medium">
+                            Sesi konseling Anda telah dibatalkan secara otomatis oleh sistem karena tidak ada respons dari konselor hingga waktu yang dijadwalkan:
+                        </p>
+                        
+                        <div class="bg-red-50/50 border border-red-100 rounded-2xl p-4 mb-6 text-left max-h-48 overflow-y-auto">
+                            <p class="text-xs font-bold text-red-800 uppercase tracking-wider mb-2">Detail Sesi:</p>
+                            <ul class="space-y-3">
+                                @foreach(session('expired_cancelled_sessions') as $detail)
+                                    <li class="flex flex-col gap-0.5 border-b border-red-100 pb-2 last:border-0 last:pb-0">
+                                        <span class="text-[13px] font-bold text-gray-800">{{ $detail['konselor'] }}</span>
+                                        <span class="text-[11px] font-medium text-gray-500">{{ $detail['jadwal'] }}</span>
+                                    </li>
+                                @endforeach
+                            </ul>
+                        </div>
+
+                        <button onclick="clearExpiredNotification()" id="btn-mengerti-pembatalan" class="w-full bg-[#A881C2] hover:bg-[#8A64A4] text-white font-bold py-3.5 px-4 rounded-xl transition-colors shadow-sm shadow-purple-500/30">
+                            Mengerti
+                        </button>
+                    </div>
+                </div>
+                <script>
+                    function clearExpiredNotification() {
+                        fetch("{{ route('booking.clear-expired-notification') }}", {
+                            method: 'POST',
+                            headers: {
+                                'X-CSRF-TOKEN': '{{ csrf_token() }}',
+                                'Content-Type': 'application/json',
+                                'Accept': 'application/json'
+                            }
+                        }).then(response => {
+                            document.getElementById('expiredCancellationModal').remove();
+                        }).catch(err => {
+                            document.getElementById('expiredCancellationModal').remove();
+                        });
+                    }
+                </script>
+            @endif
+
             @yield('content')
         </main>
 

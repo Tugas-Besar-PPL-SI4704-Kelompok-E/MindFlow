@@ -40,10 +40,50 @@ class SesiKonseling extends Model
     }
 
     /**
+     * Flag untuk mencegah eksekusi berulang dalam satu request.
+     */
+    protected static $hasCancelledExpired = false;
+
+    /**
      * Membatalkan sesi yang berstatus pending jika waktunya sudah lewat (PBI-45).
      */
     public static function cancelExpiredPendingSessions()
     {
+        if (self::$hasCancelledExpired) {
+            return;
+        }
+        self::$hasCancelledExpired = true;
+
+        $userId = \Illuminate\Support\Facades\Auth::id();
+        if ($userId) {
+            // Temukan sesi pending milik user tersebut yang sudah lewat waktunya (kadaluarsa)
+            $expiredSessions = self::where('user_id', $userId)
+                ->where('status', 'pending')
+                ->where('jadwal', '<', now())
+                ->with('profilKonselor')
+                ->get();
+
+            if ($expiredSessions->isNotEmpty()) {
+                // Batalkan sesi-sesi tersebut
+                self::whereIn('sesi_konseling_id', $expiredSessions->pluck('sesi_konseling_id'))
+                    ->update(['status' => 'cancelled']);
+
+                // Kumpulkan informasi sesi untuk notifikasi
+                $cancelledDetails = [];
+                foreach ($expiredSessions as $session) {
+                    $counselorName = $session->profilKonselor ? $session->profilKonselor->nama : 'Konselor';
+                    $cancelledDetails[] = [
+                        'jadwal' => \Carbon\Carbon::parse($session->jadwal)->translatedFormat('d M Y, H:i'),
+                        'konselor' => $counselorName,
+                    ];
+                }
+
+                // Simpan ke session untuk ditampilkan ke user (sampai ditutup secara manual)
+                session()->put('expired_cancelled_sessions', $cancelledDetails);
+            }
+        }
+
+        // Batalkan seluruh sesi pending lainnya yang sudah kadaluarsa secara umum
         self::where('status', 'pending')
             ->where('jadwal', '<', now())
             ->update(['status' => 'cancelled']);

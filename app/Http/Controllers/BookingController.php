@@ -97,4 +97,10 @@ class BookingController extends Controller
         return redirect()->route('konseling.show', $konselorId)
             ->with('error', 'Sesi konsultasi Anda telah dibatalkan.');
     }
+
+    public function clearExpiredNotification()
+    {
+        session()->forget('expired_cancelled_sessions');
+        return response()->json(['success' => true]);
+    }
 }
