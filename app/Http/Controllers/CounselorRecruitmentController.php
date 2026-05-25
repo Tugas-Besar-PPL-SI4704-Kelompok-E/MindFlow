@@ -33,6 +33,7 @@ class CounselorRecruitmentController extends Controller
             'berkas_ktp' => 'required|file|mimes:jpg,jpeg,png,pdf|max:2048',
             'berkas_sipp' => 'required|file|mimes:pdf|max:2048',
             'berkas_cv' => 'required|file|mimes:pdf|max:2048',
+            'harga_per_sesi' => 'required|numeric|min:0',
         ], [
             'nama_lengkap.required' => 'Nama lengkap wajib diisi.',
             'email.required' => 'Email wajib diisi.',
@@ -76,6 +77,7 @@ class CounselorRecruitmentController extends Controller
                 'user_id' => $user->id,
                 'nama' => $request->nama_lengkap,
                 'spesialisasi' => $request->spesialisasi,
+                'harga_per_sesi' => $request->harga_per_sesi,
                 'biografi' => '',
                 'keahlian' => '',
                 'nomor_whatsapp' => $request->nomor_whatsapp,

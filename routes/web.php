@@ -62,6 +62,7 @@ Route::middleware('auth')->group(function () {
 
     // PBI 29 & 30
     Route::post('/booking/store', [BookingController::class, 'store'])->name('booking.store');
+    Route::post('/booking/check-expired', [BookingController::class, 'checkExpiredPending'])->name('booking.checkExpired');
 
     // PBI 31
     Route::get('/booking/edit/{id}', [BookingController::class, 'edit'])->name('booking.edit');
@@ -101,6 +102,9 @@ Route::middleware('auth')->group(function () {
         Route::delete('/spesialisasi/{id}', [AdminController::class, 'destroySpesialisasi'])->name('spesialisasi.destroy');
         Route::get('/settings', [AdminController::class, 'settings'])->name('settings');
         Route::put('/settings', [AdminController::class, 'updateSettings'])->name('settings.update');
+        // Konseling admin actions
+        Route::post('/konseling/{id}/confirm', [\App\Http\Controllers\AdminKonselingController::class, 'confirm'])->name('konseling.confirm');
+        Route::post('/konseling/{id}/cancel', [\App\Http\Controllers\AdminKonselingController::class, 'cancel'])->name('konseling.cancel');
     });
 
     // Konselor Routes
@@ -111,6 +115,12 @@ Route::middleware('auth')->group(function () {
         Route::post('/jadwal/{id}/accept', [CounselorController::class, 'acceptSession'])->name('jadwal.accept');
         Route::post('/jadwal/{id}/reject', [CounselorController::class, 'rejectSession'])->name('jadwal.reject');
         Route::post('/jadwal/{id}/evaluasi', [CounselorController::class, 'submitEvaluasi'])->name('jadwal.evaluasi');
+        
+        // PBI 34: Ketersediaan Jadwal
+        Route::resource('/counselor-schedules', \App\Http\Controllers\CounselorScheduleController::class)
+            ->names('counselor-schedules')
+            ->except(['show', 'create', 'edit']);
+            
         Route::get('/settings', [CounselorController::class, 'settings'])->name('settings');
         Route::put('/settings', [CounselorController::class, 'updateSettings'])->name('settings.update');
     });

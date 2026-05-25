@@ -35,10 +35,11 @@ class PBI30NotifikasiTest extends DuskTestCase
                     ->pause(1000) // Wait untuk page load
                     ->screenshot('pre-condition');
 
-            // Steps: Set date value dan deskripsi pesan
+// Steps: Set date value dan deskripsi pesan (jadwal harus 24+ jam dari sekarang)
             $browser->script([
-                'document.getElementById("jadwal-picker").value = "2026-05-10 10:00";',
-                'document.getElementById("jadwal-picker").dispatchEvent(new Event("change", { bubbles: true }));'
+                'document.getElementById("jadwal-picker").value = "2026-05-22 10:00";',
+                'document.getElementById("jadwal-picker").dispatchEvent(new Event("change", { bubbles: true }));',
+                'document.querySelector("input[name=\"media_konseling\"][value=\"chat\"]").click();'
             ]);
             $browser->type('deskripsi', 'Topik konsultasi mengenai stres akademik')
                     ->pause(500)
@@ -62,7 +63,7 @@ class PBI30NotifikasiTest extends DuskTestCase
      * - User sudah login
      * - Sesi konseling sudah terbuat dengan status pending
      * - Halaman edit booking dapat diakses
-     * 
+     *
      * Test Scenario: Menampilkan notifikasi info setelah perubahan jadwal
      */
     public function test_menampilkan_notifikasi_info_setelah_perubahan_jadwal()
@@ -74,7 +75,8 @@ class PBI30NotifikasiTest extends DuskTestCase
             $sesi = SesiKonseling::factory()->create([
                 'profil_konselor_id' => $konselor->profil_konselor_id,
                 'user_id' => $user->id,
-                'status' => 'pending'
+                'status' => 'pending',
+                'jadwal' => \Carbon\Carbon::now()->addDays(2)->format('Y-m-d H:i'),
             ]);
 
             // Pre Condition: User login dan visit halaman edit booking
@@ -132,11 +134,11 @@ class PBI30NotifikasiTest extends DuskTestCase
             $browser->press('Batalkan Sesi')
                     ->acceptDialog()
                     ->pause(500)
-                    ->waitForText('Sesi konsultasi Anda telah dibatalkan.', 10)
+                    ->waitForText('Jadwal konsultasi berhasil dibatalkan.', 10)
                     ->screenshot('step-1');
 
             // Expected Result: Notifikasi pembatalan muncul
-            $browser->assertSee('Sesi konsultasi Anda telah dibatalkan.')
+            $browser->assertSee('Jadwal konsultasi berhasil dibatalkan.')
                     ->screenshot('result');
         });
     }

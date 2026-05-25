@@ -20,6 +20,8 @@ class SesiKonseling extends Model
         'requested_jadwal',
         'request_reason',
         'status',
+        'payment_method',
+        'payment_status',
         'catatan_konselor',
     ];
     public function user()
@@ -40,12 +42,17 @@ class SesiKonseling extends Model
     }
 
     /**
-     * Membatalkan sesi yang berstatus pending jika waktunya sudah lewat (PBI-45).
+     * Membatalkan sesi yang berstatus pending jika sudah melebihi batas waktu auto-cancel.
      */
     public static function cancelExpiredPendingSessions()
     {
-        self::where('status', 'pending')
-            ->where('jadwal', '<', now())
-            ->update(['status' => 'cancelled']);
+        $timeout = env('AUTO_CANCEL_SECONDS', 3);
+
+        return self::where('status', 'pending')
+            ->where('created_at', '<', now()->subSeconds($timeout))
+            ->update([
+                'status' => 'cancelled',
+                'payment_status' => 'refunded',
+            ]);
     }
 }
