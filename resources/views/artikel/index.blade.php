@@ -92,7 +92,11 @@
 @if($artikels->count() > 0)
 <div class="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-6 mb-8">
     @foreach($artikels as $artikel)
-        <article class="group bg-white rounded-[24px] overflow-hidden shadow-[0_4px_20px_-4px_rgba(0,0,0,0.03)] border border-gray-100 hover:shadow-[0_12px_40px_-8px_rgba(168,129,194,0.15)] hover:border-purple-100 transition-all duration-300 flex flex-col" id="artikel-card-{{ $artikel->artikel_id }}">
+        <article 
+            class="group bg-white rounded-[24px] overflow-hidden shadow-[0_4px_20px_-4px_rgba(0,0,0,0.03)] border border-gray-100 hover:shadow-[0_12px_40px_-8px_rgba(168,129,194,0.15)] hover:border-purple-100 transition-all duration-300 flex flex-col cursor-pointer" 
+            id="artikel-card-{{ $artikel->artikel_id }}"
+            onclick="openArtikelModal({{ $artikel->artikel_id }})"
+        >
             {{-- Cover Image --}}
             <div class="relative overflow-hidden aspect-[16/10] bg-gradient-to-br from-purple-50 to-indigo-50">
                 @if($artikel->gambar_cover)
@@ -130,7 +134,7 @@
 
                 {{-- Bookmark Button --}}
                 @auth
-                <div class="absolute top-4 right-4">
+                <div class="absolute top-4 right-4" onclick="event.stopPropagation()">
                     <button 
                         type="button" 
                         class="w-9 h-9 flex items-center justify-center rounded-xl bg-white/80 backdrop-blur-sm shadow-sm hover:bg-white transition-all group/bm {{ $artikel->isBookmarkedBy(Auth::id()) ? 'text-[#A881C2]' : 'text-gray-400 hover:text-[#A881C2]' }}"
@@ -183,6 +187,80 @@
         </article>
     @endforeach
 </div>
+
+{{-- Artikel Detail Modal --}}
+<div id="artikelModal" class="artikel-modal-overlay" onclick="closeArtikelModal(event)">
+    <div class="artikel-modal-container" onclick="event.stopPropagation()">
+        {{-- Close Button --}}
+        <button type="button" class="artikel-modal-close" onclick="closeArtikelModal()" id="btn-close-artikel-modal">
+            <svg class="w-5 h-5" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2.5" d="M6 18L18 6M6 6l12 12"/>
+            </svg>
+        </button>
+
+        {{-- Modal Image --}}
+        <div class="artikel-modal-image-wrapper">
+            <div id="artikelModalImage" class="artikel-modal-image"></div>
+            <div id="artikelModalKategori" class="artikel-modal-kategori"></div>
+        </div>
+
+        {{-- Modal Content --}}
+        <div class="artikel-modal-content">
+            {{-- Date & Author --}}
+            <div class="flex items-center gap-3 mb-4">
+                <div class="flex items-center gap-1.5">
+                    <svg class="w-3.5 h-3.5 text-gray-400" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                        <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M8 7V3m8 4V3m-9 8h10M5 21h14a2 2 0 002-2V7a2 2 0 00-2-2H5a2 2 0 00-2 2v12a2 2 0 002 2z"/>
+                    </svg>
+                    <span id="artikelModalDate" class="text-[11px] font-bold text-gray-400 uppercase tracking-wider"></span>
+                </div>
+                <span class="text-gray-200">•</span>
+                <div class="flex items-center gap-1.5">
+                    <img id="artikelModalAuthorAvatar" src="" alt="Author" class="w-5 h-5 rounded-full">
+                    <span id="artikelModalAuthor" class="text-[11px] font-semibold text-gray-500"></span>
+                </div>
+            </div>
+
+            {{-- Title --}}
+            <h2 id="artikelModalTitle" class="text-xl font-bold text-gray-900 leading-snug mb-4"></h2>
+
+            {{-- Divider --}}
+            <div class="w-12 h-1 bg-gradient-to-r from-[#A881C2] to-[#C4A8E0] rounded-full mb-5"></div>
+
+            {{-- Description --}}
+            <div id="artikelModalDeskripsi" class="artikel-modal-deskripsi text-gray-600 text-[14px] leading-relaxed"></div>
+
+            {{-- Read Button --}}
+            <div class="mt-6 pt-5 border-t border-gray-100">
+                <button type="button" id="artikelModalReadBtn" class="w-full bg-gradient-to-r from-[#A881C2] to-[#9B6FB8] hover:from-[#8A64A4] hover:to-[#7D5599] text-white px-6 py-3.5 rounded-2xl font-bold text-sm shadow-lg shadow-[#A881C2]/25 transition-all active:scale-[0.98] flex items-center justify-center gap-2">
+                    <svg class="w-5 h-5" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                        <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M12 6.253v13m0-13C10.832 5.477 9.246 5 7.5 5S4.168 5.477 3 6.253v13C4.168 18.477 5.754 18 7.5 18s3.332.477 4.5 1.253m0-13C13.168 5.477 14.754 5 16.5 5c1.747 0 3.332.477 4.5 1.253v13C19.832 18.477 18.247 18 16.5 18c-1.746 0-3.332.477-4.5 1.253"/>
+                    </svg>
+                    Baca Selengkapnya
+                </button>
+            </div>
+        </div>
+    </div>
+</div>
+
+{{-- Artikel Data for Modal --}}
+@php
+    $artikelModalData = [];
+    foreach ($artikels as $a) {
+        $artikelModalData[$a->artikel_id] = [
+            'id' => $a->artikel_id,
+            'judul' => $a->judul,
+            'konten' => strip_tags($a->konten),
+            'gambar_cover' => $a->gambar_cover ? asset('storage/' . $a->gambar_cover) : null,
+            'kategori' => $a->kategori,
+            'tanggal' => $a->created_at->translatedFormat('d M Y'),
+            'author' => $a->admin->nama_asli ?? 'Admin',
+        ];
+    }
+@endphp
+<script>
+    const artikelData = @json($artikelModalData);
+</script>
 
 {{-- Pagination --}}
 @if($artikels->hasPages())
@@ -268,5 +346,240 @@
         -webkit-box-orient: vertical;
         overflow: hidden;
     }
+
+    /* ── Artikel Modal ── */
+    .artikel-modal-overlay {
+        position: fixed;
+        inset: 0;
+        background: rgba(15, 10, 25, 0.55);
+        backdrop-filter: blur(8px);
+        -webkit-backdrop-filter: blur(8px);
+        z-index: 200;
+        display: flex;
+        align-items: center;
+        justify-content: center;
+        padding: 24px;
+        opacity: 0;
+        visibility: hidden;
+        transition: opacity 0.3s ease, visibility 0.3s ease;
+    }
+
+    .artikel-modal-overlay.show {
+        opacity: 1;
+        visibility: visible;
+    }
+
+    .artikel-modal-container {
+        background: #fff;
+        border-radius: 28px;
+        width: 100%;
+        max-width: 768px; /* Lebih lebar */
+        max-height: 85vh;
+        overflow: hidden;
+        display: flex;
+        flex-direction: column;
+        box-shadow: 
+            0 24px 80px -12px rgba(168, 129, 194, 0.25),
+            0 8px 24px -4px rgba(0, 0, 0, 0.1);
+        transform: translateY(30px) scale(0.96);
+        transition: transform 0.35s cubic-bezier(0.16, 1, 0.3, 1);
+        position: relative;
+    }
+
+    .artikel-modal-overlay.show .artikel-modal-container {
+        transform: translateY(0) scale(1);
+    }
+
+    .artikel-modal-close {
+        position: absolute;
+        top: 16px;
+        right: 16px;
+        z-index: 10;
+        width: 36px;
+        height: 36px;
+        display: flex;
+        align-items: center;
+        justify-content: center;
+        border-radius: 12px;
+        border: none;
+        background: rgba(255, 255, 255, 0.85);
+        backdrop-filter: blur(8px);
+        color: #6b7280;
+        cursor: pointer;
+        transition: all 0.2s ease;
+        box-shadow: 0 2px 8px rgba(0,0,0,0.08);
+    }
+
+    .artikel-modal-close:hover {
+        background: #fff;
+        color: #111827;
+        transform: rotate(90deg);
+        box-shadow: 0 4px 12px rgba(0,0,0,0.12);
+    }
+
+    .artikel-modal-image-wrapper {
+        position: relative;
+        width: 100%;
+        aspect-ratio: 16 / 9;
+        overflow: hidden;
+        flex-shrink: 0;
+        background: linear-gradient(135deg, #f3e8f5 0%, #e8e0f0 100%);
+    }
+
+    .artikel-modal-image {
+        width: 100%;
+        height: 100%;
+        background-size: cover;
+        background-position: center;
+        transition: transform 0.5s ease;
+    }
+
+    .artikel-modal-container:hover .artikel-modal-image {
+        transform: scale(1.03);
+    }
+
+    .artikel-modal-image-placeholder {
+        width: 100%;
+        height: 100%;
+        display: flex;
+        align-items: center;
+        justify-content: center;
+    }
+
+    .artikel-modal-kategori {
+        position: absolute;
+        bottom: 16px;
+        left: 16px;
+    }
+
+    .artikel-modal-kategori-badge {
+        display: inline-flex;
+        align-items: center;
+        padding: 6px 14px;
+        border-radius: 14px;
+        font-size: 11px;
+        font-weight: 800;
+        text-transform: uppercase;
+        letter-spacing: 0.08em;
+        backdrop-filter: blur(8px);
+        box-shadow: 0 2px 8px rgba(0,0,0,0.1);
+    }
+
+    .artikel-modal-content {
+        padding: 28px;
+        overflow-y: auto;
+        flex: 1;
+    }
+
+    .artikel-modal-deskripsi {
+        /* Hilangkan max-height dan overflow agar panjang tanpa inner scroll */
+        padding-right: 4px;
+    }
+
+    .artikel-modal-deskripsi::-webkit-scrollbar {
+        width: 4px;
+    }
+    .artikel-modal-deskripsi::-webkit-scrollbar-track {
+        background: transparent;
+    }
+    .artikel-modal-deskripsi::-webkit-scrollbar-thumb {
+        background: #e5e7eb;
+        border-radius: 4px;
+    }
+    .artikel-modal-deskripsi::-webkit-scrollbar-thumb:hover {
+        background: #d1d5db;
+    }
+
+    /* Prevent body scroll when modal is open */
+    body.artikel-modal-open .main-content {
+        overflow: hidden;
+    }
 </style>
+@endpush
+
+@push('scripts')
+<script>
+    function openArtikelModal(artikelId) {
+        const artikel = artikelData[artikelId];
+        if (!artikel) return;
+
+        const modal = document.getElementById('artikelModal');
+        const imageEl = document.getElementById('artikelModalImage');
+        const kategoriEl = document.getElementById('artikelModalKategori');
+        const titleEl = document.getElementById('artikelModalTitle');
+        const dateEl = document.getElementById('artikelModalDate');
+        const authorEl = document.getElementById('artikelModalAuthor');
+        const authorAvatarEl = document.getElementById('artikelModalAuthorAvatar');
+        const deskripsiEl = document.getElementById('artikelModalDeskripsi');
+
+        // Set image
+        if (artikel.gambar_cover) {
+            imageEl.style.backgroundImage = `url('${artikel.gambar_cover}')`;
+            imageEl.innerHTML = '';
+            imageEl.classList.remove('artikel-modal-image-placeholder');
+        } else {
+            imageEl.style.backgroundImage = 'none';
+            imageEl.classList.add('artikel-modal-image-placeholder');
+            imageEl.innerHTML = `
+                <div class="text-center">
+                    <div style="width:64px;height:64px;margin:0 auto 12px;border-radius:16px;background:rgba(255,255,255,0.6);backdrop-filter:blur(4px);display:flex;align-items:center;justify-content:center;box-shadow:0 2px 8px rgba(0,0,0,0.05)">
+                        <svg style="width:32px;height:32px;color:#A881C2" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                            <path stroke-linecap="round" stroke-linejoin="round" stroke-width="1.5" d="M19 20H5a2 2 0 01-2-2V6a2 2 0 012-2h10a2 2 0 012 2v1m2 13a2 2 0 01-2-2V7m2 13a2 2 0 002-2V9a2 2 0 00-2-2h-2m-4-3H9M7 16h6M7 12h10"/>
+                        </svg>
+                    </div>
+                </div>`;
+        }
+
+        // Set kategori badge
+        if (artikel.kategori) {
+            const colorMap = {
+                'Kesehatan Mental': 'background:rgba(16,185,129,0.9);color:#fff',
+                'Tips & Trik': 'background:rgba(59,130,246,0.9);color:#fff',
+                'Motivasi': 'background:rgba(245,158,11,0.9);color:#fff',
+                'Edukasi': 'background:rgba(139,92,246,0.9);color:#fff',
+            };
+            const badgeStyle = colorMap[artikel.kategori] || 'background:rgba(107,114,128,0.9);color:#fff';
+            kategoriEl.innerHTML = `<span class="artikel-modal-kategori-badge" style="${badgeStyle}">${artikel.kategori}</span>`;
+        } else {
+            kategoriEl.innerHTML = '';
+        }
+
+        // Set text content
+        titleEl.textContent = artikel.judul;
+        dateEl.textContent = artikel.tanggal;
+        authorEl.textContent = artikel.author;
+        authorAvatarEl.src = `https://ui-avatars.com/api/?name=${encodeURIComponent(artikel.author)}&background=E8DEFA&color=6B3FA0&size=28&bold=true&font-size=0.45`;
+
+        // Set description (show more content in modal)
+        const maxLen = 500;
+        let deskripsi = artikel.konten;
+        if (deskripsi.length > maxLen) {
+            deskripsi = deskripsi.substring(0, maxLen) + '...';
+        }
+        deskripsiEl.textContent = deskripsi;
+
+        // Show modal
+        modal.classList.add('show');
+        document.body.classList.add('artikel-modal-open');
+
+        // Focus trap - close on Escape
+        document.addEventListener('keydown', handleArtikelModalEsc);
+    }
+
+    function closeArtikelModal(event) {
+        // If called from overlay click, only close if clicking the overlay itself
+        if (event && event.target !== event.currentTarget) return;
+        
+        const modal = document.getElementById('artikelModal');
+        modal.classList.remove('show');
+        document.body.classList.remove('artikel-modal-open');
+        document.removeEventListener('keydown', handleArtikelModalEsc);
+    }
+
+    function handleArtikelModalEsc(e) {
+        if (e.key === 'Escape') {
+            closeArtikelModal();
+        }
+    }
+</script>
 @endpush
