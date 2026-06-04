@@ -107,9 +107,23 @@
                     </div>
                     
                     <div class="mt-auto w-full space-y-4">
-                        <div class="bg-gray-50 rounded-2xl p-4 flex items-center justify-center gap-3 group-hover:bg-purple-50 transition-colors duration-300">
-                            <svg class="w-5 h-5 text-gray-400 group-hover:text-[#A881C2]" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M12 8v4l3 3m6-3a9 9 0 11-18 0 9 9 0 0118 0z"></path></svg>
-                            <span class="text-xs text-gray-600 font-bold">Senin - Rabu, 09.00 - 12.00</span>
+                        <div class="bg-gray-50 rounded-2xl p-4 flex flex-col items-center justify-center gap-1 group-hover:bg-purple-50 transition-colors duration-300 min-h-[70px]">
+                            @if($k->counselorSchedules->isNotEmpty())
+                                @foreach($k->counselorSchedules->take(2) as $jadwal)
+                                    <div class="flex items-center gap-2">
+                                        <svg class="w-3.5 h-3.5 text-gray-400 group-hover:text-[#A881C2]" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M12 8v4l3 3m6-3a9 9 0 11-18 0 9 9 0 0118 0z"></path></svg>
+                                        <span class="text-[11px] text-gray-600 font-bold uppercase tracking-wider">{{ ucfirst($jadwal->hari) }}, {{ \Carbon\Carbon::parse($jadwal->jam_mulai)->format('H:i') }} - {{ \Carbon\Carbon::parse($jadwal->jam_selesai)->format('H:i') }}</span>
+                                    </div>
+                                @endforeach
+                                @if($k->counselorSchedules->count() > 2)
+                                    <span class="text-[9px] text-gray-400 italic">...dan jadwal lainnya</span>
+                                @endif
+                            @else
+                                <div class="flex items-center gap-2">
+                                    <svg class="w-3.5 h-3.5 text-gray-400" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M12 8v4l3 3m6-3a9 9 0 11-18 0 9 9 0 0118 0z"></path></svg>
+                                    <span class="text-[11px] text-gray-400 font-bold italic uppercase tracking-wider">Jadwal belum diatur</span>
+                                </div>
+                            @endif
                         </div>
                         <div class="mt-3 text-center">
                             @if(!empty($k->harga_per_sesi) && $k->harga_per_sesi > 0)

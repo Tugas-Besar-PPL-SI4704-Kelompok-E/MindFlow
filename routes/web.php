@@ -58,6 +58,7 @@ Route::middleware('auth')->group(function () {
 
     // Konseling Routes (PBI 27 & 28)
     Route::get('/konseling', [CounselingController::class, 'index'])->name('konseling.index');
+    Route::get('/konseling/history', [\App\Http\Controllers\CounselingHistoryController::class, 'index'])->name('konseling.history');
     Route::get('/konseling/{id}', [CounselingController::class, 'show'])->name('konseling.show');
 
     // PBI 29 & 30

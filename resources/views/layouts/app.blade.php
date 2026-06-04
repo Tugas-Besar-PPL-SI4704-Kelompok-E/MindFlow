@@ -683,10 +683,10 @@
         <aside class="sidebar-right">
             <div class="right-header">
                 <h3 class="text-gray-900 font-bold">Jadwal Konsultasi</h3>
-                <a href="#" class="text-[#A881C2] hover:text-[#8A64A4] font-bold text-xs transition-colors">Lihat Semua</a>
+                <a href="{{ route('konseling.history') }}" class="text-[#A881C2] hover:text-[#8A64A4] font-bold text-xs transition-colors">Riwayat Sesi</a>
             </div>
             
-            @if(isset($jadwalKonsultasi) && $jadwalKonsultasi->where('status', '!=', 'cancelled')->isEmpty())
+            @if(isset($jadwalKonsultasi) && $jadwalKonsultasi->whereNotIn('status', ['cancelled', 'system_cancelled'])->isEmpty())
                 <div class="empty-state">
                     <div class="w-20 h-20 bg-gray-50 rounded-2xl flex items-center justify-center mb-4 border border-gray-100 shadow-inner">
                         <svg width="32" height="32" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" class="text-gray-300"><path stroke-linecap="round" stroke-linejoin="round" d="M8 7V3m8 4V3m-9 8h10M5 21h14a2 2 0 002-2V7a2 2 0 00-2-2H5a2 2 0 00-2 2v12a2 2 0 002 2z"></path></svg>
@@ -695,7 +695,7 @@
                 </div>
             @elseif(isset($jadwalKonsultasi))
                 <div class="flex flex-col gap-5">
-                    @foreach($jadwalKonsultasi->where('status', '!=', 'cancelled') as $jadwal)
+                    @foreach($jadwalKonsultasi->whereNotIn('status', ['cancelled', 'system_cancelled']) as $jadwal)
                         <div class="bg-white p-5 rounded-3xl border border-gray-100 shadow-[0_4px_12px_-2px_rgba(0,0,0,0.03)] hover:shadow-md transition-all duration-300 group">
                             <div class="flex items-start justify-between mb-4">
                                 <div>
