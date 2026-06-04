@@ -14,8 +14,7 @@ class CounselingController extends Controller
         $search = $request->input('search');
         $selectedSpesialisasi = $request->input('spesialisasi');
         $availability = $request->input('ketersediaan');
-
-        $query = ProfilKonselor::with(['user', 'sesiKonseling'])
+        $query = ProfilKonselor::with(['user', 'sesiKonseling', 'counselorSchedules'])
             ->whereHas('user', fn ($q) => $q->where('status', 'approved'));
 
         if ($search) {

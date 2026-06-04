@@ -53,6 +53,30 @@ class SesiKonseling extends Model
      */
     public static function cancelExpiredPendingSessions()
     {
+        $timeout = env('AUTO_CANCEL_SECONDS', 3);
+
+        return self::where('status', 'pending')
+            ->where('created_at', '<', now()->subSeconds($timeout))
+            ->update([
+                'status' => 'system_cancelled',
+                'payment_status' => 'refunded',
+            ]);
+    }
+    public function scopeByTimeRange($query, $range)
+    {
+        if ($range === '1_month') {
+            return $query->where('jadwal', '>=', now()->subMonth()->format('Y-m-d H:i:s'));
+        } elseif ($range === '3_months') {
+            return $query->where('jadwal', '>=', now()->subMonths(3)->format('Y-m-d H:i:s'));
+        } elseif ($range === '6_months') {
+            return $query->where('jadwal', '>=', now()->subMonths(6)->format('Y-m-d H:i:s'));
+        } elseif ($range === '1_year') {
+            return $query->where('jadwal', '>=', now()->subYear()->format('Y-m-d H:i:s'));
+        }
+        
+        return $query;
+    }
+}
         if (self::$hasCancelledExpired) {
             return;
         }
