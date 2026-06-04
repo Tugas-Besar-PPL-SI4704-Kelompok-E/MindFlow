@@ -25,4 +25,9 @@ class Journal extends Model
     {
         return $this->belongsTo(User::class);
     }
+
+    public function sesiKonselings()
+    {
+        return $this->belongsToMany(SesiKonseling::class, 'jurnal_sesi_konseling', 'journal_id', 'sesi_konseling_id');
+    }
 }

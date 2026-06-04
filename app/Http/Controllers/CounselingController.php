@@ -65,7 +65,9 @@ class CounselingController extends Controller
             ->pluck('jadwal')
             ->toArray();
 
-        return view('konseling.show', compact('konselor', 'sesiTersedia', 'bookedSchedules'));
+        $userJournals = \App\Models\Journal::where('user_id', auth()->id())->latest()->get();
+
+        return view('konseling.show', compact('konselor', 'sesiTersedia', 'bookedSchedules', 'userJournals'));
     }
 
     /**
