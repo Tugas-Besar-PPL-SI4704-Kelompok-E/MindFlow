@@ -111,6 +111,13 @@
                             <svg class="w-5 h-5 text-gray-400 group-hover:text-[#A881C2]" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M12 8v4l3 3m6-3a9 9 0 11-18 0 9 9 0 0118 0z"></path></svg>
                             <span class="text-xs text-gray-600 font-bold">Senin - Rabu, 09.00 - 12.00</span>
                         </div>
+                        <div class="mt-3 text-center">
+                            @if(!empty($k->harga_per_sesi) && $k->harga_per_sesi > 0)
+                                <span class="inline-block px-4 py-2 bg-purple-50 text-[#6B21A8] font-bold rounded-full">Rp{{ number_format($k->harga_per_sesi, 0, ',', '.') }} / sesi</span>
+                            @else
+                                <span class="inline-block px-4 py-2 bg-gray-50 text-gray-400 rounded-full">Harga belum diatur</span>
+                            @endif
+                        </div>
                         
                         <a href="{{ route('konseling.show', $k->profil_konselor_id) }}" class="flex items-center justify-center gap-2 bg-white hover:bg-[#A881C2] text-[#A881C2] hover:text-white w-full py-4 rounded-2xl text-sm font-black transition-all duration-300 border-2 border-purple-100 hover:border-[#A881C2] shadow-sm hover:shadow-lg hover:shadow-purple-100 active:scale-[0.98]">
                             Pilih Sesi

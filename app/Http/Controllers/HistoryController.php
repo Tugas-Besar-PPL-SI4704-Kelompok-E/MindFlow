@@ -24,6 +24,9 @@ class HistoryController extends Controller
      */
     public function index()
     {
+        // Auto-cancel expired sessions when patient views history
+        \Illuminate\Support\Facades\Artisan::call('app:cancel-expired-sessions');
+
         $userId = Auth::id() ?? 1;
 
         // PBI-45: Batalkan sesi yang sudah kedaluwarsa secara otomatis sebelum menampilkan riwayat
