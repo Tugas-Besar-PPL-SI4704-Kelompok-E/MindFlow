@@ -6,14 +6,13 @@ use Illuminate\Support\Facades\Schema;
 
 return new class extends Migration
 {
-    /**
-     * Run the migrations.
-     */
     public function up(): void
     {
-        Schema::table('sesi_konselings', function (Blueprint $table) {
-            $table->text('catatan_konselor')->nullable()->after('status');
-        });
+        if (!Schema::hasColumn('sesi_konselings', 'catatan_konselor')) {
+            Schema::table('sesi_konselings', function (Blueprint $table) {
+                $table->text('catatan_konselor')->nullable()->after('status');
+            });
+        }
     }
 
     /**
@@ -21,8 +20,10 @@ return new class extends Migration
      */
     public function down(): void
     {
-        Schema::table('sesi_konselings', function (Blueprint $table) {
-            $table->dropColumn('catatan_konselor');
-        });
+        if (Schema::hasColumn('sesi_konselings', 'catatan_konselor')) {
+            Schema::table('sesi_konselings', function (Blueprint $table) {
+                $table->dropColumn('catatan_konselor');
+            });
+        }
     }
 };

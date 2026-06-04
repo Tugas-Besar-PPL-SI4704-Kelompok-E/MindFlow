@@ -107,4 +107,10 @@ class BookingController extends Controller
 
         return response()->json(['cancelled' => (bool) $cancelled]);
     }
+
+    public function clearExpiredNotification()
+    {
+        session()->forget('expired_cancelled_sessions');
+        return response()->json(['success' => true]);
+    }
 }

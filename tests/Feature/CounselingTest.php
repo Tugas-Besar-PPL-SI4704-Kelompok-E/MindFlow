@@ -262,4 +262,33 @@ class CounselingTest extends TestCase
             'status' => 'cancelled'
         ]);
     }
+
+    /**
+     * PBI 45: Pembatalan otomatis sesi yang kadaluarsa
+     */
+    public function test_pbi_45_pembatalan_otomatis_sesi_kadaluarsa()
+    {
+        $user = User::factory()->create();
+        $konselor = ProfilKonselor::factory()->create();
+        
+        // Membuat sesi pending di masa lampau (kadaluarsa)
+        $sesi = SesiKonseling::factory()->create([
+            'user_id' => $user->id,
+            'profil_konselor_id' => $konselor->profil_konselor_id,
+            'jadwal' => now()->subDay(), // Kemarin
+            'status' => 'pending'
+        ]);
+
+        // Akses halaman home
+        $response = $this->actingAs($user)->get('/home');
+
+        // Sesi harusnya berubah menjadi cancelled
+        $this->assertDatabaseHas('sesi_konselings', [
+            'sesi_konseling_id' => $sesi->sesi_konseling_id,
+            'status' => 'cancelled'
+        ]);
+
+        // Dan session harus memiliki data expired_cancelled_sessions
+        $response->assertSessionHas('expired_cancelled_sessions');
+    }
 }
