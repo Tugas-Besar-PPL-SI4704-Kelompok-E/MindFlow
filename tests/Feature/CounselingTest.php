@@ -5,6 +5,7 @@ namespace Tests\Feature;
 use App\Models\ProfilKonselor;
 use App\Models\SesiKonseling;
 use App\Models\User;
+use Carbon\Carbon;
 use Illuminate\Foundation\Testing\RefreshDatabase;
 use Illuminate\Foundation\Testing\WithFaker;
 use Tests\TestCase;
@@ -102,6 +103,7 @@ class CounselingTest extends TestCase
             'konselor_id' => $konselor->profil_konselor_id,
             'jadwal' => '2026-05-10 10:00:00',
             'deskripsi' => 'Diskusi topik stres akademik',
+            'payment_method' => 'transfer',
         ]);
 
         $response->assertRedirect();
@@ -109,6 +111,55 @@ class CounselingTest extends TestCase
             'profil_konselor_id' => $konselor->profil_konselor_id,
             'jadwal' => '2026-05-10 10:00:00',
             'status' => 'pending'
+        ]);
+    }
+
+    /**
+     * PBI 35: Pembayaran sesi konseling dicatat dengan metode dan status yang benar
+     */
+    public function test_pbi_35_menyimpan_metode_dan_status_pembayaran_saat_membooking_sesi()
+    {
+        $user = User::factory()->create();
+        $konselor = ProfilKonselor::factory()->create(['harga_per_sesi' => 150000]);
+
+        $response = $this->actingAs($user)->post(route('booking.store'), [
+            'konselor_id' => $konselor->profil_konselor_id,
+            'jadwal' => '2026-05-10 10:00:00',
+            'deskripsi' => 'Diskusi topik stres akademik',
+            'payment_method' => 'transfer',
+        ]);
+
+        $response->assertRedirect();
+        $this->assertDatabaseHas('sesi_konselings', [
+            'profil_konselor_id' => $konselor->profil_konselor_id,
+            'payment_method' => 'transfer',
+            'payment_status' => 'paid',
+            'status' => 'pending'
+        ]);
+    }
+
+    /**
+     * PBI 35: Pembayaran dikembalikan ketika sesi pending kedaluwarsa
+     */
+    public function test_pbi_35_payment_status_refunded_when_pending_session_expires()
+    {
+        $user = User::factory()->create();
+        $konselor = ProfilKonselor::factory()->create();
+        $sesi = SesiKonseling::factory()->create([
+            'profil_konselor_id' => $konselor->profil_konselor_id,
+            'user_id' => $user->id,
+            'status' => 'pending',
+            'payment_status' => 'paid',
+            'created_at' => Carbon::now()->subMinutes(5),
+        ]);
+
+        $response = $this->actingAs($user)->post(route('booking.checkExpired'));
+
+        $response->assertStatus(200);
+        $this->assertDatabaseHas('sesi_konselings', [
+            'sesi_konseling_id' => $sesi->sesi_konseling_id,
+            'status' => 'cancelled',
+            'payment_status' => 'refunded',
         ]);
     }
 

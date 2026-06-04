@@ -610,6 +610,26 @@
                 </div>
             @endif
 
+            @if(Auth::check() && Auth::user()->unreadNotifications->count() > 0)
+                @foreach(Auth::user()->unreadNotifications as $notification)
+                    <div class="bg-amber-50 border border-amber-100 text-amber-800 px-6 py-4 rounded-2xl mb-8 flex justify-between items-center shadow-sm">
+                        <div class="flex items-center gap-3">
+                            <div class="w-8 h-8 bg-amber-500 rounded-full flex items-center justify-center text-white shadow-sm shadow-amber-200">
+                                <svg class="w-5 h-5" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="3" d="M13 16h-1v-4h-1m1-4h.01M12 19a7 7 0 110-14 7 7 0 010 14z"></path></svg>
+                            </div>
+                            <div>
+                                <div class="font-bold text-sm">{{ $notification->data['title'] ?? 'Pemberitahuan' }}</div>
+                                <div class="text-xs">{{ $notification->data['message'] ?? '' }}</div>
+                            </div>
+                        </div>
+                        <button type="button" class="text-amber-400 hover:text-amber-600 transition-colors" onclick="this.parentElement.style.display='none'">
+                            <svg class="w-5 h-5" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2.5" d="M6 18L18 6M6 6l12 12"></path></svg>
+                        </button>
+                    </div>
+                    @php $notification->markAsRead(); @endphp
+                @endforeach
+            @endif
+
             @if(session('mute_error'))
                 <div class="fixed inset-0 bg-gray-900/50 backdrop-blur-sm z-[100] flex items-center justify-center animate-[fadeIn_0.2s_ease-out]" id="muteModal">
                     <div class="bg-white rounded-[24px] w-full max-w-sm shadow-xl p-8 text-center transform scale-100 mx-4">

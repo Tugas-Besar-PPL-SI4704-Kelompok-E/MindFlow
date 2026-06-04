@@ -24,6 +24,7 @@ class ProfilKonselor extends Model
         'berkas_ktp',
         'berkas_sipp',
         'berkas_cv',
+        'harga_per_sesi',
     ];
 
     public function scopeSearch($query, $search)
@@ -54,5 +55,10 @@ class ProfilKonselor extends Model
     public function sesiKonseling()
     {
         return $this->hasMany(SesiKonseling::class, 'profil_konselor_id', 'profil_konselor_id');
+    }
+
+    public function counselorSchedules()
+    {
+        return $this->hasMany(CounselorSchedule::class, 'profil_konselor_id', 'profil_konselor_id');
     }
 }

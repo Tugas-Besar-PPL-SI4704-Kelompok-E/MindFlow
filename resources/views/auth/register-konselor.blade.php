@@ -347,6 +347,13 @@
                                 <option value="Psikologi Pendidikan" {{ old('spesialisasi') == 'Psikologi Pendidikan' ? 'selected' : '' }}>Psikologi Pendidikan</option>
                             </select>
                         </div>
+                        <div class="rk-field">
+                            <label class="rk-label">Harga per Sesi (IDR) <span class="rk-required">*</span></label>
+                            <input type="number" name="harga_per_sesi" class="rk-input @error('harga_per_sesi') error @enderror" placeholder="Contoh: 150000" value="{{ old('harga_per_sesi') }}" min="0" required>
+                            @error('harga_per_sesi')
+                                <p class="text-sm text-red-600 mt-1">{{ $message }}</p>
+                            @enderror
+                        </div>
                     </div>
                 </div>
 

@@ -114,10 +114,13 @@ class CounselorController extends Controller
                 'status' => 'rejected'
             ]);
         } else {
-            $sesi->update(['status' => 'cancelled']);
+            $sesi->update([
+                'status' => 'cancelled',
+                'payment_status' => 'refunded',
+            ]);
         }
 
-        return redirect()->back()->with('success', 'Pengajuan perubahan jadwal telah ditolak.');
+        return redirect()->back()->with('success', 'Pengajuan perubahan jadwal telah ditolak. Pembayaran akan dikembalikan jika sesi dibatalkan.');
     }
 
     public function submitEvaluasi(Request $request, $id)
@@ -166,6 +169,7 @@ class CounselorController extends Controller
             'spesialisasi' => 'required|string|max:255',
             'nomor_whatsapp' => 'required|string|max:20',
             'no_sipp' => 'required|string|max:100',
+            'harga_per_sesi' => 'required|numeric|min:0',
             'biografi' => 'nullable|string',
             'keahlian' => 'nullable|string',
         ]);
@@ -184,6 +188,7 @@ class CounselorController extends Controller
             $profil->update([
                 'nama' => $request->nama_asli, // sinkronisasi nama asli ke tabel profil
                 'spesialisasi' => $request->spesialisasi,
+                'harga_per_sesi' => $request->harga_per_sesi,
                 'nomor_whatsapp' => $request->nomor_whatsapp,
                 'no_sipp' => $request->no_sipp,
                 'biografi' => $request->biografi,
