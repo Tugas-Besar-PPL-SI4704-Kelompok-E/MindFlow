@@ -20,8 +20,6 @@ class SesiKonseling extends Model
         'requested_jadwal',
         'request_reason',
         'status',
-        'payment_method',
-        'payment_status',
         'catatan_konselor',
     ];
     public function user()
@@ -31,6 +29,10 @@ class SesiKonseling extends Model
     public function profilKonselor()
     {
         return $this->belongsTo(ProfilKonselor::class, 'profil_konselor_id', 'profil_konselor_id');
+    }
+    public function journals()
+    {
+        return $this->belongsToMany(Journal::class, 'jurnal_sesi_konseling', 'sesi_konseling_id', 'journal_id');
     }
     public function scopeAvailable($query)
     {
@@ -42,7 +44,12 @@ class SesiKonseling extends Model
     }
 
     /**
-     * Membatalkan sesi yang berstatus pending jika sudah melebihi batas waktu auto-cancel.
+     * Flag untuk mencegah eksekusi berulang dalam satu request.
+     */
+    protected static $hasCancelledExpired = false;
+
+    /**
+     * Membatalkan sesi yang berstatus pending jika waktunya sudah lewat (PBI-45).
      */
     public static function cancelExpiredPendingSessions()
     {
@@ -68,5 +75,45 @@ class SesiKonseling extends Model
         }
         
         return $query;
+    }
+}
+        if (self::$hasCancelledExpired) {
+            return;
+        }
+        self::$hasCancelledExpired = true;
+
+        $userId = \Illuminate\Support\Facades\Auth::id();
+        if ($userId) {
+            // Temukan sesi pending milik user tersebut yang sudah lewat waktunya (kadaluarsa)
+            $expiredSessions = self::where('user_id', $userId)
+                ->where('status', 'pending')
+                ->where('jadwal', '<', now())
+                ->with('profilKonselor')
+                ->get();
+
+            if ($expiredSessions->isNotEmpty()) {
+                // Batalkan sesi-sesi tersebut
+                self::whereIn('sesi_konseling_id', $expiredSessions->pluck('sesi_konseling_id'))
+                    ->update(['status' => 'cancelled']);
+
+                // Kumpulkan informasi sesi untuk notifikasi
+                $cancelledDetails = [];
+                foreach ($expiredSessions as $session) {
+                    $counselorName = $session->profilKonselor ? $session->profilKonselor->nama : 'Konselor';
+                    $cancelledDetails[] = [
+                        'jadwal' => \Carbon\Carbon::parse($session->jadwal)->translatedFormat('d M Y, H:i'),
+                        'konselor' => $counselorName,
+                    ];
+                }
+
+                // Simpan ke session untuk ditampilkan ke user (sampai ditutup secara manual)
+                session()->put('expired_cancelled_sessions', $cancelledDetails);
+            }
+        }
+
+        // Batalkan seluruh sesi pending lainnya yang sudah kadaluarsa secara umum
+        self::where('status', 'pending')
+            ->where('jadwal', '<', now())
+            ->update(['status' => 'cancelled']);
     }
 }

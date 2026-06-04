@@ -60,6 +60,11 @@ Route::middleware('auth')->group(function () {
     Route::get('/konseling', [CounselingController::class, 'index'])->name('konseling.index');
     Route::get('/konseling/history', [\App\Http\Controllers\CounselingHistoryController::class, 'index'])->name('konseling.history');
     Route::get('/konseling/{id}', [CounselingController::class, 'show'])->name('konseling.show');
+    
+    // PBI 60: Live Session
+    Route::get('/sesi-konseling/{id}/room', [CounselingController::class, 'room'])->name('konseling.room');
+    Route::get('/sesi-konseling/{id}/chat', [CounselingController::class, 'getChat'])->name('konseling.chat.get');
+    Route::post('/sesi-konseling/{id}/chat', [CounselingController::class, 'sendChat'])->name('konseling.chat.send');
 
     // PBI 29 & 30
     Route::post('/booking/store', [BookingController::class, 'store'])->name('booking.store');
@@ -69,6 +74,7 @@ Route::middleware('auth')->group(function () {
     Route::get('/booking/edit/{id}', [BookingController::class, 'edit'])->name('booking.edit');
     Route::put('/booking/update/{id}', [BookingController::class, 'update'])->name('booking.update');
     Route::delete('/booking/cancel/{id}', [BookingController::class, 'cancel'])->name('booking.cancel');
+    Route::post('/booking/clear-expired-notification', [BookingController::class, 'clearExpiredNotification'])->name('booking.clear-expired-notification');
 
     // History Route
     Route::get('/history', [HistoryController::class, 'index'])->name('history.index');

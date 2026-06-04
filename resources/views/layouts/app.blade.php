@@ -675,6 +675,52 @@
                 </script>
             @endif
 
+            @if(session('expired_cancelled_sessions'))
+                <div class="fixed inset-0 bg-gray-900/50 backdrop-blur-sm z-[100] flex items-center justify-center animate-[fadeIn_0.2s_ease-out]" id="expiredCancellationModal">
+                    <div class="bg-white rounded-[24px] w-full max-w-md shadow-xl p-8 text-center transform scale-100 mx-4 border border-red-100">
+                        <div class="w-20 h-20 bg-red-50 rounded-full flex items-center justify-center mx-auto mb-5 shadow-inner">
+                            <span class="text-4xl">⏰</span>
+                        </div>
+                        <h3 class="text-xl font-bold text-gray-900 mb-2">Pembatalan Otomatis</h3>
+                        <p class="text-[14px] text-gray-600 mb-4 leading-relaxed font-medium">
+                            Sesi konseling Anda telah dibatalkan secara otomatis oleh sistem karena tidak ada respons dari konselor hingga waktu yang dijadwalkan:
+                        </p>
+                        
+                        <div class="bg-red-50/50 border border-red-100 rounded-2xl p-4 mb-6 text-left max-h-48 overflow-y-auto">
+                            <p class="text-xs font-bold text-red-800 uppercase tracking-wider mb-2">Detail Sesi:</p>
+                            <ul class="space-y-3">
+                                @foreach(session('expired_cancelled_sessions') as $detail)
+                                    <li class="flex flex-col gap-0.5 border-b border-red-100 pb-2 last:border-0 last:pb-0">
+                                        <span class="text-[13px] font-bold text-gray-800">{{ $detail['konselor'] }}</span>
+                                        <span class="text-[11px] font-medium text-gray-500">{{ $detail['jadwal'] }}</span>
+                                    </li>
+                                @endforeach
+                            </ul>
+                        </div>
+
+                        <button onclick="clearExpiredNotification()" id="btn-mengerti-pembatalan" class="w-full bg-[#A881C2] hover:bg-[#8A64A4] text-white font-bold py-3.5 px-4 rounded-xl transition-colors shadow-sm shadow-purple-500/30">
+                            Mengerti
+                        </button>
+                    </div>
+                </div>
+                <script>
+                    function clearExpiredNotification() {
+                        fetch("{{ route('booking.clear-expired-notification') }}", {
+                            method: 'POST',
+                            headers: {
+                                'X-CSRF-TOKEN': '{{ csrf_token() }}',
+                                'Content-Type': 'application/json',
+                                'Accept': 'application/json'
+                            }
+                        }).then(response => {
+                            document.getElementById('expiredCancellationModal').remove();
+                        }).catch(err => {
+                            document.getElementById('expiredCancellationModal').remove();
+                        });
+                    }
+                </script>
+            @endif
+
             @yield('content')
         </main>
 
@@ -721,17 +767,25 @@
                                 </span>
                             </div>
 
-                            <div class="flex gap-2">
-                                <a href="{{ route('booking.edit', $jadwal->sesi_konseling_id) }}" class="flex-1 text-center bg-gray-50 hover:bg-purple-50 hover:text-[#A881C2] text-gray-500 py-2.5 rounded-xl text-[11px] font-bold transition-all duration-300 border border-transparent hover:border-purple-100">
-                                    Ubah
-                                </a>
-                                <form action="{{ route('booking.cancel', $jadwal->sesi_konseling_id) }}" method="POST" onsubmit="return confirm('Yakin ingin membatalkan sesi ini?')" class="flex-1">
-                                    @csrf
-                                    @method('DELETE')
-                                    <button type="submit" class="w-full bg-gray-50 hover:bg-red-50 hover:text-red-500 text-gray-500 py-2.5 rounded-xl text-[11px] font-bold transition-all duration-300 border border-transparent hover:border-red-100">
-                                        Batal
-                                    </button>
-                                </form>
+                            <div class="flex flex-col gap-2">
+                                @if(in_array($jadwal->status, ['confirmed', 'rescheduled']))
+                                    <a href="{{ route('konseling.room', $jadwal->sesi_konseling_id) }}" class="w-full text-center bg-emerald-500 hover:bg-emerald-600 text-white py-3 rounded-xl text-[12px] font-bold transition-all duration-300 shadow-sm shadow-emerald-200 flex items-center justify-center gap-2">
+                                        <svg class="w-4 h-4" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M15 10l4.553-2.276A1 1 0 0121 8.618v6.764a1 1 0 01-1.447.894L15 14M5 18h8a2 2 0 002-2V8a2 2 0 00-2-2H5a2 2 0 00-2 2v8a2 2 0 002 2z"></path></svg>
+                                        Masuk Ruangan
+                                    </a>
+                                @endif
+                                <div class="flex gap-2">
+                                    <a href="{{ route('booking.edit', $jadwal->sesi_konseling_id) }}" class="flex-1 text-center bg-gray-50 hover:bg-purple-50 hover:text-[#A881C2] text-gray-500 py-2.5 rounded-xl text-[11px] font-bold transition-all duration-300 border border-transparent hover:border-purple-100">
+                                        Ubah
+                                    </a>
+                                    <form action="{{ route('booking.cancel', $jadwal->sesi_konseling_id) }}" method="POST" onsubmit="return confirm('Yakin ingin membatalkan sesi ini?')" class="flex-1">
+                                        @csrf
+                                        @method('DELETE')
+                                        <button type="submit" class="w-full bg-gray-50 hover:bg-red-50 hover:text-red-500 text-gray-500 py-2.5 rounded-xl text-[11px] font-bold transition-all duration-300 border border-transparent hover:border-red-100">
+                                            Batal
+                                        </button>
+                                    </form>
+                                </div>
                             </div>
                         </div>
                     @endforeach

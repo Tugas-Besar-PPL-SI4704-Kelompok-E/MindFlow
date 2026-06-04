@@ -64,7 +64,9 @@ class CounselingController extends Controller
             ->pluck('jadwal')
             ->toArray();
 
-        return view('konseling.show', compact('konselor', 'sesiTersedia', 'bookedSchedules'));
+        $userJournals = \App\Models\Journal::where('user_id', auth()->id())->latest()->get();
+
+        return view('konseling.show', compact('konselor', 'sesiTersedia', 'bookedSchedules', 'userJournals'));
     }
 
     /**
@@ -88,6 +90,84 @@ class CounselingController extends Controller
         }
 
         return back()->with('success', 'Janji konseling berhasil dibuat!');
+    }
+
+    /**
+     * PBI 60: Page Konseling (Live Session Room)
+     * Menampilkan antarmuka sesi konseling sesuai media yang dipilih (video, voice, chat).
+     */
+    public function room($id)
+    {
+        $sesi = SesiKonseling::with(['user', 'profilKonselor.user'])->findOrFail($id);
+
+        // Otorisasi: Hanya user (pasien) atau konselor terkait yang boleh mengakses
+        $userId = auth()->id();
+        $isPatient = $sesi->user_id === $userId;
+        $isCounselor = $sesi->profilKonselor && $sesi->profilKonselor->user_id === $userId;
+
+        if (!$isPatient && !$isCounselor) {
+            abort(403, 'Anda tidak memiliki akses ke ruangan ini.');
+        }
+
+        // Cek status sesi (misal hanya izinkan jika confirmed atau ongoing)
+        // Kita izinkan jika statusnya tidak 'cancelled' atau 'pending'
+        if (in_array($sesi->status, ['pending', 'cancelled', 'rejected'])) {
+            return redirect()->back()->with('error', 'Sesi ini belum aktif atau sudah dibatalkan.');
+        }
+
+        return view('konseling.room', compact('sesi', 'isPatient', 'isCounselor'));
+    }
+
+    public function getChat($id)
+    {
+        $sesi = SesiKonseling::findOrFail($id);
+        
+        $userId = auth()->id();
+        $isPatient = $sesi->user_id === $userId;
+        $isCounselor = $sesi->profilKonselor && $sesi->profilKonselor->user_id === $userId;
+
+        if (!$isPatient && !$isCounselor) {
+            return response()->json(['error' => 'Unauthorized'], 403);
+        }
+
+        $messages = \App\Models\PesanKonseling::with('pengirim')
+            ->where('sesi_konseling_id', $id)
+            ->orderBy('created_at', 'asc')
+            ->get()
+            ->map(function ($msg) {
+                return [
+                    'id' => $msg->id,
+                    'pengirim_id' => $msg->pengirim_id,
+                    'nama_pengirim' => $msg->pengirim->nama_asli ?? $msg->pengirim->nama_samaran,
+                    'isi_pesan' => $msg->isi_pesan,
+                    'waktu' => $msg->created_at->format('H:i'),
+                ];
+            });
+
+        return response()->json(['messages' => $messages, 'current_user_id' => $userId]);
+    }
+
+    public function sendChat(Request $request, $id)
+    {
+        $request->validate(['isi_pesan' => 'required|string']);
+
+        $sesi = SesiKonseling::findOrFail($id);
+        
+        $userId = auth()->id();
+        $isPatient = $sesi->user_id === $userId;
+        $isCounselor = $sesi->profilKonselor && $sesi->profilKonselor->user_id === $userId;
+
+        if (!$isPatient && !$isCounselor) {
+            return response()->json(['error' => 'Unauthorized'], 403);
+        }
+
+        $pesan = \App\Models\PesanKonseling::create([
+            'sesi_konseling_id' => $id,
+            'pengirim_id' => $userId,
+            'isi_pesan' => $request->isi_pesan,
+        ]);
+
+        return response()->json(['success' => true, 'pesan' => $pesan]);
     }
     
     public static function getSpesialisasi()

@@ -79,13 +79,13 @@
         <h3 class="text-gray-900 font-extrabold text-xl mb-4 tracking-tight">Kalender Mood</h3>
         <div class="bg-white rounded-[32px] shadow-[0_4px_20px_-4px_rgba(0,0,0,0.03)] border border-gray-100 p-8 md:p-10">
             <div class="flex justify-center items-center gap-6 mb-8">
-                <button class="w-10 h-10 rounded-full bg-purple-50 text-[#A881C2] hover:bg-[#A881C2] hover:text-white flex items-center justify-center transition-colors">
+                <a href="{{ route('journals.index', ['month' => $prevMonth->month, 'year' => $prevMonth->year]) }}" class="w-10 h-10 rounded-full bg-purple-50 text-[#A881C2] hover:bg-[#A881C2] hover:text-white flex items-center justify-center transition-colors">
                     <svg class="w-5 h-5" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2.5" d="M15 19l-7-7 7-7"></path></svg>
-                </button>
-                <span class="font-black text-gray-900 text-[15px] uppercase tracking-widest min-w-[120px] text-center">{{ $currentMonth }}</span>
-                <button class="w-10 h-10 rounded-full bg-purple-50 text-[#A881C2] hover:bg-[#A881C2] hover:text-white flex items-center justify-center transition-colors">
+                </a>
+                <span class="font-black text-gray-900 text-[15px] uppercase tracking-widest min-w-[150px] text-center">{{ $currentMonthName }}</span>
+                <a href="{{ route('journals.index', ['month' => $nextMonth->month, 'year' => $nextMonth->year]) }}" class="w-10 h-10 rounded-full bg-purple-50 text-[#A881C2] hover:bg-[#A881C2] hover:text-white flex items-center justify-center transition-colors">
                     <svg class="w-5 h-5" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2.5" d="M9 5l7 7-7 7"></path></svg>
-                </button>
+                </a>
             </div>
 
             <div class="flex flex-wrap justify-center gap-3">
@@ -97,7 +97,7 @@
                                $moodClass = 'bg-emerald-300 text-emerald-900 shadow-sm shadow-emerald-200';
                            } elseif ($moodData[$i] === 'biasa') {
                                $moodClass = 'bg-yellow-300 text-yellow-900 shadow-sm shadow-yellow-200';
-                           } elseif ($moodData[$i] === 'stres') {
+                           } elseif ($moodData[$i] === 'buruk') {
                                $moodClass = 'bg-red-400 text-white shadow-sm shadow-red-200';
                            }
                        }
