@@ -53,7 +53,8 @@ class SesiKonseling extends Model
      */
     public static function cancelExpiredPendingSessions()
     {
-        $timeout = env('AUTO_CANCEL_SECONDS', 3);
+        // 24 jam = 86400 detik
+        $timeout = env('AUTO_CANCEL_SECONDS', 86400);
 
         $cancelledCount = self::where('status', 'pending')
             ->where('created_at', '<', now()->subSeconds($timeout))
