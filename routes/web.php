@@ -68,6 +68,7 @@ Route::middleware('auth')->group(function () {
     Route::get('/booking/edit/{id}', [BookingController::class, 'edit'])->name('booking.edit');
     Route::put('/booking/update/{id}', [BookingController::class, 'update'])->name('booking.update');
     Route::delete('/booking/cancel/{id}', [BookingController::class, 'cancel'])->name('booking.cancel');
+    Route::post('/booking/clear-expired-notification', [BookingController::class, 'clearExpiredNotification'])->name('booking.clear-expired-notification');
 
     // History Route
     Route::get('/history', [HistoryController::class, 'index'])->name('history.index');
