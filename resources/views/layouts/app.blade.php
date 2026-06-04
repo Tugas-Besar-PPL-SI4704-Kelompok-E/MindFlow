@@ -767,17 +767,25 @@
                                 </span>
                             </div>
 
-                            <div class="flex gap-2">
-                                <a href="{{ route('booking.edit', $jadwal->sesi_konseling_id) }}" class="flex-1 text-center bg-gray-50 hover:bg-purple-50 hover:text-[#A881C2] text-gray-500 py-2.5 rounded-xl text-[11px] font-bold transition-all duration-300 border border-transparent hover:border-purple-100">
-                                    Ubah
-                                </a>
-                                <form action="{{ route('booking.cancel', $jadwal->sesi_konseling_id) }}" method="POST" onsubmit="return confirm('Yakin ingin membatalkan sesi ini?')" class="flex-1">
-                                    @csrf
-                                    @method('DELETE')
-                                    <button type="submit" class="w-full bg-gray-50 hover:bg-red-50 hover:text-red-500 text-gray-500 py-2.5 rounded-xl text-[11px] font-bold transition-all duration-300 border border-transparent hover:border-red-100">
-                                        Batal
-                                    </button>
-                                </form>
+                            <div class="flex flex-col gap-2">
+                                @if(in_array($jadwal->status, ['confirmed', 'rescheduled']))
+                                    <a href="{{ route('konseling.room', $jadwal->sesi_konseling_id) }}" class="w-full text-center bg-emerald-500 hover:bg-emerald-600 text-white py-3 rounded-xl text-[12px] font-bold transition-all duration-300 shadow-sm shadow-emerald-200 flex items-center justify-center gap-2">
+                                        <svg class="w-4 h-4" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M15 10l4.553-2.276A1 1 0 0121 8.618v6.764a1 1 0 01-1.447.894L15 14M5 18h8a2 2 0 002-2V8a2 2 0 00-2-2H5a2 2 0 00-2 2v8a2 2 0 002 2z"></path></svg>
+                                        Masuk Ruangan
+                                    </a>
+                                @endif
+                                <div class="flex gap-2">
+                                    <a href="{{ route('booking.edit', $jadwal->sesi_konseling_id) }}" class="flex-1 text-center bg-gray-50 hover:bg-purple-50 hover:text-[#A881C2] text-gray-500 py-2.5 rounded-xl text-[11px] font-bold transition-all duration-300 border border-transparent hover:border-purple-100">
+                                        Ubah
+                                    </a>
+                                    <form action="{{ route('booking.cancel', $jadwal->sesi_konseling_id) }}" method="POST" onsubmit="return confirm('Yakin ingin membatalkan sesi ini?')" class="flex-1">
+                                        @csrf
+                                        @method('DELETE')
+                                        <button type="submit" class="w-full bg-gray-50 hover:bg-red-50 hover:text-red-500 text-gray-500 py-2.5 rounded-xl text-[11px] font-bold transition-all duration-300 border border-transparent hover:border-red-100">
+                                            Batal
+                                        </button>
+                                    </form>
+                                </div>
                             </div>
                         </div>
                     @endforeach

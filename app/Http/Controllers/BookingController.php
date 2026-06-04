@@ -32,7 +32,7 @@ class BookingController extends Controller
                 ->with('error', 'Jadwal ini tidak tersedia. Pilih jadwal lain atau cek kembali ketersediaan konselor.');
         }
 
-        SesiKonseling::create([
+        $sesi = SesiKonseling::create([
             'user_id' => Auth::id(),
             'profil_konselor_id' => $data['konselor_id'],
             'jadwal' => $data['jadwal'],
@@ -42,6 +42,10 @@ class BookingController extends Controller
             'payment_status' => 'paid',
             'status' => 'pending'
         ]);
+
+        if (!empty($data['journals'])) {
+            $sesi->journals()->attach($data['journals']);
+        }
 
         return redirect()->back()->with('success', 'Sesi konsultasi berhasil direservasi. Menunggu konfirmasi.');
     }

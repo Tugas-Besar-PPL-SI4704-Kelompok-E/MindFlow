@@ -30,6 +30,10 @@ class SesiKonseling extends Model
     {
         return $this->belongsTo(ProfilKonselor::class, 'profil_konselor_id', 'profil_konselor_id');
     }
+    public function journals()
+    {
+        return $this->belongsToMany(Journal::class, 'jurnal_sesi_konseling', 'sesi_konseling_id', 'journal_id');
+    }
     public function scopeAvailable($query)
     {
         return $query->where('status', '!=', 'penuh');
