@@ -19,6 +19,8 @@ class StoreKonselingRequest extends FormRequest
             'media_konseling' => 'required|in:video_call,voice_call,chat',
             'payment_method' => 'required|in:transfer,e-wallet',
             'deskripsi' => 'nullable|string|max:1000',
+            'journals' => 'nullable|array',
+            'journals.*' => 'exists:journals,journal_id',
         ];
     }
 

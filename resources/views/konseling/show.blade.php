@@ -186,6 +186,27 @@
                         </div>
 
                         <div class="space-y-2">
+                            <label class="block text-[11px] font-black text-gray-400 uppercase tracking-widest ml-1">Lampirkan Jurnal (Opsional)</label>
+                            <p class="text-xs text-gray-500 ml-1 mb-2">Konselor dapat membaca jurnal yang kamu pilih sebagai referensi tambahan.</p>
+                            @if(isset($userJournals) && $userJournals->count() > 0)
+                                <div class="relative">
+                                    <select name="journals[]" id="journals" multiple class="w-full text-sm">
+                                        @foreach($userJournals as $journal)
+                                            <option value="{{ $journal->journal_id }}" {{ (is_array(old('journals')) && in_array($journal->journal_id, old('journals'))) ? 'selected' : '' }}>
+                                                {{ $journal->created_at->translatedFormat('d M Y') }} — {{ Str::limit(trim(strip_tags($journal->content)), 40) }}
+                                            </option>
+                                        @endforeach
+                                    </select>
+                                </div>
+                            @else
+                                <div class="p-3 bg-gray-50 border border-gray-100 rounded-[14px] text-center">
+                                    <p class="text-xs font-medium text-gray-500">Kamu belum pernah menulis jurnal. <br> <a href="{{ route('journal.index') }}" class="text-[#A881C2] hover:underline font-bold">Tulis jurnal pertamamu</a></p>
+                                </div>
+                            @endif
+                            @error('journals')<p class="text-sm text-red-600 mt-1">{{ $message }}</p>@enderror
+                        </div>
+
+                        <div class="space-y-2">
                             <label class="block text-[11px] font-black text-gray-400 uppercase tracking-widest ml-1">Metode Pembayaran</label>
                             <div class="grid grid-cols-1 gap-3">
                                 <label class="relative cursor-pointer block">
@@ -358,13 +379,61 @@
              transform: translateY(-2px) !important;
              box-shadow: 0 12px 20px -3px rgba(168, 129, 194, 0.4) !important;
          }
+         
+         /* Choices.js Custom Theme */
+         .choices__inner {
+             background-color: #f9fafb !important;
+             border: 1px solid #f3f4f6 !important;
+             border-radius: 14px !important;
+             padding: 6px 12px !important;
+             box-shadow: 0 1px 2px 0 rgba(0, 0, 0, 0.05);
+         }
+         .choices.is-focused .choices__inner {
+             background-color: #ffffff !important;
+             border-color: #A881C2 !important;
+             box-shadow: 0 0 0 4px rgba(168, 129, 194, 0.1) !important;
+         }
+         .choices__list--multiple .choices__item {
+             background-color: #A881C2 !important;
+             border: 1px solid #8A64A4 !important;
+             border-radius: 8px !important;
+             max-width: 100% !important;
+             white-space: nowrap !important;
+             overflow: hidden !important;
+             text-overflow: ellipsis !important;
+             display: inline-block !important;
+             padding-right: 28px !important; /* Spasi untuk tombol silang */
+             position: relative !important;
+         }
+         .choices__list--multiple .choices__item .choices__button {
+             position: absolute !important;
+             right: 4px !important;
+             top: 50% !important;
+             transform: translateY(-50%) !important;
+             margin: 0 !important;
+             border-left: none !important;
+             display: block !important;
+         }
+         .choices__list--dropdown {
+             border-radius: 14px !important;
+             border: 1px solid #f3f4f6 !important;
+             box-shadow: 0 10px 15px -3px rgba(0, 0, 0, 0.1), 0 4px 6px -2px rgba(0, 0, 0, 0.05) !important;
+             margin-top: 5px !important;
+             z-index: 50 !important;
+         }
+         .choices__list--dropdown .choices__item--selectable.is-highlighted {
+             background-color: #f3e8f8 !important;
+             color: #A881C2 !important;
+         }
      </style>
+     <link rel="stylesheet" href="https://cdn.jsdelivr.net/npm/choices.js/public/assets/styles/choices.min.css" />
  @endpush
 
  @push('scripts')
      <script src="https://cdn.jsdelivr.net/npm/flatpickr"></script>
      <script src="https://cdn.jsdelivr.net/npm/flatpickr/dist/plugins/confirmDate/confirmDate.js"></script>
      <script src="https://npmcdn.com/flatpickr/dist/l10n/id.js"></script>
+     <script src="https://cdn.jsdelivr.net/npm/choices.js/public/assets/scripts/choices.min.js"></script>
      <script>
          document.addEventListener('DOMContentLoaded', function() {
              const bookedSlots = @json($bookedSchedules ?? []);
@@ -413,6 +482,19 @@
                  });
              }, {{ env('AUTO_CANCEL_SECONDS', 3) * 1000 }});
              @endif
+
+             // Inisialisasi Choices.js untuk multi-select dropdown jurnal
+             const journalsSelect = document.getElementById('journals');
+             if (journalsSelect) {
+                 new Choices(journalsSelect, {
+                     removeItemButton: true,
+                     searchEnabled: false,
+                     itemSelectText: '',
+                     placeholderValue: 'Klik untuk memilih jurnal...',
+                     noResultsText: 'Tidak ada jurnal',
+                     noChoicesText: 'Semua jurnal telah dipilih',
+                 });
+             }
          });
      </script>
  @endpush

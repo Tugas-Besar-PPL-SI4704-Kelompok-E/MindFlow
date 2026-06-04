@@ -58,7 +58,13 @@ Route::middleware('auth')->group(function () {
 
     // Konseling Routes (PBI 27 & 28)
     Route::get('/konseling', [CounselingController::class, 'index'])->name('konseling.index');
+    Route::get('/konseling/history', [\App\Http\Controllers\CounselingHistoryController::class, 'index'])->name('konseling.history');
     Route::get('/konseling/{id}', [CounselingController::class, 'show'])->name('konseling.show');
+    
+    // PBI 60: Live Session
+    Route::get('/sesi-konseling/{id}/room', [CounselingController::class, 'room'])->name('konseling.room');
+    Route::get('/sesi-konseling/{id}/chat', [CounselingController::class, 'getChat'])->name('konseling.chat.get');
+    Route::post('/sesi-konseling/{id}/chat', [CounselingController::class, 'sendChat'])->name('konseling.chat.send');
 
     // PBI 29 & 30
     Route::post('/booking/store', [BookingController::class, 'store'])->name('booking.store');

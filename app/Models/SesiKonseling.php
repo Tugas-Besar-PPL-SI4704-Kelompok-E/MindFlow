@@ -20,8 +20,6 @@ class SesiKonseling extends Model
         'requested_jadwal',
         'request_reason',
         'status',
-        'payment_method',
-        'payment_status',
         'catatan_konselor',
     ];
     public function user()
@@ -31,6 +29,10 @@ class SesiKonseling extends Model
     public function profilKonselor()
     {
         return $this->belongsTo(ProfilKonselor::class, 'profil_konselor_id', 'profil_konselor_id');
+    }
+    public function journals()
+    {
+        return $this->belongsToMany(Journal::class, 'jurnal_sesi_konseling', 'sesi_konseling_id', 'journal_id');
     }
     public function scopeAvailable($query)
     {
@@ -53,9 +55,18 @@ class SesiKonseling extends Model
     public static function cancelExpiredPendingSessions($force = false)
     {
         if (self::$hasCancelledExpired && !$force) {
-            return false;
+            return 0;
         }
         self::$hasCancelledExpired = true;
+
+        $timeout = env('AUTO_CANCEL_SECONDS', 3);
+
+        $cancelledCount = self::where('status', 'pending')
+            ->where('created_at', '<', now()->subSeconds($timeout))
+            ->update([
+                'status' => 'system_cancelled',
+                'payment_status' => 'refunded',
+            ]);
 
         $userId = \Illuminate\Support\Facades\Auth::id();
         if ($userId) {
@@ -82,7 +93,8 @@ class SesiKonseling extends Model
                 }
 
                 // Simpan ke session untuk ditampilkan ke user (sampai ditutup secara manual)
-                session()->put('expired_cancelled_sessions', $cancelledDetails);
+                $existing = session()->get('expired_cancelled_sessions', []);
+                session()->put('expired_cancelled_sessions', array_merge($existing, $cancelledDetails));
             }
         }
 
@@ -91,16 +103,21 @@ class SesiKonseling extends Model
             ->where('jadwal', '<', now())
             ->update(['status' => 'cancelled']);
 
-        // Membatalkan sesi yang berstatus pending jika sudah melebihi batas waktu auto-cancel
-        $timeout = env('AUTO_CANCEL_SECONDS', 3);
+        return $cancelledCount;
+    }
 
-        $cancelledCount = self::where('status', 'pending')
-            ->where('created_at', '<', now()->subSeconds($timeout))
-            ->update([
-                'status' => 'cancelled',
-                'payment_status' => 'refunded',
-            ]);
-
-        return $cancelledCount > 0;
+    public function scopeByTimeRange($query, $range)
+    {
+        if ($range === '1_month') {
+            return $query->where('jadwal', '>=', now()->subMonth()->format('Y-m-d H:i:s'));
+        } elseif ($range === '3_months') {
+            return $query->where('jadwal', '>=', now()->subMonths(3)->format('Y-m-d H:i:s'));
+        } elseif ($range === '6_months') {
+            return $query->where('jadwal', '>=', now()->subMonths(6)->format('Y-m-d H:i:s'));
+        } elseif ($range === '1_year') {
+            return $query->where('jadwal', '>=', now()->subYear()->format('Y-m-d H:i:s'));
+        }
+        
+        return $query;
     }
 }
