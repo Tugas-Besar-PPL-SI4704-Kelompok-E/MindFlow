@@ -46,7 +46,8 @@ class SesiKonseling extends Model
      */
     public static function cancelExpiredPendingSessions()
     {
-        $timeout = env('AUTO_CANCEL_SECONDS', 3);
+        // Default ke 24 jam (86400 detik) jika tidak ada di .env
+        $timeout = env('AUTO_CANCEL_SECONDS', 86400);
 
         return self::where('status', 'pending')
             ->where('created_at', '<', now()->subSeconds($timeout))
