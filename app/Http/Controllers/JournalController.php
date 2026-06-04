@@ -17,11 +17,7 @@ class JournalController extends Controller
         // $this->middleware('auth');
     }
 
-    /**
-     * Display a listing of the resource.
-     * Mengambil dan menampilkan semua riwayat jurnal khusus untuk user yang sedang login.
-     */
-    public function index()
+    public function index(Request $request)
     {
         // Ambil ID dari Auth user, secara default menggunakan ID 1 untuk keperluan testing
         $userId = Auth::id() ?? 1;
@@ -31,20 +27,51 @@ class JournalController extends Controller
             ->orderBy('updated_at', 'desc')
             ->get();
 
-        // Data Kalender Mood (Dinamis & Dummy Placeholder)
-        $currentMonth = \Carbon\Carbon::now()->translatedFormat('F'); // Contoh: "April"
-        $daysInMonth = \Carbon\Carbon::now()->daysInMonth;
-        $currentDay = \Carbon\Carbon::now()->day;
-        
-        // Dummy placeholder untuk status mood berdasarkan tanggal bulan ini
-        // Rencana: Hijau = Senang, Kuning = Biasa, Merah = Stres
-        $moodData = [
-            1 => 'senang',
-            2 => 'biasa',
-            3 => 'stres',
-        ];
+        // Mendapatkan bulan dan tahun dari request, atau gunakan saat ini
+        $month = $request->query('month', \Carbon\Carbon::now()->month);
+        $year = $request->query('year', \Carbon\Carbon::now()->year);
 
-        return view('journals.index', compact('journals', 'currentMonth', 'daysInMonth', 'currentDay', 'moodData'));
+        // Set tanggal
+        $date = \Carbon\Carbon::createFromDate($year, $month, 1);
+        
+        $currentMonthName = $date->translatedFormat('F Y');
+        $daysInMonth = $date->daysInMonth;
+        
+        $isCurrentMonth = ($month == \Carbon\Carbon::now()->month && $year == \Carbon\Carbon::now()->year);
+        $currentDay = $isCurrentMonth ? \Carbon\Carbon::now()->day : null;
+        
+        // Navigasi bulan
+        $prevMonth = $date->copy()->subMonth();
+        $nextMonth = $date->copy()->addMonth();
+
+        // Ambil riwayat mood dari HasilCheckInstan
+        $moodHistory = \App\Models\HasilCheckInstan::where('user_id', $userId)
+            ->whereMonth('created_at', $month)
+            ->whereYear('created_at', $year)
+            ->orderBy('created_at', 'asc')
+            ->get();
+
+        $moodData = [];
+        foreach ($moodHistory as $mood) {
+            $day = \Carbon\Carbon::parse($mood->created_at)->day;
+            if ($mood->kategori_hasil === 'Baik') {
+                $moodData[$day] = 'senang';
+            } elseif ($mood->kategori_hasil === 'Biasa') {
+                $moodData[$day] = 'biasa';
+            } elseif ($mood->kategori_hasil === 'Buruk') {
+                $moodData[$day] = 'buruk';
+            }
+        }
+
+        return view('journals.index', compact(
+            'journals', 
+            'currentMonthName', 
+            'daysInMonth', 
+            'currentDay', 
+            'moodData',
+            'prevMonth',
+            'nextMonth'
+        ));
     }
 
     /**
