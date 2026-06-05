@@ -148,6 +148,9 @@ Route::middleware('auth')->group(function () {
     // ──────────────────── Artikel Routes ────────────────────
     Route::prefix('artikel')->name('artikel.')->group(function () {
         Route::get('/', [ArtikelController::class, 'index'])->name('index');
+        Route::get('/bookmarks', [ArtikelController::class, 'bookmarks'])->name('bookmarks');
+        Route::get('/{id}', [ArtikelController::class, 'show'])->name('show');
+        Route::post('/{id}/bookmark', [ArtikelController::class, 'toggleBookmark'])->name('bookmark.toggle');
     });
     
     // Settings

@@ -232,12 +232,12 @@
 
             {{-- Read Button --}}
             <div class="mt-6 pt-5 border-t border-gray-100">
-                <button type="button" id="artikelModalReadBtn" class="w-full bg-gradient-to-r from-[#A881C2] to-[#9B6FB8] hover:from-[#8A64A4] hover:to-[#7D5599] text-white px-6 py-3.5 rounded-2xl font-bold text-sm shadow-lg shadow-[#A881C2]/25 transition-all active:scale-[0.98] flex items-center justify-center gap-2">
+                <a href="#" id="artikelModalReadBtn" class="w-full bg-gradient-to-r from-[#A881C2] to-[#9B6FB8] hover:from-[#8A64A4] hover:to-[#7D5599] text-white px-6 py-3.5 rounded-2xl font-bold text-sm shadow-lg shadow-[#A881C2]/25 transition-all active:scale-[0.98] flex items-center justify-center gap-2 no-underline">
                     <svg class="w-5 h-5" fill="none" stroke="currentColor" viewBox="0 0 24 24">
                         <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M12 6.253v13m0-13C10.832 5.477 9.246 5 7.5 5S4.168 5.477 3 6.253v13C4.168 18.477 5.754 18 7.5 18s3.332.477 4.5 1.253m0-13C13.168 5.477 14.754 5 16.5 5c1.747 0 3.332.477 4.5 1.253v13C19.832 18.477 18.247 18 16.5 18c-1.746 0-3.332.477-4.5 1.253"/>
                     </svg>
                     Baca Selengkapnya
-                </button>
+                </a>
             </div>
         </div>
     </div>
@@ -255,6 +255,7 @@
             'kategori' => $a->kategori,
             'tanggal' => $a->created_at->translatedFormat('d M Y'),
             'author' => $a->admin->nama_asli ?? 'Admin',
+            'url' => route('artikel.show', $a->artikel_id),
         ];
     }
 @endphp
@@ -549,6 +550,10 @@
         dateEl.textContent = artikel.tanggal;
         authorEl.textContent = artikel.author;
         authorAvatarEl.src = `https://ui-avatars.com/api/?name=${encodeURIComponent(artikel.author)}&background=E8DEFA&color=6B3FA0&size=28&bold=true&font-size=0.45`;
+
+        // Set read button link
+        const readBtn = document.getElementById('artikelModalReadBtn');
+        readBtn.href = artikel.url;
 
         // Set description (show more content in modal)
         const maxLen = 500;
