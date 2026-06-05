@@ -47,6 +47,22 @@
                     </span>
                 </div>
             @endif
+
+            {{-- Bookmark Button --}}
+            @auth
+            <div class="absolute top-5 right-5">
+                <button 
+                    type="button" 
+                    onclick="toggleBookmark({{ $artikel->artikel_id }}, this)"
+                    class="w-10 h-10 flex items-center justify-center rounded-xl bg-white/90 backdrop-blur-md shadow-lg hover:bg-white transition-all group/bm {{ $artikel->isBookmarkedBy(Auth::id()) ? 'text-[#A881C2]' : 'text-gray-400 hover:text-[#A881C2]' }}"
+                    title="{{ $artikel->isBookmarkedBy(Auth::id()) ? 'Hapus Bookmark' : 'Bookmark' }}"
+                >
+                    <svg class="w-5 h-5" viewBox="0 0 24 24" fill="{{ $artikel->isBookmarkedBy(Auth::id()) ? 'currentColor' : 'none' }}" stroke="currentColor" stroke-width="2">
+                        <path stroke-linecap="round" stroke-linejoin="round" d="M5 5a2 2 0 012-2h10a2 2 0 012 2v16l-7-3.5L5 21V5z"/>
+                    </svg>
+                </button>
+            </div>
+            @endauth
         </div>
 
         {{-- Article Header --}}
@@ -405,4 +421,52 @@
         }
     }
 </style>
+
+<script>
+    function toggleBookmark(artikelId, btn) {
+        const isBookmarked = btn.classList.contains('text-[#A881C2]');
+        const svg = btn.querySelector('svg');
+        
+        // Optimistic UI update
+        if (isBookmarked) {
+            btn.classList.remove('text-[#A881C2]');
+            btn.classList.add('text-gray-400');
+            svg.setAttribute('fill', 'none');
+            btn.setAttribute('title', 'Bookmark');
+        } else {
+            btn.classList.remove('text-gray-400');
+            btn.classList.add('text-[#A881C2]');
+            svg.setAttribute('fill', 'currentColor');
+            btn.setAttribute('title', 'Hapus Bookmark');
+        }
+
+        fetch(`/artikel/${artikelId}/bookmark`, {
+            method: 'POST',
+            headers: {
+                'X-CSRF-TOKEN': '{{ csrf_token() }}',
+                'Accept': 'application/json',
+                'Content-Type': 'application/json'
+            }
+        }).then(res => res.json())
+        .then(data => {
+            if (!data.success) {
+                throw new Error('Gagal toggle bookmark');
+            }
+        }).catch(err => {
+            // Revert UI on error
+            if (isBookmarked) {
+                btn.classList.add('text-[#A881C2]');
+                btn.classList.remove('text-gray-400');
+                svg.setAttribute('fill', 'currentColor');
+                btn.setAttribute('title', 'Hapus Bookmark');
+            } else {
+                btn.classList.add('text-gray-400');
+                btn.classList.remove('text-[#A881C2]');
+                svg.setAttribute('fill', 'none');
+                btn.setAttribute('title', 'Bookmark');
+            }
+            alert('Terjadi kesalahan saat memproses bookmark.');
+        });
+    }
+</script>
 @endpush

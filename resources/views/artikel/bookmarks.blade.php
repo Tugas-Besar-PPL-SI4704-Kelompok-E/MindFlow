@@ -5,22 +5,22 @@
 {{-- Page Header --}}
 <div class="mb-8 flex flex-col sm:flex-row sm:items-center justify-between gap-4">
     <div>
-        <h2 class="text-2xl font-bold text-gray-900 mb-1">Artikel</h2>
-        <p class="text-gray-500 text-sm font-medium">Temukan artikel seputar kesehatan mental, tips, dan motivasi untuk keseharianmu.</p>
+        <h2 class="text-2xl font-bold text-gray-900 mb-1">Artikel Disimpan</h2>
+        <p class="text-gray-500 text-sm font-medium">Daftar artikel kesehatan mental, tips, dan motivasi yang telah Anda simpan.</p>
     </div>
     @auth
-    <a href="{{ route('artikel.bookmarks') }}" class="flex items-center justify-center gap-2 bg-white hover:bg-purple-50 text-[#A881C2] border border-purple-100 px-5 py-2.5 rounded-xl font-bold text-sm shadow-[0_2px_8px_-2px_rgba(168,129,194,0.15)] transition-all group">
-        <svg class="w-4.5 h-4.5" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2">
-            <path stroke-linecap="round" stroke-linejoin="round" d="M5 5a2 2 0 012-2h10a2 2 0 012 2v16l-7-3.5L5 21V5z"/>
+    <a href="{{ route('artikel.index') }}" class="flex items-center justify-center gap-2 bg-white hover:bg-purple-50 text-[#A881C2] border border-purple-100 px-5 py-2.5 rounded-xl font-bold text-sm shadow-[0_2px_8px_-2px_rgba(168,129,194,0.15)] transition-all group">
+        <svg class="w-4.5 h-4.5 group-hover:-translate-x-0.5 transition-transform" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.5">
+            <path stroke-linecap="round" stroke-linejoin="round" d="M15 19l-7-7 7-7"/>
         </svg>
-        Bookmark Saya
+        Semua Artikel
     </a>
     @endauth
 </div>
 
 {{-- Search & Filter Bar --}}
 <div class="bg-white rounded-[24px] p-5 shadow-[0_4px_20px_-4px_rgba(0,0,0,0.03)] border border-gray-100 mb-8">
-    <form action="{{ route('artikel.index') }}" method="GET" class="flex flex-col sm:flex-row gap-3">
+    <form action="{{ route('artikel.bookmarks') }}" method="GET" class="flex flex-col sm:flex-row gap-3">
         {{-- Search Input --}}
         <div class="relative flex-1">
             <div class="absolute inset-y-0 left-0 pl-4 flex items-center pointer-events-none">
@@ -67,7 +67,7 @@
         </button>
         
         @if(request('search') || request('kategori'))
-            <a href="{{ route('artikel.index') }}" class="flex items-center justify-center px-4 py-3 bg-gray-50 hover:bg-gray-100 border border-gray-200 text-gray-500 rounded-2xl text-sm font-bold transition-all">
+            <a href="{{ route('artikel.bookmarks') }}" class="flex items-center justify-center px-4 py-3 bg-gray-50 hover:bg-gray-100 border border-gray-200 text-gray-500 rounded-2xl text-sm font-bold transition-all">
                 <svg class="w-4 h-4 mr-1" fill="none" stroke="currentColor" viewBox="0 0 24 24">
                     <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M6 18L18 6M6 6l12 12"/>
                 </svg>
@@ -324,19 +324,23 @@
         @if(request('search') || request('kategori'))
             Artikel Tidak Ditemukan
         @else
-            Belum Ada Artikel
+            Belum Ada Bookmark
         @endif
     </h4>
     <p class="text-gray-500 text-[15px] text-center max-w-xs leading-relaxed">
         @if(request('search') || request('kategori'))
-            Coba ubah kata kunci pencarian atau filter kategori untuk menemukan artikel yang Anda cari.
+            Coba ubah kata kunci pencarian atau filter kategori untuk menemukan artikel bookmark yang Anda cari.
         @else
-            Artikel seputar kesehatan mental akan segera hadir. Nantikan update terbaru!
+            Anda belum membookmark artikel apa pun. Mulai simpan artikel menarik untuk dibaca lagi nanti!
         @endif
     </p>
     @if(request('search') || request('kategori'))
+        <a href="{{ route('artikel.bookmarks') }}" class="mt-6 bg-[#A881C2] hover:bg-[#8A64A4] text-white px-6 py-2.5 rounded-full font-bold text-sm shadow-md shadow-[#A881C2]/20 transition-all active:scale-95">
+            Lihat Semua Bookmark
+        </a>
+    @else
         <a href="{{ route('artikel.index') }}" class="mt-6 bg-[#A881C2] hover:bg-[#8A64A4] text-white px-6 py-2.5 rounded-full font-bold text-sm shadow-md shadow-[#A881C2]/20 transition-all active:scale-95">
-            Lihat Semua Artikel
+            Jelajahi Artikel
         </a>
     @endif
 </div>
