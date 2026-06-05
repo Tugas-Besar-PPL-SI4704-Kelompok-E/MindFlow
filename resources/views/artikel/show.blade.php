@@ -54,7 +54,7 @@
                 <button 
                     type="button" 
                     onclick="toggleBookmark({{ $artikel->artikel_id }}, this)"
-                    class="w-10 h-10 flex items-center justify-center rounded-xl bg-white/90 backdrop-blur-md shadow-lg hover:bg-white transition-all group/bm {{ $artikel->isBookmarkedBy(Auth::id()) ? 'text-[#A881C2]' : 'text-gray-400 hover:text-[#A881C2]' }}"
+                    class="w-10 h-10 flex items-center justify-center transition-all group/bm {{ $artikel->isBookmarkedBy(Auth::id()) ? 'text-[#A881C2]' : 'text-gray-400 hover:text-[#A881C2] drop-shadow-sm' }}"
                     title="{{ $artikel->isBookmarkedBy(Auth::id()) ? 'Hapus Bookmark' : 'Bookmark' }}"
                 >
                     <svg class="w-5 h-5" viewBox="0 0 24 24" fill="{{ $artikel->isBookmarkedBy(Auth::id()) ? 'currentColor' : 'none' }}" stroke="currentColor" stroke-width="2">
