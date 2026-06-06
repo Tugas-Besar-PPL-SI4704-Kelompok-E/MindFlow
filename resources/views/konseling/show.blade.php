@@ -448,7 +448,7 @@
                  appendTo: document.body,
                  enableTime: true,
                  dateFormat: "Y-m-d H:i",
-                 minDate: "today",
+                 minDate: new Date(new Date().getTime() + 3 * 60 * 60 * 1000),
                  time_24hr: true,
                  locale: "id",
                  clickOpens: true,

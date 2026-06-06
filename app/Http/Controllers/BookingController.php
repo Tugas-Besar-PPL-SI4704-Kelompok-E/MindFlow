@@ -15,10 +15,10 @@ class BookingController extends Controller
         $data = $request->validated();
 
         $jadwalDate = \Carbon\Carbon::parse($data['jadwal']);
-        if ($jadwalDate->lt(now())) {
+        if ($jadwalDate->lt(now()->addHours(3))) {
             return redirect()->back()
                 ->withInput()
-                ->with('error', 'Jadwal tidak valid. Silakan pilih jadwal di masa depan.');
+                ->with('error', 'Jadwal tidak valid. Pemesanan tidak boleh mendadak, silakan pilih jadwal minimal 3 jam dari sekarang.');
         }
 
         $alreadyBooked = SesiKonseling::where('profil_konselor_id', $data['konselor_id'])
@@ -64,9 +64,9 @@ class BookingController extends Controller
         ]);
 
         $jadwalDate = \Carbon\Carbon::parse($request->jadwal);
-        if ($jadwalDate->lt(now())) {
+        if ($jadwalDate->lt(now()->addHours(3))) {
             return redirect()->back()
-                ->with('error', 'Jadwal tidak valid. Silakan pilih jadwal di masa depan.');
+                ->with('error', 'Perubahan jadwal tidak valid. Jadwal baru harus minimal 3 jam dari sekarang.');
         }
 
         $sesi = SesiKonseling::findOrFail($id);

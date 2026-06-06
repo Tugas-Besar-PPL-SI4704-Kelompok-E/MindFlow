@@ -140,9 +140,15 @@
                             <tr class="hover:bg-gray-50/50 transition">
                                 <td class="px-6 py-4 w-1/2">
                                     <div class="text-[11px] text-gray-400 uppercase font-semibold mb-1">Dilaporkan oleh: <span class="text-gray-700">{{ $report->pelapor->nama_samaran ?? ($report->pelapor->nama_asli ?? 'Tidak diketahui') }}</span></div>
-                                    <div class="text-[11px] text-red-400 uppercase font-semibold mb-1">Diposting oleh: <span class="text-red-600">{{ $report->pelanggar ? ($report->pelanggar->nama_samaran ?? ($report->pelanggar->nama_asli ?? 'Pengguna')) : 'Tidak diketahui' }}</span></div>
+                                    <div class="text-[11px] text-red-400 uppercase font-semibold mb-1">Diposting oleh: <span class="text-red-600">{{ $report->pelanggar ? ($report->pelanggar->nama_samaran ?? ($report->pelanggar->nama_asli ?? 'Admin')) : 'Admin MindFlow' }}</span></div>
                                     <div class="text-sm text-gray-700 italic">"{{ Str::limit($report->konten, 100) }}"</div>
-                                    <span class="inline-block mt-1.5 px-2 py-0.5 rounded text-[10px] font-bold uppercase {{ $report->type === 'thread' ? 'bg-blue-50 text-blue-600' : 'bg-gray-100 text-gray-500' }}">{{ $report->type === 'thread' ? 'Postingan' : 'Balasan' }}</span>
+                                    @if ($report->type === 'thread')
+                                        <span class="inline-block mt-1.5 px-2 py-0.5 rounded text-[10px] font-bold uppercase bg-blue-50 text-blue-600">Postingan</span>
+                                    @elseif ($report->type === 'reply')
+                                        <span class="inline-block mt-1.5 px-2 py-0.5 rounded text-[10px] font-bold uppercase bg-gray-100 text-gray-500">Balasan</span>
+                                    @elseif ($report->type === 'artikel')
+                                        <span class="inline-block mt-1.5 px-2 py-0.5 rounded text-[10px] font-bold uppercase bg-purple-50 text-[#A881C2]">Artikel</span>
+                                    @endif
                                 </td>
                                 <td class="px-6 py-4">
                                     <span class="px-3 py-1.5 bg-red-50 text-red-700 rounded-lg text-xs font-bold">{{ $report->alasan }}</span>
@@ -150,20 +156,48 @@
                                 <td class="px-6 py-4">
                                     <div class="flex justify-center items-center">
                                         @if(!$report->is_deleted)
-                                        @if($report->pelanggar)
-                                            @if(!($report->pelanggar->status === 'muted' && \Carbon\Carbon::parse($report->pelanggar->muted_until)->isFuture()))
-                                                <button onclick="openPunishModal({{ $report->pelanggar->id }}, '{{ addslashes($report->pelanggar->nama_samaran ?? $report->pelanggar->nama_asli ?? 'Pengguna') }}')" class="flex items-center gap-2 px-4 py-2 bg-amber-500 text-white rounded-xl text-xs font-bold hover:bg-amber-600 transition mr-2">
-                                                    <svg class="w-4 h-4" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M12 9v2m0 4h.01m-6.938 4h13.856c1.54 0 2.502-1.667 1.732-3L13.732 4c-.77-1.333-2.694-1.333-3.464 0L3.34 16c-.77 1.333.192 3 1.732 3z"></path></svg>
-                                                    Tindak Pelanggar
+                                            @if($report->type === 'artikel')
+                                                <div class="flex items-center gap-2">
+                                                    <a href="{{ route('artikel.show', $report->target_id) }}" target="_blank" class="flex items-center gap-1.5 px-3 py-2 bg-purple-50 hover:bg-purple-100 text-[#A881C2] rounded-xl text-xs font-bold transition">
+                                                        <svg class="w-4 h-4" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                                                            <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M15 12a3 3 0 11-6 0 3 3 0 016 0z"/>
+                                                            <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M2.458 12C3.732 7.943 7.523 5 12 5c4.478 0 8.268 2.943 9.542 7-1.274 4.057-5.064 7-9.542 7-4.477 0-8.268-2.943-9.542-7z"/>
+                                                        </svg>
+                                                        Lihat
+                                                    </a>
+                                                    <button type="button" onclick="openDeleteModal('{{ route('admin.artikel.delete', $report->target_id) }}', 'artikel')" class="flex items-center gap-1.5 px-3 py-2 bg-red-600 text-white rounded-xl text-xs font-bold hover:bg-red-700 transition">
+                                                        <svg class="w-4 h-4" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                                                            <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M19 7l-.867 12.142A2 2 0 0116.138 21H7.862a2 2 0 01-1.995-1.858L5 7m5 4v6m4-6v6m1-10V4a1 1 0 00-1-1h-4a1 1 0 00-1 1v3M4 7h16"/>
+                                                        </svg>
+                                                        Hapus
+                                                    </button>
+                                                    <form action="{{ route('admin.laporan.artikel.delete', $report->id) }}" method="POST" class="inline m-0">
+                                                        @csrf
+                                                        @method('DELETE')
+                                                        <button type="submit" class="flex items-center gap-1.5 px-3 py-2 bg-gray-100 text-gray-600 rounded-xl text-xs font-bold hover:bg-gray-200 transition">
+                                                            <svg class="w-4 h-4" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                                                                <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M6 18L18 6M6 6l12 12"/>
+                                                            </svg>
+                                                            Abaikan
+                                                        </button>
+                                                    </form>
+                                                </div>
+                                            @else
+                                                @if($report->pelanggar)
+                                                    @if(!($report->pelanggar->status === 'muted' && \Carbon\Carbon::parse($report->pelanggar->muted_until)->isFuture()))
+                                                        <button onclick="openPunishModal({{ $report->pelanggar->id }}, '{{ addslashes($report->pelanggar->nama_samaran ?? $report->pelanggar->nama_asli ?? 'Pengguna') }}')" class="flex items-center gap-2 px-4 py-2 bg-amber-500 text-white rounded-xl text-xs font-bold hover:bg-amber-600 transition mr-2">
+                                                            <svg class="w-4 h-4" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M12 9v2m0 4h.01m-6.938 4h13.856c1.54 0 2.502-1.667 1.732-3L13.732 4c-.77-1.333-2.694-1.333-3.464 0L3.34 16c-.77 1.333.192 3 1.732 3z"></path></svg>
+                                                            Tindak Pelanggar
+                                                        </button>
+                                                    @endif
+                                                @endif
+                                                <button type="button" onclick="openDeleteModal('{{ route('admin.forum.delete', ['id' => $report->target_id, 'type' => $report->type]) }}', '{{ $report->type === 'thread' ? 'postingan' : 'balasan' }}')" class="flex items-center gap-2 px-4 py-2 bg-red-600 text-white rounded-xl text-xs font-bold hover:bg-red-700 transition">
+                                                    <svg class="w-4 h-4" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M19 7l-.867 12.142A2 2 0 0116.138 21H7.862a2 2 0 01-1.995-1.858L5 7m5 4v6m4-6v6m1-10V4a1 1 0 00-1-1h-4a1 1 0 00-1 1v3M4 7h16"></path></svg>
+                                                    Hapus
                                                 </button>
                                             @endif
-                                        @endif
-                                        <button type="button" onclick="openDeleteModal('{{ route('admin.forum.delete', ['id' => $report->target_id, 'type' => $report->type]) }}', '{{ $report->type === 'thread' ? 'postingan' : 'balasan' }}')" class="flex items-center gap-2 px-4 py-2 bg-red-600 text-white rounded-xl text-xs font-bold hover:bg-red-700 transition">
-                                            <svg class="w-4 h-4" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M19 7l-.867 12.142A2 2 0 0116.138 21H7.862a2 2 0 01-1.995-1.858L5 7m5 4v6m4-6v6m1-10V4a1 1 0 00-1-1h-4a1 1 0 00-1 1v3M4 7h16"></path></svg>
-                                            Hapus
-                                        </button>
                                         @else
-                                        <span class="px-3 py-1.5 bg-gray-100 text-gray-400 rounded-lg text-xs font-semibold">Postingan Dihapus</span>
+                                            <span class="px-3 py-1.5 bg-gray-100 text-gray-400 rounded-lg text-xs font-semibold">{{ $report->type === 'artikel' ? 'Artikel Dihapus' : 'Postingan Dihapus' }}</span>
                                         @endif
                                     </div>
                                 </td>

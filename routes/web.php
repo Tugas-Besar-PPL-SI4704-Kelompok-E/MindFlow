@@ -102,6 +102,8 @@ Route::middleware('auth')->group(function () {
         Route::get('/laporan', [AdminController::class, 'laporan'])->name('laporan');
         Route::post('/laporan/{id}/punish', [AdminController::class, 'punishUser'])->name('laporan.punish');
         Route::delete('/forum/{id}/delete', [AdminController::class, 'hapusPostingan'])->name('forum.delete');
+        Route::delete('/artikel/{id}/delete', [AdminController::class, 'hapusArtikel'])->name('artikel.delete');
+        Route::delete('/laporan/artikel/{id}', [AdminController::class, 'hapusLaporanArtikel'])->name('laporan.artikel.delete');
         Route::get('/spesialisasi', [AdminController::class, 'spesialisasi'])->name('spesialisasi');
         Route::post('/spesialisasi', [AdminController::class, 'storeSpesialisasi'])->name('spesialisasi.store');
         Route::put('/spesialisasi/{id}', [AdminController::class, 'updateSpesialisasi'])->name('spesialisasi.update');
@@ -148,6 +150,10 @@ Route::middleware('auth')->group(function () {
     // ──────────────────── Artikel Routes ────────────────────
     Route::prefix('artikel')->name('artikel.')->group(function () {
         Route::get('/', [ArtikelController::class, 'index'])->name('index');
+        Route::get('/bookmarks', [ArtikelController::class, 'bookmarks'])->name('bookmarks');
+        Route::get('/{id}', [ArtikelController::class, 'show'])->name('show');
+        Route::post('/{id}/bookmark', [ArtikelController::class, 'toggleBookmark'])->name('bookmark.toggle');
+        Route::post('/{id}/report', [ArtikelController::class, 'report'])->name('report');
     });
     
     // Settings
