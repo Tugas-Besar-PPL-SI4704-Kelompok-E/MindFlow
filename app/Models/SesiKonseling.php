@@ -54,15 +54,17 @@ class SesiKonseling extends Model
      */
     public static function cancelExpiredPendingSessions($force = false)
     {
-<<<<<<< HEAD
+        if (!\Illuminate\Support\Facades\Schema::hasTable('sesi_konselings')) {
+            return 0;
+        }
+
+        $timeout = env('AUTO_CANCEL_SECONDS', 3);
         // 24 jam = 86400 detik
         $timeout = env('AUTO_CANCEL_SECONDS', 86400);
-=======
         if (self::$hasCancelledExpired && !$force) {
             return 0;
         }
         self::$hasCancelledExpired = true;
->>>>>>> c1bedb0de9f3f32916c1ded1f2107a09e40dc059
 
         $timeout = env('AUTO_CANCEL_SECONDS', 172800);
 

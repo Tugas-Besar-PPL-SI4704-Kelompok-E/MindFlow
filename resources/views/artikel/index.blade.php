@@ -183,11 +183,16 @@
                 
                 {{-- Footer: Author + Read More --}}
                 <div class="flex items-center justify-between pt-3 border-t border-gray-50">
-                    <div class="flex items-center gap-2">
-                        <img src="https://ui-avatars.com/api/?name={{ urlencode($artikel->admin->nama_asli ?? 'Admin') }}&background=E8DEFA&color=6B3FA0&size=28&bold=true&font-size=0.45" alt="Author" class="w-6 h-6 rounded-full">
-                        <span class="text-[11px] font-semibold text-gray-500">{{ $artikel->admin->nama_asli ?? 'Admin' }}</span>
+                    <div class="flex flex-col gap-0.5 min-w-0">
+                        <div class="flex items-center gap-1.5">
+                            <img src="https://ui-avatars.com/api/?name={{ urlencode($artikel->admin->nama_asli ?? 'Admin') }}&background=E8DEFA&color=6B3FA0&size=28&bold=true&font-size=0.45" alt="Author" class="w-5 h-5 rounded-full flex-shrink-0">
+                            <span class="text-[11px] font-bold text-gray-600 truncate">{{ $artikel->admin->nama_asli ?? 'Admin' }}</span>
+                        </div>
+                        @if($artikel->penerbit)
+                            <span class="text-[10px] text-gray-400 font-medium truncate ml-6" title="Penerbit: {{ $artikel->penerbit }}">Penerbit: {{ $artikel->penerbit }}</span>
+                        @endif
                     </div>
-                    <span class="text-[12px] font-bold text-[#A881C2] group-hover:translate-x-0.5 transition-transform inline-flex items-center gap-1">
+                    <span class="text-[12px] font-bold text-[#A881C2] group-hover:translate-x-0.5 transition-transform inline-flex items-center gap-1 flex-shrink-0">
                         Baca
                         <svg class="w-3.5 h-3.5" fill="none" stroke="currentColor" viewBox="0 0 24 24">
                             <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2.5" d="M9 5l7 7-7 7"/>
@@ -230,6 +235,10 @@
                     <img id="artikelModalAuthorAvatar" src="" alt="Author" class="w-5 h-5 rounded-full">
                     <span id="artikelModalAuthor" class="text-[11px] font-semibold text-gray-500"></span>
                 </div>
+                <span class="text-gray-200" id="artikelModalPenerbitSeparator">•</span>
+                <div class="flex items-center gap-1.5" id="artikelModalPenerbitWrapper">
+                    <span class="text-[11px] font-medium text-gray-400">Penerbit: <strong id="artikelModalPenerbit" class="text-gray-500 font-bold"></strong></span>
+                </div>
             </div>
 
             {{-- Title --}}
@@ -266,6 +275,7 @@
             'kategori' => $a->kategori,
             'tanggal' => $a->created_at->translatedFormat('d M Y'),
             'author' => $a->admin->nama_asli ?? 'Admin',
+            'penerbit' => $a->penerbit,
             'url' => route('artikel.show', $a->artikel_id),
         ];
     }
@@ -523,6 +533,9 @@
         const authorEl = document.getElementById('artikelModalAuthor');
         const authorAvatarEl = document.getElementById('artikelModalAuthorAvatar');
         const deskripsiEl = document.getElementById('artikelModalDeskripsi');
+        const penerbitEl = document.getElementById('artikelModalPenerbit');
+        const penerbitWrapper = document.getElementById('artikelModalPenerbitWrapper');
+        const penerbitSeparator = document.getElementById('artikelModalPenerbitSeparator');
 
         // Set image
         if (artikel.gambar_cover) {
@@ -561,6 +574,15 @@
         dateEl.textContent = artikel.tanggal;
         authorEl.textContent = artikel.author;
         authorAvatarEl.src = `https://ui-avatars.com/api/?name=${encodeURIComponent(artikel.author)}&background=E8DEFA&color=6B3FA0&size=28&bold=true&font-size=0.45`;
+        
+        if (artikel.penerbit) {
+            penerbitEl.textContent = artikel.penerbit;
+            penerbitWrapper.classList.remove('hidden');
+            penerbitSeparator.classList.remove('hidden');
+        } else {
+            penerbitWrapper.classList.add('hidden');
+            penerbitSeparator.classList.add('hidden');
+        }
 
         // Set read button link
         const readBtn = document.getElementById('artikelModalReadBtn');

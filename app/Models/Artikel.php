@@ -15,6 +15,7 @@ class Artikel extends Model
         'konten',
         'gambar_cover',
         'kategori',
+        'penerbit',
         'status',
     ];
 
