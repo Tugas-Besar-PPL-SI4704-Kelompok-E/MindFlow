@@ -200,7 +200,7 @@
                                 </div>
                             @else
                                 <div class="p-3 bg-gray-50 border border-gray-100 rounded-[14px] text-center">
-                                    <p class="text-xs font-medium text-gray-500">Kamu belum pernah menulis jurnal. <br> <a href="{{ route('journal.index') }}" class="text-[#A881C2] hover:underline font-bold">Tulis jurnal pertamamu</a></p>
+                                    <p class="text-xs font-medium text-gray-500">Kamu belum pernah menulis jurnal. <br> <a href="{{ route('journals.index') }}" class="text-[#A881C2] hover:underline font-bold">Tulis jurnal pertamamu</a></p>
                                 </div>
                             @endif
                             @error('journals')<p class="text-sm text-red-600 mt-1">{{ $message }}</p>@enderror
@@ -442,7 +442,7 @@
                  appendTo: document.body,
                  enableTime: true,
                  dateFormat: "Y-m-d H:i",
-                 minDate: "today",
+                 minDate: new Date(new Date().getTime() + 3 * 60 * 60 * 1000),
                  time_24hr: true,
                  locale: "id",
                  clickOpens: true,
