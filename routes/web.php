@@ -40,7 +40,8 @@ Route::get('/faq', function () {
     if (auth()->check()) {
         return redirect()->route('settings.edit', [], 302)->withFragment('faq');
     }
-    return view('faq');
+    $faqs = \App\Models\Faq::orderBy('id')->get();
+    return view('faq', compact('faqs'));
 })->name('faq');
 
 // ──────────────────── Rekrutmen Konselor (Public) ────────────────────
@@ -112,6 +113,10 @@ Route::middleware('auth')->group(function () {
         Route::delete('/spesialisasi/{id}', [AdminController::class, 'destroySpesialisasi'])->name('spesialisasi.destroy');
         Route::get('/settings', [AdminController::class, 'settings'])->name('settings');
         Route::put('/settings', [AdminController::class, 'updateSettings'])->name('settings.update');
+        Route::get('/faq', [AdminController::class, 'faq'])->name('faq');
+        Route::post('/faq', [AdminController::class, 'storeFaq'])->name('faq.store');
+        Route::put('/faq/{id}', [AdminController::class, 'updateFaq'])->name('faq.update');
+        Route::delete('/faq/{id}', [AdminController::class, 'destroyFaq'])->name('faq.destroy');
         // Konseling admin actions
         Route::post('/konseling/{id}/confirm', [\App\Http\Controllers\AdminKonselingController::class, 'confirm'])->name('konseling.confirm');
         Route::post('/konseling/{id}/cancel', [\App\Http\Controllers\AdminKonselingController::class, 'cancel'])->name('konseling.cancel');

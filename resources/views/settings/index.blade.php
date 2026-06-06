@@ -333,71 +333,19 @@
                 <p class="form-section-subtitle" style="margin-bottom: 28px;">Punya pertanyaan? Berikut jawaban dari pertanyaan yang sering ditanyakan.</p>
 
                 <div class="faq-list">
-                    <!-- FAQ 1 -->
+                    @forelse($faqs as $faq)
                     <details class="faq-item">
                         <summary class="faq-summary">
-                            <span class="faq-question">Apa itu MindFlow?</span>
+                            <span class="faq-question">{{ $faq->question }}</span>
                             <svg class="faq-icon" viewBox="0 0 24 24"><line x1="12" y1="5" x2="12" y2="19"></line><line x1="5" y1="12" x2="19" y2="12"></line></svg>
                         </summary>
                         <div class="faq-answer">
-                            MindFlow adalah platform kesejahteraan mental yang dirancang untuk membantu Anda melacak suasana hati, berlatih mindfulness, dan terhubung dengan konselor profesional.
+                            {!! $faq->answer !!}
                         </div>
                     </details>
-
-                    <!-- FAQ 2 -->
-                    <details class="faq-item">
-                        <summary class="faq-summary">
-                            <span class="faq-question">Apakah data dan privasi saya aman?</span>
-                            <svg class="faq-icon" viewBox="0 0 24 24"><line x1="12" y1="5" x2="12" y2="19"></line><line x1="5" y1="12" x2="19" y2="12"></line></svg>
-                        </summary>
-                        <div class="faq-answer">
-                            Tentu saja. Privasi pengguna adalah prioritas utama kami. Kami menggunakan nama samaran (pseudonym) dan enkripsi standar industri untuk melindungi seluruh percakapan dan data pribadi Anda.
-                        </div>
-                    </details>
-
-                    <!-- FAQ 3 -->
-                    <details class="faq-item">
-                        <summary class="faq-summary">
-                            <span class="faq-question">Bagaimana cara mengubah profil dan nama samaran saya?</span>
-                            <svg class="faq-icon" viewBox="0 0 24 24"><line x1="12" y1="5" x2="12" y2="19"></line><line x1="5" y1="12" x2="19" y2="12"></line></svg>
-                        </summary>
-                        <div class="faq-answer">
-                            Anda dapat mengubahnya di tab <strong>Profil</strong> pada halaman Pengaturan ini. Di sana Anda dapat memperbarui Nama Asli, Nama Samaran, serta Kata Sandi Anda.
-                        </div>
-                    </details>
-
-                    <!-- FAQ 4 -->
-                    <details class="faq-item">
-                        <summary class="faq-summary">
-                            <span class="faq-question">Apakah konseling di MindFlow berbayar?</span>
-                            <svg class="faq-icon" viewBox="0 0 24 24"><line x1="12" y1="5" x2="12" y2="19"></line><line x1="5" y1="12" x2="19" y2="12"></line></svg>
-                        </summary>
-                        <div class="faq-answer">
-                            Kami menyediakan layanan dasar gratis (seperti Jurnal dan Tracker Suasana Hati). Namun untuk konseling secara profesional, kami menerapkan biaya konsultasi yang transparan sesuai dengan tarif masing-masing konselor.
-                        </div>
-                    </details>
-
-                    <!-- FAQ 5 -->
-                    <details class="faq-item">
-                        <summary class="faq-summary">
-                            <span class="faq-question">Bagaimana cara membuat janji konseling?</span>
-                            <svg class="faq-icon" viewBox="0 0 24 24"><line x1="12" y1="5" x2="12" y2="19"></line><line x1="5" y1="12" x2="19" y2="12"></line></svg>
-                        </summary>
-                        <div class="faq-answer">
-                            Kunjungi menu <strong>Konsultasi</strong> di sidebar, lalu klik tombol "Buat Janji". Pilih konselor yang tersedia, tentukan jadwal yang cocok, dan konfirmasi pemesanan Anda.
-                        </div>
-                    </details>
-
-                    <!-- FAQ 6 -->
-                    <details class="faq-item">
-                        <summary class="faq-summary">
-                            <span class="faq-question">Apa itu Mood Tracker dan bagaimana cara menggunakannya?</span>
-                            <svg class="faq-icon" viewBox="0 0 24 24"><line x1="12" y1="5" x2="12" y2="19"></line><line x1="5" y1="12" x2="19" y2="12"></line></svg>
-                        </summary>
-                        <div class="faq-answer">
-                            Mood Tracker adalah fitur untuk memantau kondisi emosional Anda sehari-hari. Tersedia pemeriksaan singkat (check-in harian) dan pemeriksaan mendalam menggunakan kuesioner DASS-21 untuk evaluasi lebih detail.
-                        </div>
-                    </details>
+                    @empty
+                    <p class="text-center text-sm text-gray-500 py-6">Belum ada FAQ tersedia.</p>
+                    @endforelse
                 </div>
             </div>
         </div>
