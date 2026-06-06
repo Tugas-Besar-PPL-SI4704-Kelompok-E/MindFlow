@@ -48,13 +48,29 @@
                 </div>
             @endif
 
-            {{-- Bookmark Button --}}
+            {{-- Action Buttons --}}
             @auth
-            <div class="absolute top-5 right-5">
+            <div class="absolute top-5 right-5 flex items-center gap-2">
+                {{-- Report Button --}}
+                @if(Auth::user()->role !== 'admin')
+                <button 
+                    type="button" 
+                    onclick="openReportModal()"
+                    class="w-10 h-10 flex items-center justify-center bg-white/80 hover:bg-white text-gray-500 hover:text-red-500 rounded-xl transition-all shadow-sm backdrop-blur-sm group/rpt"
+                    title="Laporkan Artikel"
+                    id="btn-report-artikel"
+                >
+                    <svg class="w-5 h-5 group-hover/rpt:scale-105 transition-transform" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                        <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M3 21v-4m0 0V5a2 2 0 012-2h6.5l1 1H21l-3 6 3 6h-8.5l-1-1H5a2 2 0 00-2 2zm9-13.5V9"/>
+                    </svg>
+                </button>
+                @endif
+
+                {{-- Bookmark Button --}}
                 <button 
                     type="button" 
                     onclick="toggleBookmark({{ $artikel->artikel_id }}, this)"
-                    class="w-10 h-10 flex items-center justify-center transition-all group/bm {{ $artikel->isBookmarkedBy(Auth::id()) ? 'text-[#A881C2]' : 'text-gray-400 hover:text-[#A881C2] drop-shadow-sm' }}"
+                    class="w-10 h-10 flex items-center justify-center bg-white/80 hover:bg-white rounded-xl transition-all group/bm {{ $artikel->isBookmarkedBy(Auth::id()) ? 'text-[#A881C2]' : 'text-gray-400 hover:text-[#A881C2] shadow-sm backdrop-blur-sm' }}"
                     title="{{ $artikel->isBookmarkedBy(Auth::id()) ? 'Hapus Bookmark' : 'Bookmark' }}"
                 >
                     <svg class="w-5 h-5" viewBox="0 0 24 24" fill="{{ $artikel->isBookmarkedBy(Auth::id()) ? 'currentColor' : 'none' }}" stroke="currentColor" stroke-width="2">
@@ -212,6 +228,56 @@
     </aside>
     @endif
 </div>
+
+{{-- Report Modal --}}
+@auth
+    @if(Auth::user()->role !== 'admin')
+    <div id="reportModal" class="hidden fixed inset-0 bg-gray-900/50 backdrop-blur-sm z-[100] flex items-center justify-center animate-[fadeIn_0.2s_ease-out]">
+        <div class="bg-white rounded-[28px] w-full max-w-md shadow-2xl overflow-hidden transform transition-all scale-100 border border-gray-100">
+            <div class="px-6 py-5 border-b border-gray-100 flex justify-between items-center bg-gray-50/50">
+                <h3 class="font-bold text-gray-800 flex items-center gap-2">
+                    <svg class="w-5 h-5 text-red-500" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                        <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M12 9v2m0 4h.01m-6.938 4h13.856c1.54 0 2.502-1.667 1.732-3L13.732 4c-.77-1.333-2.694-1.333-3.464 0L3.34 16c-.77 1.333.192 3 1.732 3z"></path>
+                    </svg>
+                    Laporkan Artikel
+                </h3>
+                <button onclick="closeReportModal()" class="text-gray-400 hover:text-gray-600 p-1.5 rounded-xl hover:bg-gray-100 transition-colors">
+                    <svg class="w-5 h-5" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                        <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2.5" d="M6 18L18 6M6 6l12 12"></path>
+                    </svg>
+                </button>
+            </div>
+            <form action="{{ route('artikel.report', $artikel->artikel_id) }}" method="POST" class="m-0">
+                @csrf
+                <div class="p-6 space-y-4">
+                    <div class="bg-red-50/50 border border-red-100 rounded-2xl p-4 flex gap-3">
+                        <svg class="w-5 h-5 text-red-500 flex-shrink-0 mt-0.5" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                            <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M13 16h-1v-4h-1m1-4h.01M21 12a9 9 0 11-18 0 9 9 0 0118 0z"></path>
+                        </svg>
+                        <p class="text-xs text-red-700 leading-relaxed font-medium">
+                            Laporkan jika artikel ini memiliki masalah konten, pelanggaran hak cipta, informasi salah, atau konten tidak pantas. Tim admin kami akan segera meninjau laporan Anda.
+                        </p>
+                    </div>
+                    <div>
+                        <label class="block text-xs font-black uppercase tracking-wider text-gray-400 mb-2">Alasan Pelaporan</label>
+                        <textarea 
+                            name="reason" 
+                            rows="4" 
+                            class="w-full border border-gray-200 rounded-2xl px-4 py-3.5 text-sm focus:outline-none focus:ring-4 focus:ring-red-500/10 focus:border-red-400 bg-gray-50 focus:bg-white resize-none text-gray-700 font-medium transition-all placeholder-gray-400" 
+                            placeholder="Tuliskan detail masalah pada artikel ini..." 
+                            required
+                        ></textarea>
+                    </div>
+                </div>
+                <div class="px-6 py-4 border-t border-gray-100 bg-gray-50 flex justify-end gap-3">
+                    <button type="button" onclick="closeReportModal()" class="px-5 py-2.5 text-sm font-bold text-gray-500 hover:text-gray-700 hover:bg-gray-200 bg-gray-100 rounded-xl transition-all">Batal</button>
+                    <button type="submit" class="px-5 py-2.5 text-sm font-bold text-white bg-red-500 hover:bg-red-600 rounded-xl transition-all shadow-md shadow-red-500/20 active:scale-95">Kirim Laporan</button>
+                </div>
+            </form>
+        </div>
+    </div>
+    @endif
+@endauth
 
 @endsection
 
@@ -423,6 +489,13 @@
 </style>
 
 <script>
+    function openReportModal() {
+        document.getElementById('reportModal').classList.remove('hidden');
+    }
+    function closeReportModal() {
+        document.getElementById('reportModal').classList.add('hidden');
+    }
+
     function toggleBookmark(artikelId, btn) {
         const isBookmarked = btn.classList.contains('text-[#A881C2]');
         const svg = btn.querySelector('svg');

@@ -122,4 +122,28 @@ class ArtikelController extends Controller
             'message' => $isBookmarked ? 'Artikel ditambahkan ke bookmark.' : 'Artikel dihapus dari bookmark.'
         ]);
     }
+
+    /**
+     * Laporkan artikel.
+     */
+    public function report(Request $request, $id)
+    {
+        $artikel = Artikel::published()->findOrFail($id);
+        
+        if (Auth::user()->role === 'admin') {
+            abort(403, 'Admin tidak diizinkan melaporkan artikel.');
+        }
+
+        $request->validate([
+            'reason' => 'required|string|max:1000',
+        ]);
+
+        \App\Models\ArtikelReport::create([
+            'artikel_id' => $artikel->artikel_id,
+            'user_id' => Auth::id(),
+            'reason' => $request->reason,
+        ]);
+
+        return back()->with('success', 'Laporan artikel berhasil dikirim.');
+    }
 }
