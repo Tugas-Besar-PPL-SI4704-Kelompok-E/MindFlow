@@ -48,17 +48,25 @@ class JournalController extends Controller
         $moodHistory = \App\Models\HasilCheckInstan::where('user_id', $userId)
             ->whereMonth('created_at', $month)
             ->whereYear('created_at', $year)
-            ->orderBy('created_at', 'asc')
             ->get();
 
         $moodData = [];
-        foreach ($moodHistory as $mood) {
-            $day = \Carbon\Carbon::parse($mood->created_at)->day;
-            if ($mood->kategori_hasil === 'Baik') {
+        
+        // Mengelompokkan riwayat mood berdasarkan tanggal
+        $groupedMoods = $moodHistory->groupBy(function($mood) {
+            return \Carbon\Carbon::parse($mood->created_at)->day;
+        });
+
+        // Menentukan emosi dominan harian berdasarkan rata-rata skor mood
+        foreach ($groupedMoods as $day => $moods) {
+            $averageScore = $moods->avg('poin_skor');
+            $kategoriDominan = \App\Models\HasilCheckInstan::determineKategori(round($averageScore));
+            
+            if ($kategoriDominan === 'Baik') {
                 $moodData[$day] = 'senang';
-            } elseif ($mood->kategori_hasil === 'Biasa') {
+            } elseif ($kategoriDominan === 'Biasa') {
                 $moodData[$day] = 'biasa';
-            } elseif ($mood->kategori_hasil === 'Buruk') {
+            } elseif ($kategoriDominan === 'Buruk') {
                 $moodData[$day] = 'buruk';
             }
         }
