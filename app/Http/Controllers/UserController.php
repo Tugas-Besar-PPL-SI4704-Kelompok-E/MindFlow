@@ -11,7 +11,8 @@ class UserController extends Controller
     public function edit()
     {
         $user = Auth::user();
-        return view('settings.index', compact('user'));
+        $faqs = \App\Models\Faq::orderBy('id')->get();
+        return view('settings.index', compact('user', 'faqs'));
     }
 
     public function update(Request $request)

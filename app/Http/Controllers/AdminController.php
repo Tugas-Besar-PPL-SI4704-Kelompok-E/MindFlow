@@ -327,4 +327,52 @@ class AdminController extends Controller
 
         return back()->with('success', 'Pengaturan admin berhasil diperbarui!');
     }
+
+    /**
+     * Pengelolaan FAQ oleh Admin.
+     */
+    public function faq()
+    {
+        $faqs = \App\Models\Faq::latest()->get();
+        return view('admin.faq', compact('faqs'));
+    }
+
+    public function storeFaq(Request $request)
+    {
+        $request->validate([
+            'question' => 'required|string',
+            'answer' => 'required|string',
+        ]);
+
+        \App\Models\Faq::create([
+            'question' => $request->question,
+            'answer' => $request->answer,
+        ]);
+
+        return back()->with('success', 'FAQ berhasil ditambahkan!');
+    }
+
+    public function updateFaq(Request $request, $id)
+    {
+        $request->validate([
+            'question' => 'required|string',
+            'answer' => 'required|string',
+        ]);
+
+        $faq = \App\Models\Faq::findOrFail($id);
+        $faq->update([
+            'question' => $request->question,
+            'answer' => $request->answer,
+        ]);
+
+        return back()->with('success', 'FAQ berhasil diperbarui!');
+    }
+
+    public function destroyFaq($id)
+    {
+        $faq = \App\Models\Faq::findOrFail($id);
+        $faq->delete();
+
+        return back()->with('success', 'FAQ berhasil dihapus!');
+    }
 }

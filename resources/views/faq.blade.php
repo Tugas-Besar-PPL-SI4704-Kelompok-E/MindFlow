@@ -75,10 +75,10 @@
         </div>
 
         <div class="space-y-4">
-            <!-- FAQ Item 1 -->
+            @forelse($faqs as $faq)
             <details class="group bg-white rounded-2xl shadow-sm border border-slate-100 [&_summary::-webkit-details-marker]:hidden">
                 <summary class="flex cursor-pointer items-center justify-between gap-1.5 p-6 text-slate-900">
-                    <h2 class="font-semibold text-lg">Apa itu MindFlow?</h2>
+                    <h2 class="font-semibold text-lg">{{ $faq->question }}</h2>
                     <span class="relative h-5 w-5 shrink-0">
                         <svg class="absolute inset-0 opacity-100 group-open:opacity-0 transition-opacity" xmlns="http://www.w3.org/2000/svg" fill="none" viewBox="0 0 24 24" stroke="currentColor" stroke-width="2">
                             <path stroke-linecap="round" stroke-linejoin="round" d="M12 9v3m0 0v3m0-3h3m-3 0H9m12 0a9 9 0 11-18 0 9 9 0 0118 0z" />
@@ -89,63 +89,14 @@
                     </span>
                 </summary>
                 <div class="px-6 pb-6 text-slate-600 leading-relaxed">
-                    MindFlow adalah platform kesejahteraan mental yang dirancang untuk membantu Anda melacak suasana hati, berlatih mindfulness, dan terhubung dengan konselor profesional.
+                    {!! $faq->answer !!}
                 </div>
             </details>
-
-            <!-- FAQ Item 2 -->
-            <details class="group bg-white rounded-2xl shadow-sm border border-slate-100 [&_summary::-webkit-details-marker]:hidden">
-                <summary class="flex cursor-pointer items-center justify-between gap-1.5 p-6 text-slate-900">
-                    <h2 class="font-semibold text-lg">Apakah data dan privasi saya aman?</h2>
-                    <span class="relative h-5 w-5 shrink-0">
-                        <svg class="absolute inset-0 opacity-100 group-open:opacity-0 transition-opacity" xmlns="http://www.w3.org/2000/svg" fill="none" viewBox="0 0 24 24" stroke="currentColor" stroke-width="2">
-                            <path stroke-linecap="round" stroke-linejoin="round" d="M12 9v3m0 0v3m0-3h3m-3 0H9m12 0a9 9 0 11-18 0 9 9 0 0118 0z" />
-                        </svg>
-                        <svg class="absolute inset-0 opacity-0 group-open:opacity-100 transition-opacity" xmlns="http://www.w3.org/2000/svg" fill="none" viewBox="0 0 24 24" stroke="currentColor" stroke-width="2">
-                            <path stroke-linecap="round" stroke-linejoin="round" d="M15 12H9m12 0a9 9 0 11-18 0 9 9 0 0118 0z" />
-                        </svg>
-                    </span>
-                </summary>
-                <div class="px-6 pb-6 text-slate-600 leading-relaxed">
-                    Tentu saja. Privasi pengguna adalah prioritas utama kami. Kami menggunakan nama samaran (pseudonym) dan enkripsi standar industri untuk melindungi seluruh percakapan dan data pribadi Anda.
-                </div>
-            </details>
-
-            <!-- FAQ Item 3 -->
-            <details class="group bg-white rounded-2xl shadow-sm border border-slate-100 [&_summary::-webkit-details-marker]:hidden">
-                <summary class="flex cursor-pointer items-center justify-between gap-1.5 p-6 text-slate-900">
-                    <h2 class="font-semibold text-lg">Bagaimana cara mengubah profil dan nama samaran saya?</h2>
-                    <span class="relative h-5 w-5 shrink-0">
-                        <svg class="absolute inset-0 opacity-100 group-open:opacity-0 transition-opacity" xmlns="http://www.w3.org/2000/svg" fill="none" viewBox="0 0 24 24" stroke="currentColor" stroke-width="2">
-                            <path stroke-linecap="round" stroke-linejoin="round" d="M12 9v3m0 0v3m0-3h3m-3 0H9m12 0a9 9 0 11-18 0 9 9 0 0118 0z" />
-                        </svg>
-                        <svg class="absolute inset-0 opacity-0 group-open:opacity-100 transition-opacity" xmlns="http://www.w3.org/2000/svg" fill="none" viewBox="0 0 24 24" stroke="currentColor" stroke-width="2">
-                            <path stroke-linecap="round" stroke-linejoin="round" d="M15 12H9m12 0a9 9 0 11-18 0 9 9 0 0118 0z" />
-                        </svg>
-                    </span>
-                </summary>
-                <div class="px-6 pb-6 text-slate-600 leading-relaxed">
-                    Anda dapat pergi ke halaman <a href="/settings" class="text-teal-600 hover:underline">Settings</a>. Di sana Anda dapat memperbarui Nama Asli, Nama Samaran, serta Kata Sandi Anda.
-                </div>
-            </details>
-
-            <!-- FAQ Item 4 -->
-            <details class="group bg-white rounded-2xl shadow-sm border border-slate-100 [&_summary::-webkit-details-marker]:hidden">
-                <summary class="flex cursor-pointer items-center justify-between gap-1.5 p-6 text-slate-900">
-                    <h2 class="font-semibold text-lg">Apakah konseling di MindFlow berbayar?</h2>
-                    <span class="relative h-5 w-5 shrink-0">
-                        <svg class="absolute inset-0 opacity-100 group-open:opacity-0 transition-opacity" xmlns="http://www.w3.org/2000/svg" fill="none" viewBox="0 0 24 24" stroke="currentColor" stroke-width="2">
-                            <path stroke-linecap="round" stroke-linejoin="round" d="M12 9v3m0 0v3m0-3h3m-3 0H9m12 0a9 9 0 11-18 0 9 9 0 0118 0z" />
-                        </svg>
-                        <svg class="absolute inset-0 opacity-0 group-open:opacity-100 transition-opacity" xmlns="http://www.w3.org/2000/svg" fill="none" viewBox="0 0 24 24" stroke="currentColor" stroke-width="2">
-                            <path stroke-linecap="round" stroke-linejoin="round" d="M15 12H9m12 0a9 9 0 11-18 0 9 9 0 0118 0z" />
-                        </svg>
-                    </span>
-                </summary>
-                <div class="px-6 pb-6 text-slate-600 leading-relaxed">
-                    Kami menyediakan layanan dasar gratis (seperti Jurnal dan Tracker Suasana Hati). Namun untuk konseling secara profesional, kami menerapkan biaya konsultasi yang transparan sesuai dengan tarif masing-masing konselor.
-                </div>
-            </details>
+            @empty
+            <div class="text-center bg-white rounded-2xl p-12 shadow-sm border border-slate-100 text-slate-500">
+                Belum ada FAQ tersedia saat ini.
+            </div>
+            @endforelse
         </div>
     </div>
 
