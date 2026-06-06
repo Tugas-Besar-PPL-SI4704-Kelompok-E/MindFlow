@@ -18,7 +18,7 @@ class AdminController extends Controller
     {
         $totalUsers      = User::where('role', 'user')->count();
         $totalKonselor   = User::where('role', 'konselor')->count();
-        $totalReports    = \App\Models\ThreadReport::count() + \App\Models\ReplyReport::count();
+        $totalReports    = \App\Models\ThreadReport::count() + \App\Models\ReplyReport::count() + \App\Models\ArtikelReport::count();
         $totalThreads    = \App\Models\Thread::count();
         $totalSessions   = \App\Models\SesiKonseling::count();
         $totalJournals   = \App\Models\Journal::count();
@@ -112,7 +112,23 @@ class AdminController extends Controller
                 ];
             });
 
-        $reports = $threadReports->concat($replyReports)->sortByDesc('created_at');
+        $artikelReports = \App\Models\ArtikelReport::with(['artikel', 'user'])
+            ->get()
+            ->map(function($r) {
+                return (object)[
+                    'type' => 'artikel',
+                    'id' => $r->id,
+                    'target_id' => $r->artikel_id,
+                    'pelapor' => $r->user,
+                    'pelanggar' => $r->artikel ? $r->artikel->admin : null,
+                    'konten' => $r->artikel ? $r->artikel->judul : 'Artikel telah dihapus',
+                    'alasan' => $r->reason,
+                    'created_at' => $r->created_at,
+                    'is_deleted' => $r->artikel ? false : true
+                ];
+            });
+
+        $reports = $threadReports->concat($replyReports)->concat($artikelReports)->sortByDesc('created_at');
 
         return view('admin.laporan', compact('reports'));
     }
@@ -133,6 +149,26 @@ class AdminController extends Controller
             $thread->delete();
             return back()->with('success', "Postingan telah dihapus secara permanen.");
         }
+    }
+
+    /**
+     * Hapus artikel secara permanen dari panel admin.
+     */
+    public function hapusArtikel($id)
+    {
+        $artikel = \App\Models\Artikel::findOrFail($id);
+        $artikel->delete();
+        return back()->with('success', "Artikel berhasil dihapus secara permanen.");
+    }
+
+    /**
+     * Hapus/Abaikan laporan artikel secara permanen.
+     */
+    public function hapusLaporanArtikel($id)
+    {
+        $report = \App\Models\ArtikelReport::findOrFail($id);
+        $report->delete();
+        return back()->with('success', "Laporan artikel berhasil diabaikan.");
     }
 
     /**

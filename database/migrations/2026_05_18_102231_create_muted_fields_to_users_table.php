@@ -12,7 +12,9 @@ return new class extends Migration
      */
     public function up(): void
     {
-        DB::statement("ALTER TABLE users MODIFY COLUMN status ENUM('pending', 'approved', 'rejected', 'muted') DEFAULT 'approved'");
+        if (DB::getDriverName() !== 'sqlite') {
+            DB::statement("ALTER TABLE users MODIFY COLUMN status ENUM('pending', 'approved', 'rejected', 'muted') DEFAULT 'approved'");
+        }
 
         Schema::table('users', function (Blueprint $table) {
             $table->timestamp('muted_until')->nullable();
@@ -29,6 +31,8 @@ return new class extends Migration
             $table->dropColumn(['muted_until', 'punishment_reason']);
         });
 
-        DB::statement("ALTER TABLE users MODIFY COLUMN status ENUM('pending', 'approved', 'rejected') DEFAULT 'approved'");
+        if (DB::getDriverName() !== 'sqlite') {
+            DB::statement("ALTER TABLE users MODIFY COLUMN status ENUM('pending', 'approved', 'rejected') DEFAULT 'approved'");
+        }
     }
 };
