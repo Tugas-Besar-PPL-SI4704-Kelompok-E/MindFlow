@@ -325,6 +325,12 @@
                     </div>
                 </div>
                 <div class="flex flex-col gap-3">
+                    @if(in_array($contohSesi->status, ['confirmed', 'rescheduled']))
+                        <a href="{{ route('konseling.room', $contohSesi->sesi_konseling_id) }}" class="w-full text-center bg-emerald-500 hover:bg-emerald-600 text-white py-3.5 rounded-2xl text-sm font-bold transition-all duration-300 shadow-sm shadow-emerald-200 flex items-center justify-center gap-2">
+                            <svg class="w-5 h-5" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M15 10l4.553-2.276A1 1 0 0121 8.618v6.764a1 1 0 01-1.447.894L15 14M5 18h8a2 2 0 002-2V8a2 2 0 00-2-2H5a2 2 0 00-2 2v8a2 2 0 002 2z"></path></svg>
+                            Masuk Ruangan
+                        </a>
+                    @endif
                     <a href="{{ route('booking.edit', $contohSesi->sesi_konseling_id) }}" class="w-full text-center bg-purple-50 text-[#A881C2] hover:bg-purple-100 py-3.5 rounded-2xl text-sm font-bold transition-all duration-300">
                         Ubah Jadwal
                     </a>
@@ -480,7 +486,7 @@
                  .catch(function(error) {
                      console.error('Auto-cancel request gagal:', error);
                  });
-             }, {{ env('AUTO_CANCEL_SECONDS', 3) * 1000 }});
+             }, {{ env('AUTO_CANCEL_SECONDS', 86400) * 1000 }});
              @endif
 
              // Inisialisasi Choices.js untuk multi-select dropdown jurnal
