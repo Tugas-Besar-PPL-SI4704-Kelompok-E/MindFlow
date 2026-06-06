@@ -37,7 +37,7 @@
             <div class="mb-8">
                 <label class="block text-[11px] font-black text-gray-400 uppercase tracking-[0.2em] mb-4 ml-1">Jadwal Konsultasi Baru</label>
                 <div class="relative">
-                    <input type="datetime-local" name="jadwal" value="{{ old('jadwal', \Carbon\Carbon::parse($sesi->jadwal)->format('Y-m-d\TH:i')) }}" class="w-full bg-gray-50 border border-gray-200 rounded-[24px] px-6 py-5 focus:outline-none focus:ring-4 focus:ring-[#A881C2]/10 focus:border-[#A881C2] focus:bg-white text-base text-gray-700 font-bold shadow-sm transition-all" required>
+                    <input type="datetime-local" name="jadwal" min="{{ now()->addHours(3)->format('Y-m-d\TH:i') }}" value="{{ old('jadwal', \Carbon\Carbon::parse($sesi->jadwal)->format('Y-m-d\TH:i')) }}" class="w-full bg-gray-50 border border-gray-200 rounded-[24px] px-6 py-5 focus:outline-none focus:ring-4 focus:ring-[#A881C2]/10 focus:border-[#A881C2] focus:bg-white text-base text-gray-700 font-bold shadow-sm transition-all" required>
                 </div>
             </div>
 

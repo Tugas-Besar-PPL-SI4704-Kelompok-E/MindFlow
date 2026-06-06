@@ -1,0 +1,12 @@
+/vendor/
+/node_modules/
+/.env
+/.env.dusk.local
+/storage/*.key
+/storage/framework/cache/data/*
+/storage/framework/sessions/*
+/storage/framework/views/*
+/.git
+/.gitignore
+/tests
+/scratch_dusk.txt

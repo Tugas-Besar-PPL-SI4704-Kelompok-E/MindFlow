@@ -98,10 +98,11 @@ class CounselingTest extends TestCase
     {
         $user = User::factory()->create();
         $konselor = ProfilKonselor::factory()->create();
+        $jadwal = Carbon::now()->addDays(2)->toDateTimeString();
 
         $response = $this->actingAs($user)->post(route('booking.store'), [
             'konselor_id' => $konselor->profil_konselor_id,
-            'jadwal' => '2026-05-10 10:00:00',
+            'jadwal' => $jadwal,
             'deskripsi' => 'Diskusi topik stres akademik',
             'payment_method' => 'transfer',
         ]);
@@ -109,7 +110,7 @@ class CounselingTest extends TestCase
         $response->assertRedirect();
         $this->assertDatabaseHas('sesi_konselings', [
             'profil_konselor_id' => $konselor->profil_konselor_id,
-            'jadwal' => '2026-05-10 10:00:00',
+            'jadwal' => $jadwal,
             'status' => 'pending'
         ]);
     }
@@ -121,10 +122,11 @@ class CounselingTest extends TestCase
     {
         $user = User::factory()->create();
         $konselor = ProfilKonselor::factory()->create(['harga_per_sesi' => 150000]);
+        $jadwal = Carbon::now()->addDays(2)->toDateTimeString();
 
         $response = $this->actingAs($user)->post(route('booking.store'), [
             'konselor_id' => $konselor->profil_konselor_id,
-            'jadwal' => '2026-05-10 10:00:00',
+            'jadwal' => $jadwal,
             'deskripsi' => 'Diskusi topik stres akademik',
             'payment_method' => 'transfer',
         ]);
@@ -158,7 +160,7 @@ class CounselingTest extends TestCase
         $response->assertStatus(200);
         $this->assertDatabaseHas('sesi_konselings', [
             'sesi_konseling_id' => $sesi->sesi_konseling_id,
-            'status' => 'cancelled',
+            'status' => 'system_cancelled',
             'payment_status' => 'refunded',
         ]);
     }
@@ -170,11 +172,13 @@ class CounselingTest extends TestCase
     {
         $user = User::factory()->create();
         $konselor = ProfilKonselor::factory()->create();
+        $jadwal = Carbon::now()->addDays(2)->toDateTimeString();
 
         $response = $this->actingAs($user)->post(route('booking.store'), [
             'konselor_id' => $konselor->profil_konselor_id,
-            'jadwal' => '2026-05-10 10:00:00',
+            'jadwal' => $jadwal,
             'deskripsi' => 'Diskusi topik stres akademik',
+            'payment_method' => 'transfer',
         ]);
 
         $response->assertSessionHas('success');
@@ -189,12 +193,12 @@ class CounselingTest extends TestCase
         $konselor = ProfilKonselor::factory()->create();
         $sesi = SesiKonseling::factory()->create([
             'profil_konselor_id' => $konselor->profil_konselor_id,
-            'jadwal' => '2026-05-10 10:00:00',
+            'jadwal' => Carbon::now()->addDays(2)->toDateTimeString(),
             'status' => 'pending'
         ]);
 
         $response = $this->actingAs($user)->put(route('booking.update', $sesi->sesi_konseling_id), [
-            'jadwal' => '2026-05-11 14:00:00'
+            'jadwal' => Carbon::now()->addDays(3)->toDateTimeString()
         ]);
 
         $response->assertSessionHas('success');
@@ -226,18 +230,20 @@ class CounselingTest extends TestCase
         $konselor = ProfilKonselor::factory()->create();
         $sesi = SesiKonseling::factory()->create([
             'profil_konselor_id' => $konselor->profil_konselor_id,
-            'jadwal' => '2026-05-10 10:00:00',
+            'jadwal' => Carbon::now()->addDays(2)->toDateTimeString(),
             'status' => 'pending'
         ]);
 
+        $jadwalBaru = Carbon::now()->addDays(3)->toDateTimeString();
+
         $response = $this->actingAs($user)->put(route('booking.update', $sesi->sesi_konseling_id), [
-            'jadwal' => '2026-05-11 14:00:00'
+            'jadwal' => $jadwalBaru
         ]);
 
         $response->assertRedirect();
         $this->assertDatabaseHas('sesi_konselings', [
             'sesi_konseling_id' => $sesi->sesi_konseling_id,
-            'requested_jadwal' => '2026-05-11 14:00:00',
+            'requested_jadwal' => $jadwalBaru,
             'status' => 'change_requested'
         ]);
     }
