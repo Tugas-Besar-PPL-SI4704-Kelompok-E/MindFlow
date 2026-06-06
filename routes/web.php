@@ -70,6 +70,8 @@ Route::middleware('auth')->group(function () {
     // PBI 29 & 30
     Route::post('/booking/store', [BookingController::class, 'store'])->name('booking.store');
     Route::post('/booking/check-expired', [BookingController::class, 'checkExpiredPending'])->name('booking.checkExpired');
+    Route::get('/booking/{id}/checkout', [BookingController::class, 'checkout'])->name('booking.checkout');
+    Route::post('/booking/{id}/pay', [BookingController::class, 'pay'])->name('booking.pay');
 
     // PBI 31
     Route::get('/booking/edit/{id}', [BookingController::class, 'edit'])->name('booking.edit');
@@ -120,6 +122,12 @@ Route::middleware('auth')->group(function () {
         // Konseling admin actions
         Route::post('/konseling/{id}/confirm', [\App\Http\Controllers\AdminKonselingController::class, 'confirm'])->name('konseling.confirm');
         Route::post('/konseling/{id}/cancel', [\App\Http\Controllers\AdminKonselingController::class, 'cancel'])->name('konseling.cancel');
+        
+        // Admin Finance & Escrow Routes
+        Route::get('/transaksi', [AdminController::class, 'transaksi'])->name('transaksi');
+        Route::post('/transaksi/{id}/verify-payment', [AdminController::class, 'verifyPayment'])->name('transaksi.verify-payment');
+        Route::post('/transaksi/{id}/approve-withdrawal', [AdminController::class, 'approveWithdrawal'])->name('transaksi.approve-withdrawal');
+        Route::post('/transaksi/{id}/reject-withdrawal', [AdminController::class, 'rejectWithdrawal'])->name('transaksi.reject-withdrawal');
     });
 
     // Konselor Routes
@@ -130,6 +138,10 @@ Route::middleware('auth')->group(function () {
         Route::post('/jadwal/{id}/accept', [CounselorController::class, 'acceptSession'])->name('jadwal.accept');
         Route::post('/jadwal/{id}/reject', [CounselorController::class, 'rejectSession'])->name('jadwal.reject');
         Route::post('/jadwal/{id}/evaluasi', [CounselorController::class, 'submitEvaluasi'])->name('jadwal.evaluasi');
+
+        // Counselor Wallet Routes
+        Route::get('/dompet', [CounselorController::class, 'dompet'])->name('dompet');
+        Route::post('/dompet/withdraw', [CounselorController::class, 'withdraw'])->name('dompet.withdraw');
         
         // PBI 34: Ketersediaan Jadwal
         Route::resource('/counselor-schedules', \App\Http\Controllers\CounselorScheduleController::class)

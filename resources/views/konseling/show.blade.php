@@ -325,6 +325,12 @@
                     </div>
                 </div>
                 <div class="flex flex-col gap-3">
+                    @if($contohSesi->payment_status === 'pending')
+                        <a href="{{ route('booking.checkout', $contohSesi->sesi_konseling_id) }}" class="w-full text-center bg-purple-600 hover:bg-purple-700 text-white py-3.5 rounded-2xl text-sm font-bold transition-all duration-300 shadow-sm shadow-purple-200 flex items-center justify-center gap-2">
+                            <svg class="w-5 h-5" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M3 10h18M7 15h1m4 0h1m-7 4h12a3 3 0 003-3V8a3 3 0 00-3-3H6a3 3 0 00-3 3v8a3 3 0 003 3z"></path></svg>
+                            Bayar Sekarang
+                        </a>
+                    @endif
                     @if(in_array($contohSesi->status, ['confirmed', 'rescheduled']))
                         <a href="{{ route('konseling.room', $contohSesi->sesi_konseling_id) }}" class="w-full text-center bg-emerald-500 hover:bg-emerald-600 text-white py-3.5 rounded-2xl text-sm font-bold transition-all duration-300 shadow-sm shadow-emerald-200 flex items-center justify-center gap-2">
                             <svg class="w-5 h-5" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M15 10l4.553-2.276A1 1 0 0121 8.618v6.764a1 1 0 01-1.447.894L15 14M5 18h8a2 2 0 002-2V8a2 2 0 00-2-2H5a2 2 0 00-2 2v8a2 2 0 002 2z"></path></svg>

@@ -139,7 +139,7 @@ class CounselingTest extends TestCase
         $this->assertDatabaseHas('sesi_konselings', [
             'profil_konselor_id' => $konselor->profil_konselor_id,
             'payment_method' => 'transfer',
-            'payment_status' => 'paid',
+            'payment_status' => 'pending',
             'status' => 'pending'
         ]);
     }

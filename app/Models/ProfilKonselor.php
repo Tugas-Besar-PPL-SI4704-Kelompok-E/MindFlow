@@ -25,7 +25,13 @@ class ProfilKonselor extends Model
         'berkas_sipp',
         'berkas_cv',
         'harga_per_sesi',
+        'saldo',
     ];
+
+    public function transactions()
+    {
+        return $this->hasMany(Transaction::class, 'profil_konselor_id', 'profil_konselor_id');
+    }
 
     public function scopeSearch($query, $search)
     {
