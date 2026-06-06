@@ -59,14 +59,42 @@ class SesiKonseling extends Model
         }
         self::$hasCancelledExpired = true;
 
-        $timeout = env('AUTO_CANCEL_SECONDS', 3);
+        $timeout = env('AUTO_CANCEL_SECONDS', 172800);
 
-        $cancelledCount = self::where('status', 'pending')
+        $expiredTimeoutSessions = self::where('status', 'pending')
             ->where('created_at', '<', now()->subSeconds($timeout))
-            ->update([
-                'status' => 'system_cancelled',
-                'payment_status' => 'refunded',
-            ]);
+            ->with('profilKonselor')
+            ->get();
+
+        $cancelledCount = $expiredTimeoutSessions->count();
+
+        if ($cancelledCount > 0) {
+            $userId = \Illuminate\Support\Facades\Auth::id();
+            $timeoutCancelledDetails = [];
+
+            foreach ($expiredTimeoutSessions as $session) {
+                $session->update([
+                    'status' => 'system_cancelled',
+                    'payment_status' => 'refunded',
+                ]);
+
+
+
+                if ($userId && $session->user_id === $userId) {
+                    $counselorName = $session->profilKonselor ? $session->profilKonselor->nama : 'Konselor';
+                    $timeoutCancelledDetails[] = [
+                        'jadwal' => \Carbon\Carbon::parse($session->jadwal)->translatedFormat('d M Y, H:i'),
+                        'konselor' => $counselorName,
+                        'reason' => 'Tidak ada respons dari konselor selama 2 hari.',
+                    ];
+                }
+            }
+
+            if (!empty($timeoutCancelledDetails)) {
+                $existing = session()->get('expired_cancelled_sessions', []);
+                session()->put('expired_cancelled_sessions', array_merge($existing, $timeoutCancelledDetails));
+            }
+        }
 
         $userId = \Illuminate\Support\Facades\Auth::id();
         if ($userId) {
@@ -89,6 +117,7 @@ class SesiKonseling extends Model
                     $cancelledDetails[] = [
                         'jadwal' => \Carbon\Carbon::parse($session->jadwal)->translatedFormat('d M Y, H:i'),
                         'konselor' => $counselorName,
+                        'reason' => 'Tidak ada respons dari konselor hingga waktu yang dijadwalkan.',
                     ];
                 }
 

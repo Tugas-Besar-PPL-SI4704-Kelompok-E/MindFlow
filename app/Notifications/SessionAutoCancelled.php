@@ -51,7 +51,7 @@ class SessionAutoCancelled extends Notification
      */
     public function toArray(object $notifiable): array
     {
-        $timeout = env('AUTO_CANCEL_SECONDS', 3);
+        $timeout = env('AUTO_CANCEL_SECONDS', 172800);
 
         if ($timeout < 60) {
             $duration = "$timeout detik";
