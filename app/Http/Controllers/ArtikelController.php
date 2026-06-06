@@ -43,10 +43,16 @@ class ArtikelController extends Controller
      */
     public function show($id)
     {
-        $artikel = Artikel::published()
+        $query = Artikel::query()
             ->with('admin')
-            ->withCount('bookmarks')
-            ->findOrFail($id);
+            ->withCount('bookmarks');
+
+        // Jika bukan admin, hanya izinkan melihat artikel yang statusnya published
+        if (!Auth::check() || Auth::user()->role !== 'admin') {
+            $query->published();
+        }
+
+        $artikel = $query->findOrFail($id);
 
         // Artikel terkait (same kategori, exclude current)
         $artikelTerkait = Artikel::published()

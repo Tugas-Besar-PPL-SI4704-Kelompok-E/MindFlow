@@ -53,6 +53,10 @@ class SesiKonseling extends Model
      */
     public static function cancelExpiredPendingSessions()
     {
+        if (!\Illuminate\Support\Facades\Schema::hasTable('sesi_konselings')) {
+            return 0;
+        }
+
         $timeout = env('AUTO_CANCEL_SECONDS', 3);
 
         $cancelledCount = self::where('status', 'pending')
