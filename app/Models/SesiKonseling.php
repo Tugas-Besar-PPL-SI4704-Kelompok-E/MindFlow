@@ -48,29 +48,16 @@ class SesiKonseling extends Model
      */
     protected static $hasCancelledExpired = false;
 
-    /**
-     * Membatalkan sesi yang berstatus pending jika waktunya sudah lewat (PBI-45)
-     * ATAU jika sudah melebihi batas waktu auto-cancel (PBI-35).
-     */
     public static function cancelExpiredPendingSessions($force = false)
     {
-<<<<<<< HEAD
         if (!\Illuminate\Support\Facades\Schema::hasTable('sesi_konselings')) {
             return 0;
         }
 
-        $timeout = env('AUTO_CANCEL_SECONDS', 3);
-=======
-<<<<<<< HEAD
-        // 24 jam = 86400 detik
-        $timeout = env('AUTO_CANCEL_SECONDS', 86400);
-=======
         if (self::$hasCancelledExpired && !$force) {
             return 0;
         }
         self::$hasCancelledExpired = true;
->>>>>>> c1bedb0de9f3f32916c1ded1f2107a09e40dc059
->>>>>>> 762b7030b9a5a2696208f9c60ba074dd1d1e8c88
 
         $timeout = env('AUTO_CANCEL_SECONDS', 172800);
 
@@ -90,8 +77,6 @@ class SesiKonseling extends Model
                     'status' => 'system_cancelled',
                     'payment_status' => 'refunded',
                 ]);
-
-
 
                 if ($userId && $session->user_id === $userId) {
                     $counselorName = $session->profilKonselor ? $session->profilKonselor->nama : 'Konselor';
