@@ -39,7 +39,7 @@ class BookingController extends Controller
             'media_konseling' => $data['media_konseling'],
             'deskripsi' => $data['deskripsi'] ?? null,
             'payment_method' => $data['payment_method'],
-            'payment_status' => 'paid',
+            'payment_status' => 'pending',
             'status' => 'pending'
         ]);
 
@@ -47,7 +47,7 @@ class BookingController extends Controller
             $sesi->journals()->attach($data['journals']);
         }
 
-        return redirect()->back()->with('success', 'Sesi konsultasi berhasil direservasi. Menunggu konfirmasi.');
+        return redirect()->route('booking.checkout', $sesi->sesi_konseling_id)->with('success', 'Sesi konsultasi berhasil direservasi. Silakan selesaikan pembayaran.');
     }
 
     public function edit($id)
@@ -112,5 +112,34 @@ class BookingController extends Controller
     {
         session()->forget('expired_cancelled_sessions');
         return response()->json(['success' => true]);
+    }
+
+    public function checkout($id)
+    {
+        $sesi = SesiKonseling::with('profilKonselor')->findOrFail($id);
+        if ($sesi->user_id !== Auth::id()) {
+            abort(403);
+        }
+        return view('konseling.checkout', compact('sesi'));
+    }
+
+    public function pay(Request $request, $id)
+    {
+        $sesi = SesiKonseling::findOrFail($id);
+        if ($sesi->user_id !== Auth::id()) {
+            abort(403);
+        }
+
+        $paymentStatus = $sesi->payment_method === 'e-wallet' ? 'paid' : 'waiting_verification';
+
+        $sesi->update([
+            'payment_status' => $paymentStatus
+        ]);
+
+        $message = $paymentStatus === 'paid' 
+            ? 'Pembayaran berhasil dikonfirmasi! Sesi konsultasi Anda telah siap.'
+            : 'Bukti pembayaran dikirim. Menunggu verifikasi admin.';
+
+        return redirect()->route('konseling.show', $sesi->profil_konselor_id)->with('success', $message);
     }
 }

@@ -140,7 +140,23 @@ class CounselorController extends Controller
             'status' => 'completed'
         ]);
 
-        return redirect()->back()->with('success', 'Catatan evaluasi berhasil disimpan dan sesi telah selesai.');
+        if ($sesi->payment_status === 'paid') {
+            $profil = $sesi->profilKonselor;
+            $amount = $profil->harga_per_sesi ?? 0;
+
+            \App\Models\Transaction::create([
+                'profil_konselor_id' => $profil->profil_konselor_id,
+                'sesi_konseling_id' => $sesi->sesi_konseling_id,
+                'amount' => $amount,
+                'type' => 'deposit',
+                'status' => 'approved',
+                'description' => 'Honorarium Sesi Konseling #' . $sesi->sesi_konseling_id,
+            ]);
+
+            $profil->increment('saldo', $amount);
+        }
+
+        return redirect()->back()->with('success', 'Catatan evaluasi berhasil disimpan, sesi telah selesai, dan honorarium berhasil dicatat.');
     }
 
     /**
@@ -197,5 +213,52 @@ class CounselorController extends Controller
         }
 
         return back()->with('success', 'Pengaturan profil profesional berhasil diperbarui!');
+    }
+
+    public function dompet()
+    {
+        $user = Auth::user();
+        $profil = $user->profilKonselor;
+
+        if (!$profil) {
+            abort(404);
+        }
+
+        $transactions = \App\Models\Transaction::where('profil_konselor_id', $profil->profil_konselor_id)
+            ->orderBy('created_at', 'desc')
+            ->get();
+
+        return view('konselor.dompet', compact('profil', 'transactions'));
+    }
+
+    public function withdraw(Request $request)
+    {
+        $request->validate([
+            'amount' => 'required|numeric|min:10000',
+            'bank_name' => 'required|string|max:100',
+            'account_number' => 'required|string|max:50',
+            'account_holder' => 'required|string|max:150',
+        ]);
+
+        $profil = Auth::user()->profilKonselor;
+
+        if ($request->amount > $profil->saldo) {
+            return redirect()->back()->withErrors(['amount' => 'Saldo tidak mencukupi untuk melakukan penarikan.']);
+        }
+
+        \App\Models\Transaction::create([
+            'profil_konselor_id' => $profil->profil_konselor_id,
+            'amount' => $request->amount,
+            'type' => 'withdrawal',
+            'status' => 'pending',
+            'bank_name' => $request->bank_name,
+            'account_number' => $request->account_number,
+            'account_holder' => $request->account_holder,
+            'description' => 'Penarikan Dana ke ' . $request->bank_name . ' (' . $request->account_number . ')',
+        ]);
+
+        $profil->decrement('saldo', $request->amount);
+
+        return redirect()->back()->with('success', 'Permintaan penarikan dana berhasil diajukan dan sedang diproses oleh admin.');
     }
 }

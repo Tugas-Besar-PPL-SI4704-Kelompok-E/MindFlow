@@ -180,6 +180,31 @@
 
 @section('content')
 <div class="home-container">
+    @php
+        $unpaidSession = \App\Models\SesiKonseling::with('profilKonselor')
+            ->where('user_id', Auth::id())
+            ->where('payment_status', 'pending')
+            ->where('status', '!=', 'cancelled')
+            ->first();
+    @endphp
+
+    @if($unpaidSession)
+        <div class="bg-amber-50 border-l-4 border-amber-500 text-amber-900 p-5 rounded-2xl mb-8 flex flex-col md:flex-row justify-between items-start md:items-center gap-4 shadow-sm animate-in fade-in duration-500">
+            <div class="flex items-center gap-4">
+                <div class="w-12 h-12 bg-amber-500 rounded-full flex items-center justify-center text-white shadow-md shadow-amber-200 shrink-0">
+                    <svg class="w-6 h-6" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2.5" d="M12 9v2m0 4h.01m-6.938 4h13.856c1.54 0 2.502-1.667 1.732-3L13.732 4c-.77-1.333-2.694-1.333-3.464 0L3.34 16c-.77 1.333.192 3 1.732 3z"></path></svg>
+                </div>
+                <div>
+                    <h4 class="font-bold text-sm text-amber-950">Menunggu Pembayaran Sesi Konseling</h4>
+                    <p class="text-xs text-amber-800 font-medium mt-1">Sesi dengan <strong>{{ $unpaidSession->profilKonselor->nama }}</strong> pada {{ \Carbon\Carbon::parse($unpaidSession->jadwal)->translatedFormat('d F Y, H:i') }} belum dibayar.</p>
+                </div>
+            </div>
+            <a href="{{ route('booking.checkout', $unpaidSession->sesi_konseling_id) }}" class="inline-flex items-center justify-center px-5 py-2.5 bg-amber-600 hover:bg-amber-700 text-white rounded-xl text-xs font-bold shadow-md shadow-amber-300/30 transition-all active:scale-[0.98] shrink-0">
+                Bayar Sekarang
+            </a>
+        </div>
+    @endif
+
     <!-- Welcome Banner -->
     <div class="welcome-banner">
         <div style="z-index: 1; position: relative;">

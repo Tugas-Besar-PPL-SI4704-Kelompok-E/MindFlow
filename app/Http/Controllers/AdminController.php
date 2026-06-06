@@ -375,4 +375,80 @@ class AdminController extends Controller
 
         return back()->with('success', 'FAQ berhasil dihapus!');
     }
+
+    public function transaksi()
+    {
+        $sessions = \App\Models\SesiKonseling::with(['user', 'profilKonselor'])
+            ->orderBy('created_at', 'desc')
+            ->get();
+
+        $withdrawals = \App\Models\Transaction::where('type', 'withdrawal')
+            ->with('profilKonselor')
+            ->orderBy('created_at', 'desc')
+            ->get();
+
+        return view('admin.transaksi', compact('sessions', 'withdrawals'));
+    }
+
+    public function verifyPayment($id)
+    {
+        $sesi = \App\Models\SesiKonseling::findOrFail($id);
+        
+        if ($sesi->payment_status !== 'paid') {
+            $sesi->update(['payment_status' => 'paid']);
+            
+            // Jika sesi sudah diselesaikan sebelumnya oleh konselor,
+            // berikan honorarium sekarang agar saldonya langsung masuk.
+            if ($sesi->status === 'completed') {
+                $profil = $sesi->profilKonselor;
+                $amount = $profil->harga_per_sesi ?? 0;
+                
+                $exists = \App\Models\Transaction::where('sesi_konseling_id', $sesi->sesi_konseling_id)
+                    ->where('type', 'deposit')
+                    ->exists();
+                
+                if (!$exists) {
+                    \App\Models\Transaction::create([
+                        'profil_konselor_id' => $profil->profil_konselor_id,
+                        'sesi_konseling_id' => $sesi->sesi_konseling_id,
+                        'amount' => $amount,
+                        'type' => 'deposit',
+                        'status' => 'approved',
+                        'description' => 'Honorarium Sesi Konseling #' . $sesi->sesi_konseling_id,
+                    ]);
+
+                    $profil->increment('saldo', $amount);
+                }
+            }
+        }
+
+        return back()->with('success', 'Pembayaran sesi konseling #' . $id . ' berhasil diverifikasi!');
+    }
+
+    public function approveWithdrawal($id)
+    {
+        $tx = \App\Models\Transaction::findOrFail($id);
+        if ($tx->type !== 'withdrawal' || $tx->status !== 'pending') {
+            abort(400);
+        }
+
+        $tx->update(['status' => 'approved']);
+
+        return back()->with('success', 'Pengajuan penarikan dana berhasil disetujui!');
+    }
+
+    public function rejectWithdrawal($id)
+    {
+        $tx = \App\Models\Transaction::findOrFail($id);
+        if ($tx->type !== 'withdrawal' || $tx->status !== 'pending') {
+            abort(400);
+        }
+
+        $tx->update(['status' => 'rejected']);
+
+        $profil = $tx->profilKonselor;
+        $profil->increment('saldo', $tx->amount);
+
+        return back()->with('success', 'Pengajuan penarikan dana telah ditolak dan saldo dikembalikan ke konselor.');
+    }
 }
