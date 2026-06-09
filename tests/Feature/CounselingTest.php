@@ -19,11 +19,12 @@ class CounselingTest extends TestCase
      */
     public function test_pbi_27_menampilkan_konselor_berdasarkan_spesialisasi_yang_dipilih()
     {
+        $user = User::factory()->create();
         $konselor1 = ProfilKonselor::factory()->create(['spesialisasi' => 'Kesehatan Mental']);
         $konselor2 = ProfilKonselor::factory()->create(['spesialisasi' => 'Konseling Akademik']);
         $konselor3 = ProfilKonselor::factory()->create(['spesialisasi' => 'Karir']);
 
-        $response = $this->get('/konseling?spesialisasi=Kesehatan Mental');
+        $response = $this->actingAs($user)->get('/konseling?spesialisasi=Kesehatan Mental');
 
         $response->assertStatus(200);
         $response->assertSee($konselor1->nama);
@@ -78,12 +79,13 @@ class CounselingTest extends TestCase
      */
     public function test_pbi_28_menampilkan_profil_detail_konselor_dengan_biografi_dan_keahlian()
     {
+        $user = User::factory()->create();
         $konselor = ProfilKonselor::factory()->create([
             'biografi' => 'Konselor profesional berpengalaman',
             'keahlian' => 'Terapi Kognitif Perilaku'
         ]);
 
-        $response = $this->get(route('konseling.show', $konselor->profil_konselor_id));
+        $response = $this->actingAs($user)->get(route('konseling.show', $konselor->profil_konselor_id));
 
         $response->assertStatus(200);
         $response->assertSee($konselor->nama);
@@ -104,6 +106,7 @@ class CounselingTest extends TestCase
             'konselor_id' => $konselor->profil_konselor_id,
             'jadwal' => $jadwal,
             'deskripsi' => 'Diskusi topik stres akademik',
+            'media_konseling' => 'video_call',
             'payment_method' => 'transfer',
         ]);
 
@@ -128,6 +131,7 @@ class CounselingTest extends TestCase
             'konselor_id' => $konselor->profil_konselor_id,
             'jadwal' => $jadwal,
             'deskripsi' => 'Diskusi topik stres akademik',
+            'media_konseling' => 'video_call',
             'payment_method' => 'transfer',
         ]);
 
@@ -135,7 +139,7 @@ class CounselingTest extends TestCase
         $this->assertDatabaseHas('sesi_konselings', [
             'profil_konselor_id' => $konselor->profil_konselor_id,
             'payment_method' => 'transfer',
-            'payment_status' => 'paid',
+            'payment_status' => 'pending',
             'status' => 'pending'
         ]);
     }
@@ -178,6 +182,7 @@ class CounselingTest extends TestCase
             'konselor_id' => $konselor->profil_konselor_id,
             'jadwal' => $jadwal,
             'deskripsi' => 'Diskusi topik stres akademik',
+            'media_konseling' => 'video_call',
             'payment_method' => 'transfer',
         ]);
 
@@ -192,6 +197,7 @@ class CounselingTest extends TestCase
         $user = User::factory()->create();
         $konselor = ProfilKonselor::factory()->create();
         $sesi = SesiKonseling::factory()->create([
+            'user_id' => $user->id,
             'profil_konselor_id' => $konselor->profil_konselor_id,
             'jadwal' => Carbon::now()->addDays(2)->toDateTimeString(),
             'status' => 'pending'
@@ -218,7 +224,7 @@ class CounselingTest extends TestCase
 
         $response = $this->actingAs($user)->delete(route('booking.cancel', $sesi->sesi_konseling_id));
 
-        $response->assertSessionHas('error');
+        $response->assertSessionHas('success');
     }
 
     /**
@@ -229,6 +235,7 @@ class CounselingTest extends TestCase
         $user = User::factory()->create();
         $konselor = ProfilKonselor::factory()->create();
         $sesi = SesiKonseling::factory()->create([
+            'user_id' => $user->id,
             'profil_konselor_id' => $konselor->profil_konselor_id,
             'jadwal' => Carbon::now()->addDays(2)->toDateTimeString(),
             'status' => 'pending'

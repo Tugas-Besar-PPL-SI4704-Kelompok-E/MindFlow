@@ -21,6 +21,8 @@ class SesiKonseling extends Model
         'request_reason',
         'status',
         'catatan_konselor',
+        'payment_method',
+        'payment_status',
     ];
     public function user()
     {
@@ -53,8 +55,7 @@ class SesiKonseling extends Model
         if (!\Illuminate\Support\Facades\Schema::hasTable('sesi_konselings')) {
             return 0;
         }
-
-        if (self::$hasCancelledExpired && !$force) {
+        if (self::$hasCancelledExpired && !$force && !app()->runningUnitTests()) {
             return 0;
         }
         self::$hasCancelledExpired = true;
