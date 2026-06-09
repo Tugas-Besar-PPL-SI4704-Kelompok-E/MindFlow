@@ -185,6 +185,18 @@
         <p class="page-desc">Pilih metode yang paling sesuai dengan kebutuhanmu. Luangkan waktu sejenak untuk terhubung kembali dengan dirimu sendiri.</p>
     </div>
 
+    @if(session('feedback_tip'))
+    <div style="background: linear-gradient(135deg, #FFF7ED 0%, #FFEDD5 100%); border: 1px solid #FDBA74; border-radius: 24px; padding: 24px 32px; margin-bottom: 40px; display: flex; gap: 20px; align-items: flex-start; box-shadow: 0 10px 15px -3px rgba(234, 88, 12, 0.05);">
+        <div style="background: #FFFFFF; padding: 12px; border-radius: 16px; box-shadow: 0 4px 6px -1px rgba(234, 88, 12, 0.1); color: #EA580C; flex-shrink: 0;">
+            <svg width="28" height="28" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="M20.24 12.24a6 6 0 0 0-8.49-8.49L5 10.5V19h8.5z"></path><line x1="16" y1="8" x2="2" y2="22"></line><line x1="17.5" y1="15" x2="9" y2="6.5"></line></svg>
+        </div>
+        <div>
+            <h3 style="font-size: 18px; font-weight: 800; color: #9A3412; margin-bottom: 8px;">Pertolongan Pertama</h3>
+            <p style="color: #C2410C; font-size: 15px; line-height: 1.6; font-weight: 500;">{{ session('feedback_tip') }}</p>
+        </div>
+    </div>
+    @endif
+
     <div class="cards-grid">
         <a href="{{ route('mood-tracker.singkat') }}" class="premium-card">
             <div class="card-icon icon-orange">
