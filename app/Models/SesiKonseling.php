@@ -77,7 +77,6 @@ class SesiKonseling extends Model
                     'status' => 'system_cancelled',
                     'payment_status' => 'refunded',
                 ]);
-
                 if ($userId && $session->user_id === $userId) {
                     $counselorName = $session->profilKonselor ? $session->profilKonselor->nama : 'Konselor';
                     $timeoutCancelledDetails[] = [

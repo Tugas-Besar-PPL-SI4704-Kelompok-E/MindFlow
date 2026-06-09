@@ -414,6 +414,29 @@
             border-color: var(--text-muted);
         }
     </style>
+    @if(Auth::check() && Auth::user()->role === 'admin')
+    <style>
+        .brand span.flow {
+            color: #9B76D6 !important;
+        }
+        .menu-item {
+            padding: 14px 30px !important;
+        }
+        .menu-item svg {
+            width: 22px !important;
+            height: 22px !important;
+            margin-right: 14px !important;
+        }
+        .menu-item.active {
+            background-color: #F4EEFB !important;
+            color: #9B76D6 !important;
+            border-left-color: #9B76D6 !important;
+        }
+        .menu-item.active svg {
+            stroke: #9B76D6 !important;
+        }
+    </style>
+    @endif
     @stack('styles')
 </head><body>
     <div class="layout">
@@ -459,9 +482,9 @@
                     </a>
                 </li>
                 <li>
-                    <a href="{{ route('artikel.index') }}" class="menu-item {{ request()->is('artikel*') ? 'active' : '' }}">
+                    <a href="{{ route('admin.artikel.index') }}" class="menu-item {{ request()->is('admin/artikel*') ? 'active' : '' }}">
                         <svg viewBox="0 0 24 24" stroke="currentColor" fill="none"><path stroke-linecap="round" stroke-linejoin="round" d="M19 20H5a2 2 0 0 1-2-2V6a2 2 0 0 1 2-2h10a2 2 0 0 1 2 2v1m2 13a2 2 0 0 1-2-2V7m2 13a2 2 0 0 0 2-2V9a2 2 0 0 0-2-2h-2m-4-3H9M7 16h6M7 12h10"></path></svg>
-                        Artikel
+                        Kelola Artikel
                     </a>
                 </li>
                 @elseif(Auth::check() && Auth::user()->role === 'konselor')
@@ -525,37 +548,53 @@
                 @endif
             </ul>
 
-            <!-- Spacer to push profile to bottom -->
-            <div class="sidebar-spacer"></div>
-
-            <!-- Profile Section -->
-            <div class="sidebar-profile-section" id="profileSection">
-                <!-- Popup Menu -->
-                <div class="sidebar-popup" id="profilePopup">
-                    <a href="{{ route('settings.edit') }}" class="sidebar-popup-item" id="btn-pengaturan">
-                        <svg viewBox="0 0 24 24"><circle cx="12" cy="12" r="3"></circle><path d="M19.4 15a1.65 1.65 0 0 0 .33 1.82l.06.06a2 2 0 0 1-2.83 2.83l-.06-.06a1.65 1.65 0 0 0-1.82-.33 1.65 1.65 0 0 0-1 1.51V21a2 2 0 0 1-4 0v-.09A1.65 1.65 0 0 0 9 19.4a1.65 1.65 0 0 0-1.82.33l-.06.06a2 2 0 0 1-2.83-2.83l.06-.06A1.65 1.65 0 0 0 4.68 15a1.65 1.65 0 0 0-1.51-1H3a2 2 0 0 1 0-4h.09A1.65 1.65 0 0 0 4.6 9a1.65 1.65 0 0 0-.33-1.82l-.06-.06a2 2 0 0 1 2.83-2.83l.06.06A1.65 1.65 0 0 0 9 4.68a1.65 1.65 0 0 0 1-1.51V3a2 2 0 0 1 4 0v.09a1.65 1.65 0 0 0 1 1.51 1.65 1.65 0 0 0 1.82-.33l.06-.06a2 2 0 0 1 2.83 2.83l-.06.06A1.65 1.65 0 0 0 19.4 9a1.65 1.65 0 0 0 1.51 1H21a2 2 0 0 1 0 4h-.09a1.65 1.65 0 0 0-1.51 1z"></path></svg>
-                        Pengaturan
+            @if(Auth::check() && Auth::user()->role === 'admin')
+                <div class="mt-auto border-t border-gray-100 pt-4 pb-4">
+                    <a href="{{ route('admin.settings') }}" class="menu-item {{ request()->is('admin/settings*') ? 'active' : '' }}" style="display: flex; align-items: center; width: 100%;">
+                        <svg viewBox="0 0 24 24" style="margin-right: 16px;"><path stroke-linecap="round" stroke-linejoin="round" d="M10.325 4.317c.426-1.756 2.924-1.756 3.35 0a1.724 1.724 0 002.573 1.066c1.543-.94 3.31.826 2.37 2.37a1.724 1.724 0 001.066 2.573c1.756.426 1.756 2.924 0 3.35a1.724 1.724 0 00-1.066 2.573c.94 1.543-.826 3.31-2.37 2.37a1.724 1.724 0 00-2.573 1.066c-.426 1.756-2.924 1.756-3.35 0a1.724 1.724 0 00-2.573-1.066c-1.543.94-3.31-.826-2.37-2.37a1.724 1.724 0 00-1.066-2.573c-1.756-.426-1.756-2.924 0-3.35a1.724 1.724 0 001.066-2.573c-.94-1.543.826-3.31 2.37-2.37.996.608 2.296.07 2.572-1.065z"></path><circle cx="12" cy="12" r="3"></circle></svg>
+                        Settings
                     </a>
-                    <div class="sidebar-popup-divider"></div>
-                    <form method="POST" action="{{ route('logout') }}" style="margin:0;">
+                    <form action="{{ route('logout') }}" method="POST" style="margin: 0;">
                         @csrf
-                        <button type="submit" class="sidebar-popup-item logout-item" id="btn-logout">
-                            <svg viewBox="0 0 24 24"><path d="M9 21H5a2 2 0 0 1-2-2V5a2 2 0 0 1 2-2h4"></path><polyline points="16 17 21 12 16 7"></polyline><line x1="21" y1="12" x2="9" y2="12"></line></svg>
+                        <button type="submit" class="menu-item w-full text-left" style="color:#ef4444; background:none; border:none; cursor:pointer; display:flex; align-items:center;">
+                            <svg viewBox="0 0 24 24" stroke="#ef4444" fill="none" style="margin-right: 16px;"><path stroke-linecap="round" stroke-linejoin="round" d="M17 16l4-4m0 0l-4-4m4 4H7m6 4v1a3 3 0 01-3 3H6a3 3 0 01-3-3V7a3 3 0 013-3h4a3 3 0 013 3v1"></path></svg>
                             Keluar
                         </button>
                     </form>
                 </div>
+            @else
+                <!-- Spacer to push profile to bottom -->
+                <div class="sidebar-spacer"></div>
 
-                <!-- Profile Button -->
-                <button class="sidebar-profile-btn" id="profileBtn" type="button">
-                    <img src="https://ui-avatars.com/api/?name={{ urlencode(Auth::user()->nama_samaran ?? 'User') }}&background=E8DEFA&color=6B3FA0&size=42&font-size=0.4&bold=true" alt="Profile" class="sidebar-profile-avatar">
-                    <div class="sidebar-profile-info">
-                        <div class="sidebar-profile-name">{{ Auth::user()->nama_samaran ?? 'User' }}</div>
-                        <div class="sidebar-profile-role">{{ ucfirst(Auth::user()->role ?? 'Mahasiswa') }}</div>
+                <!-- Profile Section -->
+                <div class="sidebar-profile-section" id="profileSection">
+                    <!-- Popup Menu -->
+                    <div class="sidebar-popup" id="profilePopup">
+                        <a href="{{ route('settings.edit') }}" class="sidebar-popup-item" id="btn-pengaturan">
+                            <svg viewBox="0 0 24 24"><circle cx="12" cy="12" r="3"></circle><path d="M19.4 15a1.65 1.65 0 0 0 .33 1.82l.06.06a2 2 0 0 1-2.83 2.83l-.06-.06a1.65 1.65 0 0 0-1.82-.33 1.65 1.65 0 0 0-1 1.51V21a2 2 0 0 1-4 0v-.09A1.65 1.65 0 0 0 9 19.4a1.65 1.65 0 0 0-1.82.33l-.06.06a2 2 0 0 1-2.83-2.83l.06-.06A1.65 1.65 0 0 0 4.68 15a1.65 1.65 0 0 0-1.51-1H3a2 2 0 0 1 0-4h.09A1.65 1.65 0 0 0 4.6 9a1.65 1.65 0 0 0-.33-1.82l-.06-.06a2 2 0 0 1 2.83-2.83l.06.06A1.65 1.65 0 0 0 9 4.68a1.65 1.65 0 0 0 1-1.51V3a2 2 0 0 1 4 0v.09a1.65 1.65 0 0 0 1 1.51 1.65 1.65 0 0 0 1.82-.33l.06-.06a2 2 0 0 1 2.83 2.83l-.06.06A1.65 1.65 0 0 0 19.4 9a1.65 1.65 0 0 0 1.51 1H21a2 2 0 0 1 0 4h-.09a1.65 1.65 0 0 0-1.51 1z"></path></svg>
+                            Pengaturan
+                        </a>
+                        <div class="sidebar-popup-divider"></div>
+                        <form method="POST" action="{{ route('logout') }}" style="margin:0;">
+                            @csrf
+                            <button type="submit" class="sidebar-popup-item logout-item" id="btn-logout">
+                                <svg viewBox="0 0 24 24"><path d="M9 21H5a2 2 0 0 1-2-2V5a2 2 0 0 1 2-2h4"></path><polyline points="16 17 21 12 16 7"></polyline><line x1="21" y1="12" x2="9" y2="12"></line></svg>
+                                Keluar
+                            </button>
+                        </form>
                     </div>
-                    <svg class="sidebar-profile-chevron" viewBox="0 0 24 24"><polyline points="6 9 12 15 18 9"></polyline></svg>
-                </button>
-            </div>
+
+                    <!-- Profile Button -->
+                    <button class="sidebar-profile-btn" id="profileBtn" type="button">
+                        <img src="https://ui-avatars.com/api/?name={{ urlencode(Auth::user()->nama_samaran ?? 'User') }}&background=E8DEFA&color=6B3FA0&size=42&font-size=0.4&bold=true" alt="Profile" class="sidebar-profile-avatar">
+                        <div class="sidebar-profile-info">
+                            <div class="sidebar-profile-name">{{ Auth::user()->nama_samaran ?? 'User' }}</div>
+                            <div class="sidebar-profile-role">{{ ucfirst(Auth::user()->role ?? 'Mahasiswa') }}</div>
+                        </div>
+                        <svg class="sidebar-profile-chevron" viewBox="0 0 24 24"><polyline points="6 9 12 15 18 9"></polyline></svg>
+                    </button>
+                </div>
+            @endif
         </aside>
 
         <!-- Main Content (Tengah) -->

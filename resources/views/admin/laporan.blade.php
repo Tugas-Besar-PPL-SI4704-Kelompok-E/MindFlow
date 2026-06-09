@@ -143,7 +143,7 @@
                                     <div class="text-[11px] text-red-400 uppercase font-semibold mb-1">Diposting oleh: <span class="text-red-600">{{ $report->pelanggar ? ($report->pelanggar->nama_samaran ?? ($report->pelanggar->nama_asli ?? 'Admin')) : 'Admin MindFlow' }}</span></div>
                                     <div class="text-sm text-gray-700 italic">"{{ Str::limit($report->konten, 100) }}"</div>
                                     @if ($report->type === 'thread')
-                                        <span class="inline-block mt-1.5 px-2 py-0.5 rounded text-[10px] font-bold uppercase bg-blue-50 text-blue-600">Postingan</span>
+                                        <span class="inline-block mt-1.5 px-2 py-0.5 rounded text-[10px] font-bold uppercase bg-blue-50 text-blue-600">Forum</span>
                                     @elseif ($report->type === 'reply')
                                         <span class="inline-block mt-1.5 px-2 py-0.5 rounded text-[10px] font-bold uppercase bg-gray-100 text-gray-500">Balasan</span>
                                     @elseif ($report->type === 'artikel')
