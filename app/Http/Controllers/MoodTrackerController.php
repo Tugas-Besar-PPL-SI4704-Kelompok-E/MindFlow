@@ -56,8 +56,20 @@ class MoodTrackerController extends Controller
             return redirect()->route('mood-tracker.open-question', ['check_instan_id' => $hasil->check_instan_id]);
         }
         
-        return redirect()->route('mood-tracker.index')
+        $redirect = redirect()->route('mood-tracker.index')
             ->with('success', 'Mood berhasil disimpan! Skor kamu: ' . $skor . ' (' . $kategori . ')');
+
+        if ($isBuruk) {
+            $tips = [
+                "Coba tarik napas dalam-dalam selama 5 detik, tahan 5 detik, dan hembuskan perlahan. Ulangi 3 kali.",
+                "Menjauh sejenak dari layar atau aktivitasmu saat ini. Minum segelas air putih hangat.",
+                "Pejamkan mata sejenak, fokus pada suara di sekitarmu, dan sadari bahwa perasaan berat ini hanya sementara.",
+                "Coba tuliskan 3 hal kecil yang membuatmu bersyukur hari ini, sesederhana cuaca yang cerah atau makanan yang enak."
+            ];
+            $redirect->with('feedback_tip', $tips[array_rand($tips)]);
+        }
+
+        return $redirect;
     }
 
     /**
@@ -89,8 +101,12 @@ class MoodTrackerController extends Controller
             'jawaban_terbuka' => $request->open_answer,
         ]);
 
+        // Feedback empatik khusus untuk pengguna yang baru saja meluapkan isi hatinya
+        $empatheticTip = "Terima kasih sudah berani jujur dan menuliskannya. Memindahkan isi kepala ke dalam tulisan adalah langkah awal yang luar biasa untuk melepaskan beban emosi. Jika kamu merasa butuh teman bercerita yang profesional, jangan ragu untuk menjadwalkan sesi konseling bersama kami ya.";
+
         return redirect()->route('mood-tracker.index')
-            ->with('success', 'Terima kasih sudah bercerita. Jawabanmu telah tersimpan dengan aman.');
+            ->with('success', 'Terima kasih sudah bercerita. Jawabanmu telah tersimpan dengan aman.')
+            ->with('feedback_tip', $empatheticTip);
     }
 
     /**
