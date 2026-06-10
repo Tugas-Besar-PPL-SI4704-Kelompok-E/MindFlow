@@ -73,4 +73,9 @@ class User extends Authenticatable
         return $query->where('role', 'konselor')
                      ->where('status', 'approved');
     }
+
+    public function getNameAttribute(): ?string
+    {
+        return $this->nama_asli ?? $this->nama_samaran ?? null;
+    }
 }

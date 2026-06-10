@@ -18,7 +18,7 @@
                         placeholder="Cari nama konselor, keahlian, atau gejala..."
                         class="w-full border border-gray-200 rounded-2xl py-4 px-5 pr-28 text-sm text-gray-700 shadow-sm focus:border-[#A881C2] focus:ring-4 focus:ring-[#A881C2]/10 transition-all"
                     />
-                    <button type="submit" class="absolute right-2 top-2 bottom-2 bg-[#4F46E5] text-white px-6 rounded-2xl text-sm font-semibold hover:bg-[#4338CA] transition-colors">Cari</button>
+                    <button type="submit" class="absolute right-2 top-2 bottom-2 bg-[#A881C2] text-white px-6 rounded-2xl text-sm font-semibold hover:bg-[#8A64A4] transition-colors">Cari</button>
                 </div>
 
                 <div class="flex flex-wrap gap-3 items-center">
