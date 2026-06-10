@@ -308,7 +308,6 @@
 
         @yield('styles')
     </style>
-<<<<<<< HEAD
     @if(Auth::check() && Auth::user()->role === 'admin')
     <style>
         .brand span.flow {
@@ -332,8 +331,6 @@
         }
     </style>
     @endif
-=======
->>>>>>> 12c28e0 (merge)
     <script src="https://cdn.tailwindcss.com"></script>
 </head>
 <body>

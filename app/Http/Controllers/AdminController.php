@@ -375,14 +375,11 @@ class AdminController extends Controller
 
         return back()->with('success', 'FAQ berhasil dihapus!');
     }
-<<<<<<< HEAD
 
     public function transaksi()
-    {
-        $sessions = \App\Models\SesiKonseling::with(['user', 'profilKonselor'])
-            ->orderBy('created_at', 'desc')
-            ->get();
-
+        }
+    }
+}
         $withdrawals = \App\Models\Transaction::where('type', 'withdrawal')
             ->with('profilKonselor')
             ->orderBy('created_at', 'desc')
