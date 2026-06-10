@@ -375,6 +375,7 @@ class AdminController extends Controller
 
         return back()->with('success', 'FAQ berhasil dihapus!');
     }
+<<<<<<< HEAD
 
     public function transaksi()
     {
@@ -451,4 +452,6 @@ class AdminController extends Controller
 
         return back()->with('success', 'Pengajuan penarikan dana telah ditolak dan saldo dikembalikan ke konselor.');
     }
+=======
+>>>>>>> 12c28e0 (merge)
 }

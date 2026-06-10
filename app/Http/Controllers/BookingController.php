@@ -47,7 +47,11 @@ class BookingController extends Controller
             $sesi->journals()->attach($data['journals']);
         }
 
+<<<<<<< HEAD
         return redirect()->route('booking.checkout', $sesi->sesi_konseling_id)->with('success', 'Sesi konsultasi berhasil direservasi. Silakan selesaikan pembayaran.');
+=======
+        return redirect()->back()->with('success', 'Sesi konsultasi berhasil direservasi. Menunggu konfirmasi.');
+>>>>>>> 12c28e0 (merge)
     }
 
     public function edit($id)
@@ -113,6 +117,7 @@ class BookingController extends Controller
         session()->forget('expired_cancelled_sessions');
         return response()->json(['success' => true]);
     }
+<<<<<<< HEAD
 
     public function checkout($id)
     {
@@ -142,4 +147,6 @@ class BookingController extends Controller
 
         return redirect()->route('konseling.show', $sesi->profil_konselor_id)->with('success', $message);
     }
+=======
+>>>>>>> 12c28e0 (merge)
 }
