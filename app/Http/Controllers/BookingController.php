@@ -47,16 +47,18 @@ class BookingController extends Controller
             $sesi->journals()->attach($data['journals']);
         }
 
-<<<<<<< HEAD
-        return redirect()->route('booking.checkout', $sesi->sesi_konseling_id)->with('success', 'Sesi konsultasi berhasil direservasi. Silakan selesaikan pembayaran.');
-=======
-        return redirect()->back()->with('success', 'Sesi konsultasi berhasil direservasi. Menunggu konfirmasi.');
->>>>>>> 12c28e0 (merge)
+    return redirect()->route('booking.checkout', $sesi->sesi_konseling_id)->with('success', 'Sesi konsultasi berhasil direservasi. Silakan selesaikan pembayaran.');
     }
 
     public function edit($id)
     {
         $sesi = SesiKonseling::with('profilKonselor')->findOrFail($id);
+        if ($sesi->user_id !== Auth::id()) {
+            abort(403);
+        }
+        if (in_array($sesi->status, ['completed', 'cancelled', 'rejected'])) {
+            return redirect()->back()->with('error', 'Sesi tidak bisa diubah karena telah selesai atau dibatalkan.');
+        }
         return view('konseling.edit', compact('sesi'));
     }
 
@@ -78,6 +80,9 @@ class BookingController extends Controller
         if ($sesi->user_id !== Auth::id()) {
             abort(403);
         }
+        if (in_array($sesi->status, ['completed', 'cancelled', 'rejected'])) {
+            return redirect()->back()->with('error', 'Tidak dapat mengubah sesi yang sudah selesai atau dibatalkan.');
+        }
 
         $sesi->update([
             'requested_jadwal' => $request->jadwal,
@@ -93,7 +98,13 @@ class BookingController extends Controller
     {
         $sesi = SesiKonseling::findOrFail($id);
         $konselorId = $sesi->profil_konselor_id;
-        
+        if ($sesi->user_id !== Auth::id()) {
+            abort(403);
+        }
+        if (in_array($sesi->status, ['completed', 'cancelled', 'rejected'])) {
+            return redirect()->back()->with('error', 'Sesi tidak dapat dibatalkan.');
+        }
+
         $sesi->update([
             'status' => 'cancelled'
         ]);
@@ -117,8 +128,6 @@ class BookingController extends Controller
         session()->forget('expired_cancelled_sessions');
         return response()->json(['success' => true]);
     }
-<<<<<<< HEAD
-
     public function checkout($id)
     {
         $sesi = SesiKonseling::with('profilKonselor')->findOrFail($id);
@@ -147,6 +156,5 @@ class BookingController extends Controller
 
         return redirect()->route('konseling.show', $sesi->profil_konselor_id)->with('success', $message);
     }
-=======
->>>>>>> 12c28e0 (merge)
+
 }

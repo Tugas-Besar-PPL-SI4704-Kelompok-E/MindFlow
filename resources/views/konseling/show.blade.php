@@ -298,10 +298,30 @@
                     <p class="text-[11px] font-black text-gray-400 uppercase tracking-widest mb-2">Jadwal Terdaftar</p>
                     <p class="font-bold text-gray-900 text-base mb-3">{{ \Carbon\Carbon::parse($contohSesi->jadwal)->translatedFormat('d F Y, H:i') }}</p>
                     
+                    @php
+                        $statusClasses = [
+                            'pending' => 'bg-amber-100 text-amber-700',
+                            'confirmed' => 'bg-emerald-100 text-emerald-700',
+                            'rescheduled' => 'bg-sky-100 text-sky-700',
+                            'change_requested' => 'bg-indigo-100 text-indigo-700',
+                            'completed' => 'bg-red-100 text-red-700',
+                            'cancelled' => 'bg-red-100 text-red-700',
+                        ];
+                        $dotClasses = [
+                            'pending' => 'bg-amber-500',
+                            'confirmed' => 'bg-emerald-500',
+                            'rescheduled' => 'bg-sky-500',
+                            'change_requested' => 'bg-indigo-500',
+                            'completed' => 'bg-red-500',
+                            'cancelled' => 'bg-red-500',
+                        ];
+                        $statusClass = $statusClasses[$contohSesi->status] ?? 'bg-gray-100 text-gray-700';
+                        $dotClass = $dotClasses[$contohSesi->status] ?? 'bg-gray-500';
+                    @endphp
                     <div class="flex flex-wrap gap-2">
-                        <span class="inline-flex items-center gap-1.5 px-3 py-1 bg-amber-100 text-amber-700 text-[11px] font-black uppercase tracking-wider rounded-lg">
-                            <span class="w-1.5 h-1.5 rounded-full bg-amber-500"></span>
-                            {{ $contohSesi->status }}
+                        <span class="inline-flex items-center gap-1.5 px-3 py-1 {{ $statusClass }} text-[11px] font-black uppercase tracking-wider rounded-lg">
+                            <span class="w-1.5 h-1.5 rounded-full {{ $dotClass }}"></span>
+                            {{ ucfirst($contohSesi->status) }}
                         </span>
                         
                         <span class="inline-flex items-center gap-1.5 px-3 py-1 bg-purple-50 text-[#A881C2] text-[11px] font-black uppercase tracking-wider rounded-lg border border-purple-100">
@@ -325,31 +345,30 @@
                     </div>
                 </div>
                 <div class="flex flex-col gap-3">
-<<<<<<< HEAD
                     @if($contohSesi->payment_status === 'pending')
                         <a href="{{ route('booking.checkout', $contohSesi->sesi_konseling_id) }}" class="w-full text-center bg-purple-600 hover:bg-purple-700 text-white py-3.5 rounded-2xl text-sm font-bold transition-all duration-300 shadow-sm shadow-purple-200 flex items-center justify-center gap-2">
                             <svg class="w-5 h-5" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M3 10h18M7 15h1m4 0h1m-7 4h12a3 3 0 003-3V8a3 3 0 00-3-3H6a3 3 0 00-3 3v8a3 3 0 003 3z"></path></svg>
                             Bayar Sekarang
                         </a>
                     @endif
-=======
->>>>>>> 12c28e0 (merge)
                     @if(in_array($contohSesi->status, ['confirmed', 'rescheduled']))
                         <a href="{{ route('konseling.room', $contohSesi->sesi_konseling_id) }}" class="w-full text-center bg-emerald-500 hover:bg-emerald-600 text-white py-3.5 rounded-2xl text-sm font-bold transition-all duration-300 shadow-sm shadow-emerald-200 flex items-center justify-center gap-2">
                             <svg class="w-5 h-5" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M15 10l4.553-2.276A1 1 0 0121 8.618v6.764a1 1 0 01-1.447.894L15 14M5 18h8a2 2 0 002-2V8a2 2 0 00-2-2H5a2 2 0 00-2 2v8a2 2 0 002 2z"></path></svg>
                             Masuk Ruangan
                         </a>
                     @endif
-                    <a href="{{ route('booking.edit', $contohSesi->sesi_konseling_id) }}" class="w-full text-center bg-purple-50 text-[#A881C2] hover:bg-purple-100 py-3.5 rounded-2xl text-sm font-bold transition-all duration-300">
-                        Ubah Jadwal
-                    </a>
-                    <form action="{{ route('booking.cancel', $contohSesi->sesi_konseling_id) }}" method="POST" class="w-full">
-                        @csrf
-                        @method('DELETE')
-                        <button type="submit" onclick="return confirm('Yakin ingin membatalkan sesi ini?')" class="w-full bg-red-50 text-red-500 hover:bg-red-100 py-3.5 rounded-2xl text-sm font-bold transition-all duration-300">
-                            Batalkan Sesi
-                        </button>
-                    </form>
+                    @if(!in_array($contohSesi->status, ['completed', 'cancelled', 'rejected']))
+                        <a href="{{ route('booking.edit', $contohSesi->sesi_konseling_id) }}" class="w-full text-center bg-purple-50 text-[#A881C2] hover:bg-purple-100 py-3.5 rounded-2xl text-sm font-bold transition-all duration-300">
+                            Ubah Jadwal
+                        </a>
+                        <form action="{{ route('booking.cancel', $contohSesi->sesi_konseling_id) }}" method="POST" class="w-full">
+                            @csrf
+                            @method('DELETE')
+                            <button type="submit" onclick="return confirm('Yakin ingin membatalkan sesi ini?')" class="w-full bg-red-50 text-red-500 hover:bg-red-100 py-3.5 rounded-2xl text-sm font-bold transition-all duration-300">
+                                Batalkan Sesi
+                            </button>
+                        </form>
+                    @endif
                 </div>
             </div>
             @endif

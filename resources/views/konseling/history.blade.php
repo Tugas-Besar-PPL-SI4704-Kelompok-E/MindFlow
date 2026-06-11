@@ -76,10 +76,10 @@
                                 </td>
                                 <td class="px-8 py-5 whitespace-nowrap">
                                     <div class="flex items-center gap-3">
-                                        @if($history->status === 'completed')
-                                            <span class="inline-flex items-center px-3 py-1 bg-emerald-50 text-emerald-600 border border-emerald-100 rounded-lg text-[10px] font-black uppercase tracking-widest">
-                                                Selesai
-                                            </span>
+                                                                @if($history->status === 'completed')
+                                                                    <span class="inline-flex items-center px-3 py-1 bg-red-50 text-red-600 border border-red-100 rounded-lg text-[10px] font-black uppercase tracking-widest">
+                                                                        Selesai
+                                                                    </span>
                                         @elseif($history->status === 'cancelled')
                                             <span class="inline-flex items-center px-3 py-1 bg-red-50 text-red-600 border border-red-100 rounded-lg text-[10px] font-black uppercase tracking-widest">
                                                 Dibatalkan
