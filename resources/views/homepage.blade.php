@@ -487,5 +487,86 @@
             @endif
         </div>
     </div>
+
+    <!-- Riwayat Konsultasi & Catatan Konselor Section -->
+    <div class="section-card mt-8">
+        <h3 class="card-title flex justify-between items-center mb-6">
+            <span>Riwayat Konsultasi & Catatan Konselor</span>
+            <a href="{{ route('konseling.history') }}" class="btn-link">Lihat Semua →</a>
+        </h3>
+        
+        @php
+            $sessionHistory = \App\Models\SesiKonseling::with('profilKonselor')
+                ->where('user_id', $userId)
+                ->where('payment_status', 'paid')
+                ->orderByRaw("CASE WHEN status IN ('completed', 'confirmed', 'rescheduled') THEN 0 ELSE 1 END ASC")
+                ->orderBy('jadwal', 'desc')
+                ->take(3)
+                ->get();
+        @endphp
+        
+        @if($sessionHistory->isEmpty())
+            <div class="empty-state min-h-[150px] flex flex-col items-center justify-center py-8">
+                <p class="empty-text text-gray-400">Belum ada riwayat sesi konseling selesai.</p>
+            </div>
+        @else
+            <div class="space-y-4">
+                @foreach($sessionHistory as $history)
+                    <div class="p-6 bg-gray-50/50 rounded-2xl border border-gray-100 flex flex-col gap-4">
+                        <div class="flex flex-col md:flex-row md:items-center justify-between gap-3">
+                            <div class="flex items-center gap-4">
+                                <div class="w-12 h-12 rounded-xl bg-purple-50 p-1 flex-shrink-0">
+                                    <img src="https://ui-avatars.com/api/?name={{ urlencode($history->profilKonselor->nama) }}&background=A881C2&color=fff&size=100&bold=true" class="w-full h-full object-cover rounded-lg">
+                                </div>
+                                <div>
+                                    <h4 class="font-extrabold text-gray-950 text-sm">{{ $history->profilKonselor->nama }}</h4>
+                                    <p class="text-xs text-gray-500 font-semibold">{{ $history->profilKonselor->spesialisasi }}</p>
+                                </div>
+                            </div>
+                            
+                            <div class="flex flex-wrap items-center gap-3">
+                                <span class="inline-flex items-center px-2.5 py-0.5 rounded bg-purple-50 text-[#A881C2] text-[10px] font-black uppercase tracking-wider border border-purple-100">
+                                    {{ \Carbon\Carbon::parse($history->jadwal)->translatedFormat('d M Y, H:i') }}
+                                </span>
+                                
+                                @if($history->status === 'completed')
+                                    <span class="inline-flex items-center px-2.5 py-0.5 rounded bg-emerald-50 text-emerald-700 text-[10px] font-black uppercase tracking-wider border border-emerald-100">
+                                        Selesai
+                                    </span>
+                                @else
+                                    <span class="inline-flex items-center px-2.5 py-0.5 rounded bg-red-50 text-red-700 text-[10px] font-black uppercase tracking-wider border border-red-100">
+                                        {{ $history->status === 'system_cancelled' ? 'Batal Otomatis' : 'Dibatalkan' }}
+                                    </span>
+                                @endif
+                                
+                                @if($history->payment_status === 'paid')
+                                    <span class="inline-flex items-center px-2.5 py-0.5 rounded bg-green-50 text-green-700 text-[10px] font-black uppercase tracking-wider border border-green-100">
+                                        Lunas
+                                    </span>
+                                @else
+                                    <span class="inline-flex items-center px-2.5 py-0.5 rounded bg-gray-50 text-gray-500 text-[10px] font-black uppercase tracking-wider border border-gray-100">
+                                        Belum Bayar
+                                    </span>
+                                @endif
+                            </div>
+                        </div>
+                        
+                        @if($history->status === 'completed' && $history->catatan_konselor)
+                            <div class="p-4 bg-purple-50/50 rounded-xl border border-purple-100/30">
+                                <div class="text-[11px] font-black text-[#8A64A4] uppercase tracking-widest mb-1.5 flex items-center gap-1.5">
+                                    <svg class="w-3.5 h-3.5" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2.5" d="M9 12h6m-6 4h6m2 5H7a2 2 0 01-2-2V5a2 2 0 012-2h5.586a1 1 0 01.707.293l5.414 5.414a1 1 0 01.293.707V19a2 2 0 01-2 2z"></path></svg>
+                                    Catatan Konselor
+                                </div>
+                                <p class="text-xs text-gray-700 font-medium leading-relaxed whitespace-pre-wrap">{{ $history->catatan_konselor }}</p>
+                            </div>
+                        @elseif($history->status === 'completed')
+                            <div class="text-[11px] text-gray-400 font-semibold italic">Konselor belum menuliskan catatan evaluasi untuk sesi ini.</div>
+                        @endif
+                    </div>
+                @endforeach
+            </div>
+        @endif
+    </div>
 </div>
 @endsection
+

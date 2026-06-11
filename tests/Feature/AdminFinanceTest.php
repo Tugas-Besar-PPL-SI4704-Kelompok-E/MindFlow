@@ -261,4 +261,30 @@ class AdminFinanceTest extends TestCase
 
         $this->assertEquals(120000, $profil->fresh()->saldo);
     }
+
+    public function test_user_can_simulate_bank_transfer_payment_and_confirm()
+    {
+        $user = User::factory()->create();
+        $sesi = SesiKonseling::factory()->create([
+            'user_id' => $user->id,
+            'payment_method' => 'transfer',
+            'payment_status' => 'pending',
+            'xendit_invoice_id' => 'inv_test_123',
+        ]);
+
+        // 1. Panggil simulasi
+        $responseSim = $this->actingAs($user)->post(route('booking.xendit.simulate-invoice', $sesi->sesi_konseling_id));
+        $responseSim->assertRedirect();
+        
+        $this->assertDatabaseHas('sesi_konselings', [
+            'sesi_konseling_id' => $sesi->sesi_konseling_id,
+            'payment_status' => 'paid',
+            'payment_channel' => 'MANDIRI_MOCK',
+        ]);
+
+        // 2. Klik Konfirmasi Pembayaran (pay)
+        $responsePay = $this->actingAs($user)->post(route('booking.pay', $sesi->sesi_konseling_id));
+        $responsePay->assertRedirect(route('konseling.show', $sesi->profil_konselor_id));
+    }
 }
+

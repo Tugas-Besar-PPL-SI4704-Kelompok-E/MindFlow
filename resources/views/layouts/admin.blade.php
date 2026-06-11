@@ -33,7 +33,78 @@
             flex-direction: column;
             flex-shrink: 0;
             z-index: 10;
+            transition: margin-left 0.3s cubic-bezier(0.4, 0, 0.2, 1);
         }
+
+        .sidebar-collapsed .sidebar-left {
+            margin-left: calc(-1 * var(--sidebar-left-w));
+        }
+
+        /* Floating Sidebar Toggle Button */
+        .floating-sidebar-toggle {
+            position: fixed;
+            top: 20px;
+            left: 20px;
+            z-index: 99;
+            width: 44px;
+            height: 44px;
+            background-color: #FFFFFF;
+            border: 1px solid var(--border-dark);
+            border-radius: 12px;
+            display: none;
+            align-items: center;
+            justify-content: center;
+            cursor: pointer;
+            box-shadow: 0 4px 12px rgba(168, 129, 194, 0.1);
+            transition: all 0.3s cubic-bezier(0.4, 0, 0.2, 1);
+        }
+
+        .floating-sidebar-toggle.visible { display: flex; }
+
+        .floating-sidebar-toggle svg {
+            width: 22px;
+            height: 22px;
+            stroke: var(--primary);
+            stroke-width: 2;
+            fill: none;
+        }
+
+        .floating-sidebar-toggle:hover {
+            transform: scale(1.05);
+            background-color: var(--primary-light);
+            border-color: var(--primary);
+        }
+
+        .sidebar-toggle-btn {
+            background: none;
+            border: none;
+            cursor: pointer;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            width: 32px;
+            height: 32px;
+            border-radius: 8px;
+            color: var(--text-muted);
+            transition: all 0.2s ease;
+            flex-shrink: 0;
+        }
+
+        .sidebar-toggle-btn svg {
+            width: 20px;
+            height: 20px;
+            stroke: currentColor;
+            stroke-width: 2;
+            fill: none;
+        }
+
+        .sidebar-toggle-btn:hover {
+            background-color: var(--primary-light);
+            color: var(--primary);
+            transform: scale(1.1);
+        }
+
+        .sidebar-toggle-btn:active { transform: scale(0.9); }
 
         .brand {
             display: flex;
@@ -71,12 +142,14 @@
             text-decoration: none;
             font-weight: 600;
             font-size: 15px;
-            transition: all 0.2s;
+            transition: transform 0.3s cubic-bezier(0.34, 1.56, 0.64, 1), background-color 0.2s, color 0.2s, border-left-color 0.2s;
             border-left: 4px solid transparent;
+            transform-origin: left center;
         }
 
         .menu-item:hover {
             background-color: #F9F9F9;
+            transform: scale(1.05) translateX(4px);
         }
 
         .menu-item.active {
@@ -242,65 +315,27 @@
     @stack('styles')
 </head>
 <body class="bg-gray-50 antialiased text-gray-900">
+    <!-- Floating Expand Sidebar Button -->
+    <button type="button" id="sidebarExpandBtn" class="floating-sidebar-toggle" title="Expand Sidebar">
+        <svg fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M4 6h16M4 12h16M4 18h16"></path></svg>
+    </button>
     <div class="flex h-screen overflow-hidden">
 
         {{-- ═══════════════ SIDEBAR ═══════════════ --}}
         <aside class="sidebar-left">
-            <div class="brand">
-                <img src="{{ asset('images/logo.png') }}" alt="Logo MindFlow" style="width: 36px; height: 36px; margin-right: 12px; object-fit: contain;">
-                <div>Mind<span class="flow">Flow</span></div>
+            <div class="brand" style="display: flex; align-items: center; justify-content: space-between; width: 100%; padding-right: 20px;">
+                <div style="display: flex; align-items: center;">
+                    <img src="{{ asset('images/logo.png') }}" alt="Logo MindFlow" style="width: 36px; height: 36px; margin-right: 12px; object-fit: contain;">
+                    <div>Mind<span class="flow">Flow</span></div>
+                </div>
+                <button type="button" id="sidebarCollapseBtn" class="sidebar-toggle-btn" title="Collapse Sidebar">
+                    <svg fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M15 19l-7-7 7-7"></path></svg>
+                </button>
             </div>
 
             <div class="menu-title">Menu</div>
             <ul class="menu-list">
-                <li>
-                    <a href="{{ route('admin.dashboard') }}" class="menu-item {{ request()->is('admin/dashboard') ? 'active' : '' }}">
-                        <svg viewBox="0 0 24 24" stroke="currentColor" fill="none"><path stroke-linecap="round" stroke-linejoin="round" d="M3 12l2-2m0 0l7-7 7 7M5 10v10a1 1 0 001 1h3m10-11l2 2m-2-2v10a1 1 0 01-1 1h-3m-6 0a1 1 0 001-1v-4a1 1 0 011-1h2a1 1 0 011 1v4a1 1 0 001 1m-6 0h6"/></svg>
-                        Dashboard
-                    </a>
-                </li>
-                <li>
-                    <a href="{{ route('admin.rekrutmen') }}" class="menu-item {{ request()->is('admin/rekrutmen*') ? 'active' : '' }}">
-                        <svg viewBox="0 0 24 24" stroke="currentColor" fill="none"><path stroke-linecap="round" stroke-linejoin="round" d="M18 9v3m0 0v3m0-3h3m-3 0h-3m-2-5a4 4 0 11-8 0 4 4 0 018 0zM3 20a6 6 0 0112 0v1H3v-1z"></path></svg>
-                        Rekrutmen Konselor
-                    </a>
-                </li>
-                <li>
-                    <a href="{{ route('admin.laporan') }}" class="menu-item {{ request()->is('admin/laporan*') ? 'active' : '' }}">
-                        <svg viewBox="0 0 24 24" stroke="currentColor" fill="none"><path stroke-linecap="round" stroke-linejoin="round" d="M12 9v2m0 4h.01m-6.938 4h13.856c1.54 0 2.502-1.667 1.732-3L13.732 4c-.77-1.333-2.694-1.333-3.464 0L3.34 16c-.77 1.333.192 3 1.732 3z"></path></svg>
-                        Laporan & Moderasi
-                    </a>
-                </li>
-                <li>
-                    <a href="{{ route('admin.spesialisasi') }}" class="menu-item {{ request()->is('admin/spesialisasi*') ? 'active' : '' }}">
-                        <svg viewBox="0 0 24 24" stroke="currentColor" fill="none"><path stroke-linecap="round" stroke-linejoin="round" d="M7 7h.01M7 3h5c.512 0 1.024.195 1.414.586l7 7a2 2 0 010 2.828l-7 7a2 2 0 01-2.828 0l-7-7A1.994 1.994 0 013 12V7a4 4 0 014-4z"></path></svg>
-                        Spesialisasi
-                    </a>
-                </li>
-                <li>
-                    <a href="{{ route('forum.index') }}" class="menu-item {{ request()->is('forum*') ? 'active' : '' }}">
-                        <svg viewBox="0 0 24 24" stroke="currentColor" fill="none"><path stroke-linecap="round" stroke-linejoin="round" d="M17 20h5v-2a3 3 0 00-5.356-1.857M17 20H7m10 0v-2c0-.656-.126-1.283-.356-1.857M7 20H2v-2a3 3 0 015.356-1.857M7 20v-2c0-.656.126-1.283.356-1.857m0 0a5.002 5.002 0 019.288 0M15 7a3 3 0 11-6 0 3 3 0 016 0zm6 3a2 2 0 11-4 0 2 2 0 014 0zM7 10a2 2 0 11-4 0 2 2 0 014 0z"></path></svg>
-                        Forum MindFlow
-                    </a>
-                </li>
-                <li>
-                    <a href="{{ route('artikel.index') }}" class="menu-item {{ request()->is('artikel*') ? 'active' : '' }}">
-                        <svg viewBox="0 0 24 24" stroke="currentColor" fill="none"><path stroke-linecap="round" stroke-linejoin="round" d="M19 20H5a2 2 0 0 1-2-2V6a2 2 0 0 1 2-2h10a2 2 0 0 1 2 2v1m2 13a2 2 0 0 1-2-2V7m2 13a2 2 0 0 0 2-2V9a2 2 0 0 0-2-2h-2m-4-3H9M7 16h6M7 12h10"></path></svg>
-                        Artikel
-                    </a>
-                </li>
-                <li>
-                    <a href="{{ route('admin.faq') }}" class="menu-item {{ request()->is('admin/faq*') ? 'active' : '' }}">
-                        <svg viewBox="0 0 24 24" stroke="currentColor" fill="none"><path stroke-linecap="round" stroke-linejoin="round" d="M8.228 9c.549-1.165 2.03-2 3.772-2 2.21 0 4 1.343 4 3 0 1.4-1.278 2.575-3.006 2.907-.542.104-.994.54-.994 1.093m0 3h.01M21 12a9 9 0 11-18 0 9 9 0 0118 0z"></path></svg>
-                        FAQ
-                    </a>
-                </li>
-                <li>
-                    <a href="{{ route('admin.transaksi') }}" class="menu-item {{ request()->is('admin/transaksi*') ? 'active' : '' }}">
-                        <svg viewBox="0 0 24 24" stroke="currentColor" fill="none"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M12 8c-1.657 0-3 .895-3 2s1.343 2 3 2 3 .895 3 2-1.343 2-3 2m0-8c1.11 0 2.08.402 2.599 1M12 8V7m0 1v8m0 0v1m0-1c-1.11 0-2.08-.402-2.599-1M21 12a9 9 0 11-18 0 9 9 0 0118 0z"/></svg>
-                        Kelola Transaksi
-                    </a>
-                </li>
+                @include('admin.partials.sidebar-items')
             </ul>
 
             <div class="sidebar-spacer"></div>
@@ -367,9 +402,10 @@
         </div>
     </div>
 
-    {{-- Admin Profile Popup Toggle --}}
+    {{-- Admin Profile Popup & Sidebar Toggle --}}
     <script>
         document.addEventListener('DOMContentLoaded', function() {
+            // ── Profile Popup ──────────────────────────────
             const profileBtn = document.getElementById('profileBtn');
             const profilePopup = document.getElementById('profilePopup');
 
@@ -386,6 +422,40 @@
                         profileBtn.classList.remove('open');
                     }
                 });
+            }
+
+            // ── Sidebar Collapse / Expand Toggle ───────────
+            const collapseBtn = document.getElementById('sidebarCollapseBtn');
+            const expandBtn   = document.getElementById('sidebarExpandBtn');
+            const layout      = document.querySelector('.flex.h-screen');
+            const STORAGE_KEY = 'mindflow_sidebar_collapsed';
+
+            function setSidebarState(collapsed, animate) {
+                if (!animate) {
+                    const sidebar = document.querySelector('.sidebar-left');
+                    if (sidebar) sidebar.style.transition = 'none';
+                    requestAnimationFrame(function() {
+                        if (sidebar) sidebar.style.transition = '';
+                    });
+                }
+                if (collapsed) {
+                    if (layout) layout.classList.add('sidebar-collapsed');
+                    if (expandBtn) expandBtn.classList.add('visible');
+                } else {
+                    if (layout) layout.classList.remove('sidebar-collapsed');
+                    if (expandBtn) expandBtn.classList.remove('visible');
+                }
+                localStorage.setItem(STORAGE_KEY, collapsed ? '1' : '0');
+            }
+
+            const storedCollapsed = localStorage.getItem(STORAGE_KEY) === '1';
+            setSidebarState(storedCollapsed, false);
+
+            if (collapseBtn) {
+                collapseBtn.addEventListener('click', function() { setSidebarState(true, true); });
+            }
+            if (expandBtn) {
+                expandBtn.addEventListener('click', function() { setSidebarState(false, true); });
             }
         });
     </script>
