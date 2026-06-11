@@ -55,6 +55,72 @@
             flex-direction: column;
             flex-shrink: 0;
             z-index: 10;
+            transition: margin-left 0.3s cubic-bezier(0.4, 0, 0.2, 1), transform 0.3s cubic-bezier(0.4, 0, 0.2, 1) !important;
+        }
+
+        .sidebar-collapsed .sidebar-left {
+            margin-left: calc(-1 * var(--sidebar-left-w)) !important;
+        }
+
+        /* Floating Sidebar Toggle Button */
+        .floating-sidebar-toggle {
+            position: fixed;
+            top: 20px;
+            left: 20px;
+            z-index: 99;
+            width: 44px;
+            height: 44px;
+            background-color: #FFFFFF;
+            border: 1px solid var(--border-dark);
+            border-radius: 12px;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            cursor: pointer;
+            box-shadow: 0 4px 12px rgba(168, 129, 194, 0.08);
+            transition: all 0.3s cubic-bezier(0.4, 0, 0.2, 1);
+        }
+
+        .floating-sidebar-toggle svg {
+            width: 22px;
+            height: 22px;
+            stroke: #A881C2;
+            stroke-width: 2;
+            fill: none;
+        }
+
+        .floating-sidebar-toggle:hover {
+            transform: scale(1.05);
+            background-color: #F4EEFB;
+            border-color: #A881C2;
+        }
+
+        .floating-sidebar-toggle:active {
+            transform: scale(0.95);
+        }
+
+        .sidebar-toggle-btn {
+            background: none;
+            border: none;
+            cursor: pointer;
+            color: var(--text-muted);
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            width: 32px;
+            height: 32px;
+            border-radius: 8px;
+            transition: all 0.2s ease;
+        }
+
+        .sidebar-toggle-btn:hover {
+            background-color: #F4EEFB;
+            color: #A881C2 !important;
+            transform: scale(1.1);
+        }
+        
+        .sidebar-toggle-btn:active {
+            transform: scale(0.9);
         }
 
         .brand {
@@ -118,12 +184,14 @@
             text-decoration: none;
             font-weight: 600;
             font-size: 15px;
-            transition: all 0.2s;
+            transition: transform 0.3s cubic-bezier(0.34, 1.56, 0.64, 1), background-color 0.2s, color 0.2s, border-left-color 0.2s;
             border-left: 4px solid transparent;
+            transform-origin: left center;
         }
 
         .menu-item:hover {
             background-color: #F9F9F9;
+            transform: scale(1.05) translateX(4px);
         }
 
         .menu-item.active {
@@ -414,91 +482,29 @@
             border-color: var(--text-muted);
         }
     </style>
-    @if(Auth::check() && Auth::user()->role === 'admin')
-    <style>
-        .brand span.flow {
-            color: #9B76D6 !important;
-        }
-        .menu-item {
-            padding: 14px 30px !important;
-        }
-        .menu-item svg {
-            width: 22px !important;
-            height: 22px !important;
-            margin-right: 14px !important;
-        }
-        .menu-item.active {
-            background-color: #F4EEFB !important;
-            color: #9B76D6 !important;
-            border-left-color: #9B76D6 !important;
-        }
-        .menu-item.active svg {
-            stroke: #9B76D6 !important;
-        }
-    </style>
-    @endif
     @stack('styles')
 </head><body>
+    <!-- Floating Expand Sidebar Button -->
+    <button type="button" id="sidebarExpandBtn" class="floating-sidebar-toggle" style="display: none;" title="Expand Sidebar">
+        <svg fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M4 6h16M4 12h16M4 18h16"></path></svg>
+    </button>
     <div class="layout">
         <!-- Sidebar Kiri -->
         <aside class="sidebar-left">
-            <div class="brand">
-                <img src="{{ asset('images/logo.png') }}" alt="Logo MindFlow" style="width: 36px; height: 36px; margin-right: 12px; object-fit: contain;">
-                <div>Mind<span class="flow">Flow</span></div>
+            <div class="brand" style="display: flex; align-items: center; justify-content: space-between; width: 100%; padding-right: 20px;">
+                <div style="display: flex; align-items: center;">
+                    <img src="{{ asset('images/logo.png') }}" alt="Logo MindFlow" style="width: 36px; height: 36px; margin-right: 12px; object-fit: contain;">
+                    <div>Mind<span class="flow">Flow</span></div>
+                </div>
+                <button type="button" id="sidebarCollapseBtn" class="sidebar-toggle-btn" title="Collapse Sidebar">
+                    <svg fill="none" stroke="currentColor" viewBox="0 0 24 24" style="width: 20px; height: 20px;"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M15 19l-7-7 7-7"></path></svg>
+                </button>
             </div>
             
             <div class="menu-title">Menu</div>
             <ul class="menu-list">
                 @if(Auth::check() && Auth::user()->role === 'admin')
-                {{-- Admin Menu - matches admin dashboard sidebar --}}
-                <li>
-                    <a href="{{ route('admin.dashboard') }}" class="menu-item {{ request()->is('admin/dashboard') ? 'active' : '' }}">
-                        <svg viewBox="0 0 24 24" stroke="currentColor" fill="none"><path stroke-linecap="round" stroke-linejoin="round" d="M3 12l2-2m0 0l7-7 7 7M5 10v10a1 1 0 001 1h3m10-11l2 2m-2-2v10a1 1 0 01-1 1h-3m-6 0a1 1 0 001-1v-4a1 1 0 011-1h2a1 1 0 011 1v4a1 1 0 001 1m-6 0h6"/></svg>
-                        Dashboard
-                    </a>
-                </li>
-                <li>
-                    <a href="{{ route('admin.rekrutmen') }}" class="menu-item {{ request()->is('admin/rekrutmen*') ? 'active' : '' }}">
-                        <svg viewBox="0 0 24 24" stroke="currentColor" fill="none"><path stroke-linecap="round" stroke-linejoin="round" d="M18 9v3m0 0v3m0-3h3m-3 0h-3m-2-5a4 4 0 11-8 0 4 4 0 018 0zM3 20a6 6 0 0112 0v1H3v-1z"></path></svg>
-                        Rekrutmen Konselor
-                    </a>
-                </li>
-                <li>
-                    <a href="{{ route('admin.laporan') }}" class="menu-item {{ request()->is('admin/laporan*') ? 'active' : '' }}">
-                        <svg viewBox="0 0 24 24" stroke="currentColor" fill="none"><path stroke-linecap="round" stroke-linejoin="round" d="M12 9v2m0 4h.01m-6.938 4h13.856c1.54 0 2.502-1.667 1.732-3L13.732 4c-.77-1.333-2.694-1.333-3.464 0L3.34 16c-.77 1.333.192 3 1.732 3z"></path></svg>
-                        Laporan & Moderasi
-                    </a>
-                </li>
-                <li>
-                    <a href="{{ route('admin.spesialisasi') }}" class="menu-item {{ request()->is('admin/spesialisasi*') ? 'active' : '' }}">
-                        <svg viewBox="0 0 24 24" stroke="currentColor" fill="none"><path stroke-linecap="round" stroke-linejoin="round" d="M7 7h.01M7 3h5c.512 0 1.024.195 1.414.586l7 7a2 2 0 010 2.828l-7 7a2 2 0 01-2.828 0l-7-7A1.994 1.994 0 013 12V7a4 4 0 014-4z"></path></svg>
-                        Spesialisasi
-                    </a>
-                </li>
-                <li>
-                    <a href="{{ route('forum.index') }}" class="menu-item {{ request()->is('forum*') ? 'active' : '' }}">
-                        <svg viewBox="0 0 24 24" stroke="currentColor" fill="none"><path stroke-linecap="round" stroke-linejoin="round" d="M17 20h5v-2a3 3 0 00-5.356-1.857M17 20H7m10 0v-2c0-.656-.126-1.283-.356-1.857M7 20H2v-2a3 3 0 015.356-1.857M7 20v-2c0-.656.126-1.283.356-1.857m0 0a5.002 5.002 0 019.288 0M15 7a3 3 0 11-6 0 3 3 0 016 0zm6 3a2 2 0 11-4 0 2 2 0 014 0zM7 10a2 2 0 11-4 0 2 2 0 014 0z"></path></svg>
-                        Forum MindFlow
-                    </a>
-                </li>
-                <li>
-                    <a href="{{ route('admin.artikel.index') }}" class="menu-item {{ request()->is('admin/artikel*') ? 'active' : '' }}">
-                        <svg viewBox="0 0 24 24" stroke="currentColor" fill="none"><path stroke-linecap="round" stroke-linejoin="round" d="M19 20H5a2 2 0 0 1-2-2V6a2 2 0 0 1 2-2h10a2 2 0 0 1 2 2v1m2 13a2 2 0 0 1-2-2V7m2 13a2 2 0 0 0 2-2V9a2 2 0 0 0-2-2h-2m-4-3H9M7 16h6M7 12h10"></path></svg>
-                        Kelola Artikel
-                    </a>
-                </li>
-                <li>
-                    <a href="{{ route('admin.faq') }}" class="menu-item {{ request()->is('admin/faq*') ? 'active' : '' }}">
-                        <svg viewBox="0 0 24 24" stroke="currentColor" fill="none"><path stroke-linecap="round" stroke-linejoin="round" d="M8.228 9c.549-1.165 2.03-2 3.772-2 2.21 0 4 1.343 4 3 0 1.4-1.278 2.575-3.006 2.907-.542.104-.994.54-.994 1.093m0 3h.01M21 12a9 9 0 11-18 0 9 9 0 0118 0z"></path></svg>
-                        FAQ
-                    </a>
-                </li>
-                <li>
-                    <a href="{{ route('admin.faq') }}" class="menu-item {{ request()->is('admin/faq*') ? 'active' : '' }}">
-                        <svg viewBox="0 0 24 24" stroke="currentColor" fill="none"><path stroke-linecap="round" stroke-linejoin="round" d="M8.228 9c.549-1.165 2.03-2 3.772-2 2.21 0 4 1.343 4 3 0 1.4-1.278 2.575-3.006 2.907-.542.104-.994.54-.994 1.093m0 3h.01M21 12a9 9 0 11-18 0 9 9 0 0118 0z"></path></svg>
-                        FAQ
-                    </a>
-                </li>
+                @include('admin.partials.sidebar-items')
                 @elseif(Auth::check() && Auth::user()->role === 'konselor')
                 {{-- Konselor Menu --}}
                 <li>
@@ -560,28 +566,27 @@
                 @endif
             </ul>
 
-            @if(Auth::check() && Auth::user()->role === 'admin')
-                <div class="mt-auto border-t border-gray-100 pt-4 pb-4">
-                    <a href="{{ route('admin.settings') }}" class="menu-item {{ request()->is('admin/settings*') ? 'active' : '' }}" style="display: flex; align-items: center; width: 100%;">
-                        <svg viewBox="0 0 24 24" style="margin-right: 16px;"><path stroke-linecap="round" stroke-linejoin="round" d="M10.325 4.317c.426-1.756 2.924-1.756 3.35 0a1.724 1.724 0 002.573 1.066c1.543-.94 3.31.826 2.37 2.37a1.724 1.724 0 001.066 2.573c1.756.426 1.756 2.924 0 3.35a1.724 1.724 0 00-1.066 2.573c.94 1.543-.826 3.31-2.37 2.37a1.724 1.724 0 00-2.573 1.066c-.426 1.756-2.924 1.756-3.35 0a1.724 1.724 0 00-2.573-1.066c-1.543.94-3.31-.826-2.37-2.37a1.724 1.724 0 00-1.066-2.573c-1.756-.426-1.756-2.924 0-3.35a1.724 1.724 0 001.066-2.573c-.94-1.543.826-3.31 2.37-2.37.996.608 2.296.07 2.572-1.065z"></path><circle cx="12" cy="12" r="3"></circle></svg>
-                        Settings
-                    </a>
-                    <form action="{{ route('logout') }}" method="POST" style="margin: 0;">
-                        @csrf
-                        <button type="submit" class="menu-item w-full text-left" style="color:#ef4444; background:none; border:none; cursor:pointer; display:flex; align-items:center;">
-                            <svg viewBox="0 0 24 24" stroke="#ef4444" fill="none" style="margin-right: 16px;"><path stroke-linecap="round" stroke-linejoin="round" d="M17 16l4-4m0 0l-4-4m4 4H7m6 4v1a3 3 0 01-3 3H6a3 3 0 01-3-3V7a3 3 0 013-3h4a3 3 0 013 3v1"></path></svg>
-                            Keluar
-                        </button>
-                    </form>
-                </div>
-            @else
-                <!-- Spacer to push profile to bottom -->
-                <div class="sidebar-spacer"></div>
+            <!-- Spacer to push profile to bottom -->
+            <div class="sidebar-spacer"></div>
 
-                <!-- Profile Section -->
-                <div class="sidebar-profile-section" id="profileSection">
-                    <!-- Popup Menu -->
-                    <div class="sidebar-popup" id="profilePopup">
+            <!-- Profile Section -->
+            <div class="sidebar-profile-section" id="profileSection">
+                <!-- Popup Menu -->
+                <div class="sidebar-popup" id="profilePopup">
+                    @if(Auth::check() && Auth::user()->role === 'admin')
+                        <a href="{{ route('admin.settings') }}" class="sidebar-popup-item" id="btn-admin-pengaturan">
+                            <svg viewBox="0 0 24 24"><circle cx="12" cy="12" r="3"></circle><path d="M19.4 15a1.65 1.65 0 0 0 .33 1.82l.06.06a2 2 0 0 1-2.83 2.83l-.06-.06a1.65 1.65 0 0 0-1.82-.33 1.65 1.65 0 0 0-1 1.51V21a2 2 0 0 1-4 0v-.09A1.65 1.65 0 0 0 9 19.4a1.65 1.65 0 0 0-1.82.33l-.06.06a2 2 0 0 1-2.83-2.83l.06-.06A1.65 1.65 0 0 0 4.68 15a1.65 1.65 0 0 0-1.51-1H3a2 2 0 0 1 0-4h.09A1.65 1.65 0 0 0 4.6 9a1.65 1.65 0 0 0-.33-1.82l-.06-.06a2 2 0 0 1 2.83-2.83l.06.06A1.65 1.65 0 0 0 9 4.68a1.65 1.65 0 0 0 1-1.51V3a2 2 0 0 1 4 0v.09a1.65 1.65 0 0 0 1 1.51 1.65 1.65 0 0 0 1.82-.33l.06-.06a2 2 0 0 1 2.83 2.83l-.06.06A1.65 1.65 0 0 0 19.4 9a1.65 1.65 0 0 0 1.51 1H21a2 2 0 0 1 0 4h-.09a1.65 1.65 0 0 0-1.51 1z"></path></svg>
+                            Pengaturan
+                        </a>
+                        <div class="sidebar-popup-divider"></div>
+                        <form method="POST" action="{{ route('logout') }}" style="margin:0;">
+                            @csrf
+                            <button type="submit" class="sidebar-popup-item logout-item" id="btn-admin-logout">
+                                <svg viewBox="0 0 24 24"><path d="M9 21H5a2 2 0 0 1-2-2V5a2 2 0 0 1 2-2h4"></path><polyline points="16 17 21 12 16 7"></polyline><line x1="21" y1="12" x2="9" y2="12"></line></svg>
+                                Keluar
+                            </button>
+                        </form>
+                    @else
                         <a href="{{ route('settings.edit') }}" class="sidebar-popup-item" id="btn-pengaturan">
                             <svg viewBox="0 0 24 24"><circle cx="12" cy="12" r="3"></circle><path d="M19.4 15a1.65 1.65 0 0 0 .33 1.82l.06.06a2 2 0 0 1-2.83 2.83l-.06-.06a1.65 1.65 0 0 0-1.82-.33 1.65 1.65 0 0 0-1 1.51V21a2 2 0 0 1-4 0v-.09A1.65 1.65 0 0 0 9 19.4a1.65 1.65 0 0 0-1.82.33l-.06.06a2 2 0 0 1-2.83-2.83l.06-.06A1.65 1.65 0 0 0 4.68 15a1.65 1.65 0 0 0-1.51-1H3a2 2 0 0 1 0-4h.09A1.65 1.65 0 0 0 4.6 9a1.65 1.65 0 0 0-.33-1.82l-.06-.06a2 2 0 0 1 2.83-2.83l.06.06A1.65 1.65 0 0 0 9 4.68a1.65 1.65 0 0 0 1-1.51V3a2 2 0 0 1 4 0v.09a1.65 1.65 0 0 0 1 1.51 1.65 1.65 0 0 0 1.82-.33l.06-.06a2 2 0 0 1 2.83 2.83l-.06.06A1.65 1.65 0 0 0 19.4 9a1.65 1.65 0 0 0 1.51 1H21a2 2 0 0 1 0 4h-.09a1.65 1.65 0 0 0-1.51 1z"></path></svg>
                             Pengaturan
@@ -594,19 +599,19 @@
                                 Keluar
                             </button>
                         </form>
-                    </div>
-
-                    <!-- Profile Button -->
-                    <button class="sidebar-profile-btn" id="profileBtn" type="button">
-                        <img src="https://ui-avatars.com/api/?name={{ urlencode(Auth::user()->nama_samaran ?? 'User') }}&background=E8DEFA&color=6B3FA0&size=42&font-size=0.4&bold=true" alt="Profile" class="sidebar-profile-avatar">
-                        <div class="sidebar-profile-info">
-                            <div class="sidebar-profile-name">{{ Auth::user()->nama_samaran ?? 'User' }}</div>
-                            <div class="sidebar-profile-role">{{ ucfirst(Auth::user()->role ?? 'Mahasiswa') }}</div>
-                        </div>
-                        <svg class="sidebar-profile-chevron" viewBox="0 0 24 24"><polyline points="6 9 12 15 18 9"></polyline></svg>
-                    </button>
+                    @endif
                 </div>
-            @endif
+
+                <!-- Profile Button -->
+                <button class="sidebar-profile-btn" id="profileBtn" type="button">
+                    <img src="https://ui-avatars.com/api/?name={{ urlencode(Auth::user()->nama_samaran ?? Auth::user()->nama_asli ?? 'User') }}&background=E8DEFA&color=6B3FA0&size=42&font-size=0.4&bold=true" alt="Profile" class="sidebar-profile-avatar">
+                    <div class="sidebar-profile-info">
+                        <div class="sidebar-profile-name">{{ Auth::user()->nama_samaran ?? Auth::user()->nama_asli ?? 'User' }}</div>
+                        <div class="sidebar-profile-role">{{ ucfirst(Auth::user()->role ?? 'Mahasiswa') }}</div>
+                    </div>
+                    <svg class="sidebar-profile-chevron" viewBox="0 0 24 24"><polyline points="6 9 12 15 18 9"></polyline></svg>
+                </button>
+            </div>
         </aside>
 
         <!-- Main Content (Tengah) -->
@@ -803,8 +808,8 @@
                                     <svg class="w-4 h-4" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2.5" d="M8 7V3m8 4V3m-9 8h10M5 21h14a2 2 0 002-2V7a2 2 0 00-2-2H5a2 2 0 00-2 2v12a2 2 0 002 2z"></path></svg>
                                 </div>
                             </div>
-                            
-                            <div class="mb-5">
+                                                       
+                            <div class="mb-5 flex flex-wrap gap-2">
                                 @php
                                     $statusColor = match($jadwal->status) {
                                             'pending' => 'bg-amber-50 text-amber-600 border-amber-100',
@@ -814,22 +819,44 @@
                                         default => 'bg-gray-50 text-gray-600 border-gray-100'
                                     };
                                 @endphp
-                                <span class="inline-flex items-center px-3 py-1 {{ $statusColor }} border rounded-lg text-[10px] font-black uppercase tracking-widest">
+                                <span class="inline-flex items-center px-3 py-1 {{ $statusColor }} border rounded-lg text-[10px] font-black uppercase tracking-widest" title="Status Sesi">
                                     {{ $jadwal->status }}
                                 </span>
+
+                                @if($jadwal->payment_status === 'paid')
+                                    <span class="inline-flex items-center px-3 py-1 bg-emerald-50 text-emerald-600 border border-emerald-100 rounded-lg text-[10px] font-black uppercase tracking-widest" title="Status Pembayaran">
+                                        Lunas
+                                    </span>
+                                @elseif($jadwal->payment_status === 'waiting_verification')
+                                    <span class="inline-flex items-center px-3 py-1 bg-yellow-50 text-yellow-600 border border-yellow-100 rounded-lg text-[10px] font-black uppercase tracking-widest" title="Status Pembayaran">
+                                        Verifikasi
+                                    </span>
+                                @else
+                                    <span class="inline-flex items-center px-3 py-1 bg-red-50 text-red-600 border border-red-100 rounded-lg text-[10px] font-black uppercase tracking-widest" title="Status Pembayaran">
+                                        Belum Bayar
+                                    </span>
+                                @endif
                             </div>
 
                             <div class="flex flex-col gap-2">
+                                @if($jadwal->payment_status !== 'paid')
+                                    <a href="{{ route('booking.checkout', $jadwal->sesi_konseling_id) }}" class="w-full text-center bg-[#A881C2] hover:bg-[#8A64A4] text-white py-3 rounded-xl text-[12px] font-bold transition-all duration-300 shadow-sm flex items-center justify-center gap-2">
+                                        <svg class="w-4 h-4" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M3 10h18M7 15h1m4 0h1m-7 4h12a3 3 0 003-3V8a3 3 0 00-3-3H6a3 3 0 00-3 3v8a3 3 0 003 3z"></path></svg>
+                                        Bayar Sekarang
+                                    </a>
+                                @endif
+
                                 @if(in_array($jadwal->status, ['confirmed', 'rescheduled']))
                                     <a href="{{ route('konseling.room', $jadwal->sesi_konseling_id) }}" class="w-full text-center bg-emerald-500 hover:bg-emerald-600 text-white py-3 rounded-xl text-[12px] font-bold transition-all duration-300 shadow-sm shadow-emerald-200 flex items-center justify-center gap-2">
-                                        <svg class="w-4 h-4" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M15 10l4.553-2.276A1 1 0 0121 8.618v6.764a1 1 0 01-1.447.894L15 14M5 18h8a2 2 0 002-2V8a2 2 0 00-2-2H5a2 2 0 00-2 2v8a2 2 0 002 2z"></path></svg>
+                                        <svg class="w-4 h-4" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2.5" d="M15 10l4.553-2.276A1 1 0 0121 8.618v6.764a1 1 0 01-1.447.894L15 14M5 18h8a2 2 0 002-2V8a2 2 0 00-2-2H5a2 2 0 00-2 2v8a2 2 0 002 2z"></path></svg>
                                         Masuk Ruangan
                                     </a>
                                 @endif
                                 <div class="flex gap-2">
-                                    <a href="{{ route('booking.edit', $jadwal->sesi_konseling_id) }}" class="flex-1 text-center bg-gray-50 hover:bg-purple-50 hover:text-[#A881C2] text-gray-500 py-2.5 rounded-xl text-[11px] font-bold transition-all duration-300 border border-transparent hover:border-purple-100">
+                                    <a href="{{ route('booking.edit', $jadwal->sesi_konseling_id) }}" class="{{ in_array($jadwal->status, ['confirmed', 'rescheduled']) ? 'w-full' : 'flex-1' }} text-center bg-gray-50 hover:bg-purple-50 hover:text-[#A881C2] text-gray-500 py-2.5 rounded-xl text-[11px] font-bold transition-all duration-300 border border-transparent hover:border-purple-100">
                                         Ubah
                                     </a>
+                                    @if(!in_array($jadwal->status, ['confirmed', 'rescheduled']))
                                     <form action="{{ route('booking.cancel', $jadwal->sesi_konseling_id) }}" method="POST" onsubmit="return confirm('Yakin ingin membatalkan sesi ini?')" class="flex-1">
                                         @csrf
                                         @method('DELETE')
@@ -837,6 +864,7 @@
                                             Batal
                                         </button>
                                     </form>
+                                    @endif
                                 </div>
                             </div>
                         </div>
@@ -857,6 +885,7 @@
     <!-- Profile Popup Toggle Script -->
     <script>
         document.addEventListener('DOMContentLoaded', function() {
+            // ── Profile Popup ──────────────────────────────
             const profileBtn = document.getElementById('profileBtn');
             const profilePopup = document.getElementById('profilePopup');
 
@@ -867,7 +896,6 @@
                     profileBtn.classList.toggle('open');
                 });
 
-                // Close popup when clicking outside
                 document.addEventListener('click', function(e) {
                     if (!e.target.closest('#profileSection')) {
                         profilePopup.classList.remove('show');
@@ -876,16 +904,58 @@
                 });
             }
 
+            // ── Auto-dismiss Notifications ─────────────────
             const autoDismissNotifications = document.querySelectorAll('.auto-dismiss-notification');
             autoDismissNotifications.forEach(function(notification) {
                 setTimeout(function() {
                     notification.style.transition = 'opacity 0.3s ease';
                     notification.style.opacity = '0';
-                    setTimeout(function() {
-                        notification.remove();
-                    }, 300);
+                    setTimeout(function() { notification.remove(); }, 300);
                 }, 4500);
             });
+
+            // ── Sidebar Collapse / Expand Toggle ───────────
+            const layout         = document.querySelector('.layout');
+            const collapseBtn    = document.getElementById('sidebarCollapseBtn');
+            const expandBtn      = document.getElementById('sidebarExpandBtn');
+            const STORAGE_KEY    = 'mindflow_sidebar_collapsed';
+
+            function setSidebarState(collapsed, animate) {
+                if (!animate) {
+                    // Briefly disable transitions to apply state instantly on page load
+                    const sidebar = document.querySelector('.sidebar-left');
+                    if (sidebar) sidebar.style.transition = 'none';
+                    requestAnimationFrame(function() {
+                        if (sidebar) sidebar.style.transition = '';
+                    });
+                }
+
+                if (collapsed) {
+                    layout.classList.add('sidebar-collapsed');
+                    if (expandBtn) expandBtn.style.display = 'flex';
+                } else {
+                    layout.classList.remove('sidebar-collapsed');
+                    if (expandBtn) expandBtn.style.display = 'none';
+                }
+
+                localStorage.setItem(STORAGE_KEY, collapsed ? '1' : '0');
+            }
+
+            // Restore state from localStorage on load (no animation)
+            const storedCollapsed = localStorage.getItem(STORAGE_KEY) === '1';
+            setSidebarState(storedCollapsed, false);
+
+            if (collapseBtn) {
+                collapseBtn.addEventListener('click', function() {
+                    setSidebarState(true, true);
+                });
+            }
+
+            if (expandBtn) {
+                expandBtn.addEventListener('click', function() {
+                    setSidebarState(false, true);
+                });
+            }
         });
     </script>
     @stack('scripts')

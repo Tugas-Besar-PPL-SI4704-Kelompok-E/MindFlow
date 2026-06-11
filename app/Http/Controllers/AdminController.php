@@ -377,9 +377,11 @@ class AdminController extends Controller
     }
 
     public function transaksi()
-        }
-    }
-}
+    {
+        $sessions = \App\Models\SesiKonseling::with(['user', 'profilKonselor'])
+            ->orderBy('created_at', 'desc')
+            ->get();
+
         $withdrawals = \App\Models\Transaction::where('type', 'withdrawal')
             ->with('profilKonselor')
             ->orderBy('created_at', 'desc')
@@ -446,9 +448,101 @@ class AdminController extends Controller
 
         $profil = $tx->profilKonselor;
         $profil->increment('saldo', $tx->amount);
-
         return back()->with('success', 'Pengajuan penarikan dana telah ditolak dan saldo dikembalikan ke konselor.');
     }
-=======
->>>>>>> 12c28e0 (merge)
+
+    public function syncXenditPayments()
+    {
+        $secretKey = config('services.xendit.secret_key');
+        if (empty($secretKey)) {
+            return back()->with('error', 'Kredensial Xendit belum dikonfigurasi.');
+        }
+
+        // Get all pending sessions that have a Xendit Invoice or QR Code ID
+        $pendingSessions = \App\Models\SesiKonseling::where('payment_status', 'pending')
+            ->whereNotNull('xendit_invoice_id')
+            ->get();
+
+        $updatedCount = 0;
+
+        foreach ($pendingSessions as $sesi) {
+            try {
+                // If it is QRIS (e-wallet)
+                if ($sesi->payment_method === 'e-wallet') {
+                    $response = \Illuminate\Support\Facades\Http::withBasicAuth($secretKey, '')
+                        ->withOptions([
+                            'curl' => [
+                                CURLOPT_IPRESOLVE => CURL_IPRESOLVE_V4,
+                                CURLOPT_RESOLVE => ['api.xendit.co:443:104.19.160.99,104.19.159.99']
+                            ]
+                        ])
+                        ->timeout(5)
+                        ->get('https://api.xendit.co/qr_codes/' . $sesi->xendit_invoice_id . '/payments');
+
+                    if ($response->successful()) {
+                        $payments = $response->json();
+                        $paymentList = isset($payments['data']) ? $payments['data'] : $payments;
+
+                        if (is_array($paymentList) && count($paymentList) > 0) {
+                            $payment = $paymentList[0];
+                            $channel = isset($payment['channel_code']) ? str_replace('ID_', '', $payment['channel_code']) : 'QRIS';
+                            
+                            $paidAt = null;
+                            if (!empty($payment['created'])) {
+                                try {
+                                    $paidAt = \Carbon\Carbon::parse($payment['created'])->toDateTimeString();
+                                } catch (\Exception $ex) {}
+                            }
+
+                            $sesi->update([
+                                'payment_status' => 'paid',
+                                'payment_channel' => $channel,
+                                'xendit_payment_id' => $payment['id'] ?? null,
+                                'payment_time' => $paidAt ?? now(),
+                            ]);
+                            $updatedCount++;
+                        }
+                    }
+                } 
+                // If it is Bank Transfer / Virtual Account (Xendit Invoice)
+                else {
+                    $response = \Illuminate\Support\Facades\Http::withBasicAuth($secretKey, '')
+                        ->withOptions([
+                            'curl' => [
+                                CURLOPT_IPRESOLVE => CURL_IPRESOLVE_V4,
+                                CURLOPT_RESOLVE => ['api.xendit.co:443:104.19.160.99,104.19.159.99']
+                            ]
+                        ])
+                        ->timeout(5)
+                        ->get('https://api.xendit.co/v2/invoices/' . $sesi->xendit_invoice_id);
+
+                    if ($response->successful()) {
+                        $data = $response->json();
+                        if (in_array($data['status'], ['PAID', 'SETTLED'])) {
+                            $channel = $data['payment_channel'] ?? ($data['payment_method'] ?? 'XENDIT');
+                            
+                            $paidAt = null;
+                            if (!empty($data['updated'])) {
+                                try {
+                                    $paidAt = \Carbon\Carbon::parse($data['updated'])->toDateTimeString();
+                                } catch (\Exception $ex) {}
+                            }
+
+                            $sesi->update([
+                                'payment_status' => 'paid',
+                                'payment_channel' => $channel,
+                                'xendit_payment_id' => $data['id'] ?? $sesi->xendit_invoice_id,
+                                'payment_time' => $paidAt ?? now(),
+                            ]);
+                            $updatedCount++;
+                        }
+                    }
+                }
+            } catch (\Exception $e) {
+                \Illuminate\Support\Facades\Log::error('Sync Xendit failed for session ' . $sesi->sesi_konseling_id . ': ' . $e->getMessage());
+            }
+        }
+
+        return back()->with('success', 'Sinkronisasi selesai! ' . $updatedCount . ' transaksi berhasil diperbarui.');
+    }
 }
