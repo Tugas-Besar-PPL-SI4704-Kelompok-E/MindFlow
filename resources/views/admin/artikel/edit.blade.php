@@ -1,169 +1,87 @@
-<!DOCTYPE html>
-<html lang="id">
-<head>
-    <meta charset="UTF-8">
-    <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <title>Edit Artikel - MindFlow Admin</title>
-    <link rel="preconnect" href="https://fonts.googleapis.com">
-    <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
-    <link href="https://fonts.googleapis.com/css2?family=Poppins:wght@400;500;600;700;800&display=swap" rel="stylesheet">
-    <script src="https://cdn.tailwindcss.com"></script>
-    <style>
-        * { font-family: 'Poppins', sans-serif; }
-        .sidebar-link { display:flex; align-items:center; padding:14px 30px; font-weight:600; font-size:15px; color:#1A1A1A; text-decoration:none; border-left:4px solid transparent; transition:all .2s; }
-        .sidebar-link:hover { background:#F9F9F9; }
-        .sidebar-link.active { background:#F4EEFB; color:#9B76D6; border-left-color:#9B76D6; }
-        .sidebar-link svg { width:22px; height:22px; margin-right:14px; stroke:currentColor; stroke-width:2; fill:none; }
-    </style>
-</head>
-<body class="bg-gray-50 antialiased text-gray-900">
-    <div class="flex h-screen overflow-hidden">
+@extends('layouts.admin')
 
-        {{-- Sidebar --}}
-        <aside class="w-[280px] bg-white border-r border-gray-200 flex flex-col flex-shrink-0">
-            <div class="flex items-center h-[80px] px-8 border-b border-gray-100">
-                <img src="{{ asset('images/logo.png') }}" alt="Logo MindFlow" class="w-9 h-9 mr-3 object-contain">
-                <h1 class="text-[22px] font-bold text-[#1A1A1A]">Mind<span class="text-[#9B76D6]">Flow</span></h1>
+@section('title', 'Edit Artikel')
+
+@section('content')
+<div class="flex items-center gap-3 mb-6">
+    <a href="{{ route('admin.artikel.index') }}" class="text-gray-400 hover:text-[#A881C2] transition-colors p-1.5 rounded-lg hover:bg-gray-50">
+        <svg class="w-6 h-6" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2.5" d="M15 19l-7-7 7-7"></path></svg>
+    </a>
+    <h2 class="text-xl font-bold text-gray-800">Edit Artikel</h2>
+</div>
+
+<form action="{{ route('admin.artikel.update', $artikel->artikel_id) }}" method="POST" enctype="multipart/form-data" class="max-w-4xl bg-white border border-gray-100 rounded-2xl shadow-sm overflow-hidden">
+    @csrf
+    @method('PUT')
+    <div class="p-6 md:p-8 space-y-6">
+        <div class="grid grid-cols-1 md:grid-cols-2 gap-6">
+            {{-- Judul --}}
+            <div class="md:col-span-2">
+                <label class="block text-xs font-black uppercase tracking-wider text-gray-400 mb-2">Judul Artikel *</label>
+                <input type="text" name="judul" value="{{ old('judul', $artikel->judul) }}" placeholder="Tuliskan judul artikel yang menarik..." class="w-full px-4 py-3 border border-gray-200 rounded-xl text-sm focus:outline-none focus:ring-4 focus:ring-purple-100 focus:border-[#A881C2] bg-gray-50/50 font-medium text-gray-700" required>
             </div>
-            <nav class="flex-1 overflow-y-auto py-6 flex flex-col">
-                <div style="padding:0 30px; font-size:18px; font-weight:600; margin-bottom:20px;">Menu</div>
-                <ul class="flex flex-col gap-1">
-                    <li><a href="{{ route('admin.dashboard') }}" class="sidebar-link">
-                        <svg viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" d="M3 12l2-2m0 0l7-7 7 7M5 10v10a1 1 0 001 1h3m10-11l2 2m-2-2v10a1 1 0 01-1 1h-3m-6 0a1 1 0 001-1v-4a1 1 0 011-1h2a1 1 0 011 1v4a1 1 0 001 1m-6 0h6"></path></svg>
-                        Dashboard</a></li>
-                    <li><a href="{{ route('admin.rekrutmen') }}" class="sidebar-link">
-                        <svg viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" d="M18 9v3m0 0v3m0-3h3m-3 0h-3m-2-5a4 4 0 11-8 0 4 4 0 018 0zM3 20a6 6 0 0112 0v1H3v-1z"></path></svg>
-                        Rekrutmen Konselor</a></li>
-                    <li><a href="{{ route('admin.laporan') }}" class="sidebar-link">
-                        <svg viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" d="M12 9v2m0 4h.01m-6.938 4h13.856c1.54 0 2.502-1.667 1.732-3L13.732 4c-.77-1.333-2.694-1.333-3.464 0L3.34 16c-.77 1.333.192 3 1.732 3z"></path></svg>
-                        Laporan & Moderasi</a></li>
-                    <li><a href="{{ route('admin.spesialisasi') }}" class="sidebar-link">
-                        <svg viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" d="M7 7h.01M7 3h5c.512 0 1.024.195 1.414.586l7 7a2 2 0 010 2.828l-7 7a2 2 0 01-2.828 0l-7-7A1.994 1.994 0 013 12V7a4 4 0 014-4z"></path></svg>
-                        Spesialisasi</a></li>
-                    <li><a href="{{ route('forum.index') }}" class="sidebar-link">
-                        <svg viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" d="M17 20h5v-2a3 3 0 00-5.356-1.857M17 20H7m10 0v-2c0-.656-.126-1.283-.356-1.857M7 20H2v-2a3 3 0 015.356-1.857M7 20v-2c0-.656.126-1.283.356-1.857m0 0a5.002 5.002 0 019.288 0M15 7a3 3 0 11-6 0 3 3 0 016 0zm6 3a2 2 0 11-4 0 2 2 0 014 0zM7 10a2 2 0 11-4 0 2 2 0 014 0z"></path></svg>
-                        Forum MindFlow</a></li>
-                    <li><a href="{{ route('admin.artikel.index') }}" class="sidebar-link active">
-                        <svg viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" d="M19 20H5a2 2 0 0 1-2-2V6a2 2 0 0 1 2-2h10a2 2 0 0 1 2 2v1m2 13a2 2 0 0 1-2-2V7m2 13a2 2 0 0 0 2-2V9a2 2 0 0 0-2-2h-2m-4-3H9M7 16h6M7 12h10"></path></svg>
-                        Kelola Artikel</a></li>
-                </ul>
-                <div class="mt-auto border-t border-gray-100 pt-4">
-                    <a href="{{ route('admin.settings') }}" class="sidebar-link">
-                        <svg viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" d="M10.325 4.317c.426-1.756 2.924-1.756 3.35 0a1.724 1.724 0 002.573 1.066c1.543-.94 3.31.826 2.37 2.37a1.724 1.724 0 001.066 2.573c1.756.426 1.756 2.924 0 3.35a1.724 1.724 0 00-1.066 2.573c.94 1.543-.826 3.31-2.37 2.37a1.724 1.724 0 00-2.573 1.066c-.426 1.756-2.924 1.756-3.35 0a1.724 1.724 0 00-2.573-1.066c-1.543.94-3.31-.826-2.37-2.37a1.724 1.724 0 00-1.066-2.573c-1.756-.426-1.756-2.924 0-3.35a1.724 1.724 0 001.066-2.573c-.94-1.543.826-3.31 2.37-2.37.996.608 2.296.07 2.572-1.065z"></path><circle cx="12" cy="12" r="3"></circle></svg>
-                        Settings</a>
-                    <form action="{{ route('logout') }}" method="POST" style="margin:0;">
-                        @csrf
-                        <button type="submit" class="sidebar-link w-full text-left" style="color:#ef4444; background:none; border:none; cursor:pointer;">
-                            <svg viewBox="0 0 24 24" stroke="#ef4444"><path stroke-linecap="round" stroke-linejoin="round" d="M17 16l4-4m0 0l-4-4m4 4H7m6 4v1a3 3 0 01-3 3H6a3 3 0 01-3-3V7a3 3 0 013-3h4a3 3 0 013 3v1"></path></svg>
-                            Keluar</button>
-                    </form>
-                </div>
-            </nav>
-        </aside>
 
-        {{-- Main --}}
-        <div class="flex-1 flex flex-col overflow-hidden">
-            <header class="h-[72px] bg-white border-b border-gray-100 flex items-center justify-between px-8 flex-shrink-0">
-                <div class="flex items-center gap-3">
-                    <a href="{{ route('admin.artikel.index') }}" class="text-gray-400 hover:text-[#A881C2] transition-colors p-1.5 rounded-lg hover:bg-gray-50">
-                        <svg class="w-6 h-6" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2.5" d="M15 19l-7-7 7-7"></path></svg>
-                    </a>
-                    <h2 class="text-xl font-bold text-gray-800">Edit Artikel</h2>
-                </div>
-                <div class="flex items-center gap-3">
-                    <span class="text-sm text-gray-500">{{ Auth::user()->nama_asli ?? 'Admin' }}</span>
-                    <img class="h-10 w-10 rounded-full border-2 border-purple-200" src="https://ui-avatars.com/api/?name={{ urlencode(Auth::user()->nama_asli ?? 'Admin') }}&background=f3e8ff&color=6b21a8" alt="Admin">
-                </div>
-            </header>
+            {{-- Kategori --}}
+            <div>
+                <label class="block text-xs font-black uppercase tracking-wider text-gray-400 mb-2">Kategori / Tema</label>
+                <select name="kategori" class="w-full px-4 py-3 border border-gray-200 rounded-xl text-sm focus:outline-none focus:ring-4 focus:ring-purple-100 focus:border-[#A881C2] bg-gray-50/50 font-medium text-gray-600">
+                    <option value="">-- Pilih Kategori --</option>
+                    @foreach($availableKategoris as $kat)
+                        <option value="{{ $kat }}" {{ old('kategori', $artikel->kategori) == $kat ? 'selected' : '' }}>{{ $kat }}</option>
+                    @endforeach
+                </select>
+                <span class="text-[11px] text-gray-400 mt-1 block">Atau ubah/buat kategori baru di bawah ini:</span>
+                <input type="text" name="kategori_baru" value="{{ old('kategori_baru') }}" placeholder="Kategori baru..." class="w-full mt-2 px-4 py-2 border border-gray-200 rounded-xl text-sm focus:outline-none focus:ring-4 focus:ring-purple-100 focus:border-[#A881C2] bg-gray-50/50 font-medium text-gray-700">
+            </div>
 
-            <main class="flex-1 overflow-y-auto p-8">
-                @if ($errors->any())
-                <div class="mb-6 p-4 bg-red-50 border border-red-200 text-red-800 rounded-2xl text-sm font-semibold">
-                    <div class="font-bold mb-1">Ada kesalahan input:</div>
-                    <ul class="list-disc list-inside space-y-0.5">
-                        @foreach ($errors->all() as $error)
-                            <li>{{ $error }}</li>
-                        @endforeach
-                    </ul>
-                </div>
-                @endif
+            {{-- Penerbit --}}
+            <div>
+                <label class="block text-xs font-black uppercase tracking-wider text-gray-400 mb-2">Penerbit *</label>
+                <input type="text" name="penerbit" value="{{ old('penerbit', $artikel->penerbit) }}" placeholder="Contoh: Tim Redaksi MindFlow..." class="w-full px-4 py-3 border border-gray-200 rounded-xl text-sm focus:outline-none focus:ring-4 focus:ring-purple-100 focus:border-[#A881C2] bg-gray-50/50 font-medium text-gray-700" required>
+            </div>
 
-                <form action="{{ route('admin.artikel.update', $artikel->artikel_id) }}" method="POST" enctype="multipart/form-data" class="max-w-4xl bg-white border border-gray-100 rounded-2xl shadow-sm overflow-hidden">
-                    @csrf
-                    @method('PUT')
-                    <div class="p-6 md:p-8 space-y-6">
-                        <div class="grid grid-cols-1 md:grid-cols-2 gap-6">
-                            {{-- Judul --}}
-                            <div class="md:col-span-2">
-                                <label class="block text-xs font-black uppercase tracking-wider text-gray-400 mb-2">Judul Artikel *</label>
-                                <input type="text" name="judul" value="{{ old('judul', $artikel->judul) }}" placeholder="Tuliskan judul artikel yang menarik..." class="w-full px-4 py-3 border border-gray-200 rounded-xl text-sm focus:outline-none focus:ring-4 focus:ring-purple-100 focus:border-[#A881C2] bg-gray-50/50 font-medium text-gray-700" required>
-                            </div>
+            {{-- Status --}}
+            <div>
+                <label class="block text-xs font-black uppercase tracking-wider text-gray-400 mb-2">Status Publikasi *</label>
+                <select name="status" class="w-full px-4 py-3 border border-gray-200 rounded-xl text-sm focus:outline-none focus:ring-4 focus:ring-purple-100 focus:border-[#A881C2] bg-gray-50/50 font-medium text-gray-600" required>
+                    <option value="published" {{ old('status', $artikel->status) == 'published' ? 'selected' : '' }}>Published</option>
+                    <option value="draft" {{ old('status', $artikel->status) == 'draft' ? 'selected' : '' }}>Draft</option>
+                </select>
+            </div>
 
-                            {{-- Kategori --}}
-                            <div>
-                                <label class="block text-xs font-black uppercase tracking-wider text-gray-400 mb-2">Kategori / Tema</label>
-                                <select name="kategori" class="w-full px-4 py-3 border border-gray-200 rounded-xl text-sm focus:outline-none focus:ring-4 focus:ring-purple-100 focus:border-[#A881C2] bg-gray-50/50 font-medium text-gray-600">
-                                    <option value="">-- Pilih Kategori --</option>
-                                    @foreach($availableKategoris as $kat)
-                                        <option value="{{ $kat }}" {{ old('kategori', $artikel->kategori) == $kat ? 'selected' : '' }}>{{ $kat }}</option>
-                                    @endforeach
-                                </select>
-                                <span class="text-[11px] text-gray-400 mt-1 block">Atau ubah/buat kategori baru di bawah ini:</span>
-                                <input type="text" name="kategori_baru" value="{{ old('kategori_baru') }}" placeholder="Kategori baru..." class="w-full mt-2 px-4 py-2 border border-gray-200 rounded-xl text-sm focus:outline-none focus:ring-4 focus:ring-purple-100 focus:border-[#A881C2] bg-gray-50/50 font-medium text-gray-700">
-                            </div>
+            {{-- Tanggal Terbit --}}
+            <div>
+                <label class="block text-xs font-black uppercase tracking-wider text-gray-400 mb-2">Tanggal Terbit / Dibuat</label>
+                <input type="datetime-local" name="created_at" value="{{ old('created_at', $artikel->created_at->format('Y-m-d\TH:i')) }}" class="w-full px-4 py-3 border border-gray-200 rounded-xl text-sm focus:outline-none focus:ring-4 focus:ring-purple-100 focus:border-[#A881C2] bg-gray-50/50 font-medium text-gray-600">
+                <span class="text-[11px] text-gray-400 mt-1 block">Mengubah waktu publikasi artikel secara kustom.</span>
+            </div>
 
-                            {{-- Penerbit --}}
-                            <div>
-                                <label class="block text-xs font-black uppercase tracking-wider text-gray-400 mb-2">Penerbit *</label>
-                                <input type="text" name="penerbit" value="{{ old('penerbit', $artikel->penerbit) }}" placeholder="Contoh: Tim Redaksi MindFlow..." class="w-full px-4 py-3 border border-gray-200 rounded-xl text-sm focus:outline-none focus:ring-4 focus:ring-purple-100 focus:border-[#A881C2] bg-gray-50/50 font-medium text-gray-700" required>
-                            </div>
-
-                            {{-- Status --}}
-                            <div>
-                                <label class="block text-xs font-black uppercase tracking-wider text-gray-400 mb-2">Status Publikasi *</label>
-                                <select name="status" class="w-full px-4 py-3 border border-gray-200 rounded-xl text-sm focus:outline-none focus:ring-4 focus:ring-purple-100 focus:border-[#A881C2] bg-gray-50/50 font-medium text-gray-600" required>
-                                    <option value="published" {{ old('status', $artikel->status) == 'published' ? 'selected' : '' }}>Published</option>
-                                    <option value="draft" {{ old('status', $artikel->status) == 'draft' ? 'selected' : '' }}>Draft</option>
-                                </select>
-                            </div>
-
-                            {{-- Tanggal Terbit --}}
-                            <div>
-                                <label class="block text-xs font-black uppercase tracking-wider text-gray-400 mb-2">Tanggal Terbit / Dibuat</label>
-                                <input type="datetime-local" name="created_at" value="{{ old('created_at', $artikel->created_at->format('Y-m-d\TH:i')) }}" class="w-full px-4 py-3 border border-gray-200 rounded-xl text-sm focus:outline-none focus:ring-4 focus:ring-purple-100 focus:border-[#A881C2] bg-gray-50/50 font-medium text-gray-600">
-                                <span class="text-[11px] text-gray-400 mt-1 block">Mengubah waktu publikasi artikel secara kustom.</span>
-                            </div>
-
-                            {{-- Gambar Cover --}}
-                            <div class="md:col-span-2">
-                                <label class="block text-xs font-black uppercase tracking-wider text-gray-400 mb-2">Gambar Cover</label>
-                                <div class="flex flex-col sm:flex-row items-start sm:items-center gap-4 mb-2">
-                                    <div class="w-20 h-20 rounded-xl overflow-hidden bg-purple-50 flex items-center justify-center border border-gray-100 flex-shrink-0">
-                                        @if($artikel->gambar_cover)
-                                            <img src="{{ asset('storage/' . $artikel->gambar_cover) }}" alt="Cover" class="w-full h-full object-cover">
-                                        @else
-                                            <svg class="w-8 h-8 text-[#A881C2]" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="1.5" d="M4 16l4.586-4.586a2 2 0 012.828 0L16 16m-2-2l1.586-1.586a2 2 0 012.828 0L20 14m-6-6h.01M6 20h12a2 2 0 002-2V6a2 2 0 00-2-2H6a2 2 0 00-2 2v12a2 2 0 002 2z"></path></svg>
-                                        @endif
-                                    </div>
-                                    <input type="file" name="gambar_cover" accept="image/*" class="block w-full text-sm text-gray-500 file:mr-4 file:py-2.5 file:px-4 file:rounded-xl file:border-0 file:text-xs file:font-bold file:bg-purple-50 file:text-[#A881C2] file:cursor-pointer hover:file:bg-purple-100 transition">
-                                </div>
-                                <span class="text-[11px] text-gray-400 mt-1 block">Format: JPG, JPEG, PNG, GIF. Maks: 2MB. Biarkan kosong jika tidak ingin mengubah cover.</span>
-                            </div>
-
-                            {{-- Konten --}}
-                            <div class="md:col-span-2">
-                                <label class="block text-xs font-black uppercase tracking-wider text-gray-400 mb-2">Konten Artikel *</label>
-                                <textarea name="konten" rows="12" placeholder="Tuliskan isi artikel lengkap di sini... (Gunakan baris baru untuk memisahkan paragraf, gunakan **teks** untuk menebalkan kata)" class="w-full px-4 py-3.5 border border-gray-200 rounded-xl text-sm focus:outline-none focus:ring-4 focus:ring-purple-100 focus:border-[#A881C2] bg-gray-50/50 text-gray-700 font-medium leading-relaxed resize-none" required>{{ old('konten', $artikel->konten) }}</textarea>
-                            </div>
-                        </div>
+            {{-- Gambar Cover --}}
+            <div class="md:col-span-2">
+                <label class="block text-xs font-black uppercase tracking-wider text-gray-400 mb-2">Gambar Cover</label>
+                <div class="flex flex-col sm:flex-row items-start sm:items-center gap-4 mb-2">
+                    <div class="w-20 h-20 rounded-xl overflow-hidden bg-purple-50 flex items-center justify-center border border-gray-100 flex-shrink-0">
+                        @if($artikel->gambar_cover)
+                            <img src="{{ asset('storage/' . $artikel->gambar_cover) }}" alt="Cover" class="w-full h-full object-cover">
+                        @else
+                            <svg class="w-8 h-8 text-[#A881C2]" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="1.5" d="M4 16l4.586-4.586a2 2 0 012.828 0L16 16m-2-2l1.586-1.586a2 2 0 012.828 0L20 14m-6-6h.01M6 20h12a2 2 0 002-2V6a2 2 0 00-2-2H6a2 2 0 00-2 2v12a2 2 0 002 2z"></path></svg>
+                        @endif
                     </div>
-                    <div class="px-6 py-5 border-t border-gray-100 bg-gray-50 flex items-center justify-end gap-3">
-                        <a href="{{ route('admin.artikel.index') }}" class="px-5 py-2.5 bg-white border border-gray-200 hover:bg-gray-50 text-gray-600 rounded-xl font-bold text-sm transition-all text-center">Batal</a>
-                        <button type="submit" class="px-6 py-2.5 bg-[#A881C2] hover:bg-[#8A64A4] text-white rounded-xl font-bold text-sm transition-all shadow-md shadow-purple-200 active:scale-95">Simpan Perubahan</button>
-                    </div>
-                </form>
-            </main>
+                    <input type="file" name="gambar_cover" accept="image/*" class="block w-full text-sm text-gray-500 file:mr-4 file:py-2.5 file:px-4 file:rounded-xl file:border-0 file:text-xs file:font-bold file:bg-purple-50 file:text-[#A881C2] file:cursor-pointer hover:file:bg-purple-100 transition">
+                </div>
+                <span class="text-[11px] text-gray-400 mt-1 block">Format: JPG, JPEG, PNG, GIF. Maks: 2MB. Biarkan kosong jika tidak ingin mengubah cover.</span>
+            </div>
+
+            {{-- Konten --}}
+            <div class="md:col-span-2">
+                <label class="block text-xs font-black uppercase tracking-wider text-gray-400 mb-2">Konten Artikel *</label>
+                <textarea name="konten" rows="12" placeholder="Tuliskan isi artikel lengkap di sini... (Gunakan baris baru untuk memisahkan paragraf, gunakan **teks** untuk menebalkan kata)" class="w-full px-4 py-3.5 border border-gray-200 rounded-xl text-sm focus:outline-none focus:ring-4 focus:ring-purple-100 focus:border-[#A881C2] bg-gray-50/50 text-gray-700 font-medium leading-relaxed resize-none" required>{{ old('konten', $artikel->konten) }}</textarea>
+            </div>
         </div>
     </div>
-</body>
-</html>
+    <div class="px-6 py-5 border-t border-gray-100 bg-gray-50 flex items-center justify-end gap-3">
+        <a href="{{ route('admin.artikel.index') }}" class="px-5 py-2.5 bg-white border border-gray-200 hover:bg-gray-50 text-gray-600 rounded-xl font-bold text-sm transition-all text-center">Batal</a>
+        <button type="submit" class="px-6 py-2.5 bg-[#A881C2] hover:bg-[#8A64A4] text-white rounded-xl font-bold text-sm transition-all shadow-md shadow-purple-200 active:scale-95">Simpan Perubahan</button>
+    </div>
+</form>
+@endsection

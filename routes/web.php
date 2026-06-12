@@ -72,6 +72,9 @@ Route::middleware('auth')->group(function () {
     Route::post('/booking/check-expired', [BookingController::class, 'checkExpiredPending'])->name('booking.checkExpired');
     Route::get('/booking/{id}/checkout', [BookingController::class, 'checkout'])->name('booking.checkout');
     Route::post('/booking/{id}/pay', [BookingController::class, 'pay'])->name('booking.pay');
+    Route::get('/booking/{id}/pay-success', [BookingController::class, 'paySuccess'])->name('booking.xendit.success');
+    Route::post('/booking/{id}/simulate-qris', [BookingController::class, 'simulateQris'])->name('booking.xendit.simulate-qris');
+    Route::post('/booking/{id}/simulate-invoice', [BookingController::class, 'simulateInvoice'])->name('booking.xendit.simulate-invoice');
 
     // PBI 31
     Route::get('/booking/edit/{id}', [BookingController::class, 'edit'])->name('booking.edit');
@@ -125,6 +128,7 @@ Route::middleware('auth')->group(function () {
         
         // Admin Finance & Escrow Routes
         Route::get('/transaksi', [AdminController::class, 'transaksi'])->name('transaksi');
+        Route::post('/transaksi/sync', [AdminController::class, 'syncXenditPayments'])->name('transaksi.sync');
         Route::post('/transaksi/{id}/verify-payment', [AdminController::class, 'verifyPayment'])->name('transaksi.verify-payment');
         Route::post('/transaksi/{id}/approve-withdrawal', [AdminController::class, 'approveWithdrawal'])->name('transaksi.approve-withdrawal');
         Route::post('/transaksi/{id}/reject-withdrawal', [AdminController::class, 'rejectWithdrawal'])->name('transaksi.reject-withdrawal');

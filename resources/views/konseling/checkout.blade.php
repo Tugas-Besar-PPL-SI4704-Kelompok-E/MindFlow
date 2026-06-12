@@ -15,6 +15,12 @@
         </div>
     @endif
 
+    @if(session('error'))
+        <div class="bg-rose-50 border border-rose-100 text-rose-800 px-6 py-4 rounded-2xl mb-8 flex justify-between items-center shadow-sm">
+            <span class="font-bold text-sm">{{ session('error') }}</span>
+        </div>
+    @endif
+
     <div class="bg-white rounded-[32px] p-8 md:p-10 shadow-[0_8px_30px_rgb(0,0,0,0.04)] border border-gray-50 mb-8">
         {{-- Ringkasan Sesi --}}
         <div class="flex items-center gap-6 pb-6 border-b border-gray-100 mb-6">
@@ -54,47 +60,85 @@
         {{-- Instruksi Pembayaran --}}
         <div class="p-6 bg-gray-50/50 rounded-2xl border border-gray-100 mb-8">
             @if($sesi->payment_method === 'transfer')
-                <div class="space-y-4">
-                    <div class="flex items-center gap-3 text-purple-900 font-bold mb-2">
+                <div class="space-y-4 flex flex-col items-center">
+                    <div class="flex items-center gap-3 text-purple-900 font-bold mb-2 self-start w-full">
                         <svg class="w-5 h-5" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M3 10h18M7 15h1m4 0h1m-7 4h12a3 3 0 003-3V8a3 3 0 00-3-3H6a3 3 0 00-3 3v8a3 3 0 003 3z"></path></svg>
-                        <span>Transfer Bank Mandiri</span>
+                        <span>Pembayaran Transfer Bank / Virtual Account (Xendit)</span>
                     </div>
-                    <div class="bg-white p-4 rounded-xl border border-gray-200/60 shadow-sm">
-                        <p class="text-[11px] font-black text-gray-400 uppercase tracking-widest mb-1">Nomor Virtual Account</p>
-                        <div class="flex items-center justify-between">
-                            <span class="font-mono font-extrabold text-gray-900 text-lg select-all">8801289384758293</span>
-                            <span class="text-xs font-bold text-purple-600 hover:text-purple-800 cursor-pointer">Salin</span>
+
+                    @if($sesi->xendit_invoice_url)
+                        {{-- Link Pembayaran Xendit --}}
+                        <div class="bg-white p-6 rounded-2xl border border-gray-100 shadow-sm flex flex-col items-center gap-4 w-full">
+                            <a href="{{ $sesi->xendit_invoice_url }}" target="_blank" class="px-6 py-3 bg-[#A881C2] hover:bg-[#8A64A4] text-white rounded-xl font-bold text-sm transition-all active:scale-95 shadow-md flex items-center gap-2">
+                                <svg class="w-5 h-5" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2.5" d="M10 6H6a2 2 0 00-2 2v10a2 2 0 002 2h10a2 2 0 002-2v-4M14 4h6m0 0v6m0-6L10 14"></path></svg>
+                                <span>Buka Halaman Pembayaran Xendit</span>
+                            </a>
                         </div>
-                    </div>
-                    <div class="text-xs text-gray-500 leading-relaxed font-semibold">
-                        <p class="mb-1">1. Lakukan transfer sejumlah total tagihan di atas ke nomor Virtual Account Mandiri.</p>
-                        <p class="mb-1">2. Simpan bukti transfer Anda.</p>
-                        <p>3. Klik tombol **Konfirmasi Transfer** di bawah. Admin akan segera memverifikasi pembayaran Anda.</p>
-                    </div>
+                        <div class="text-xs text-gray-500 leading-relaxed font-semibold text-center max-w-sm">
+                            <p class="mb-1">1. Klik tombol di atas untuk membuka tagihan Virtual Account Xendit.</p>
+                            <p class="mb-1">2. Lakukan transfer sesuai bank yang Anda pilih di halaman Xendit tersebut.</p>
+                            <p>3. Setelah selesai membayar, klik tombol **"Konfirmasi Pembayaran Transfer"** di bawah ini untuk memverifikasi.</p>
+                        </div>
+                        @if(config('app.env') === 'local')
+                            <form action="{{ route('booking.xendit.simulate-invoice', $sesi->sesi_konseling_id) }}" method="POST" class="mt-4 w-full">
+                                @csrf
+                                <button type="submit" class="w-full py-2 bg-amber-50 hover:bg-amber-100 text-amber-700 border border-amber-200 rounded-xl font-bold text-xs transition-all active:scale-95 flex items-center justify-center gap-1.5 shadow-sm">
+                                    <svg class="w-4 h-4" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M19.428 15.428a2 2 0 00-1.022-.547l-2.387-.477a6 6 0 00-3.86.517l-.318.158a6 6 0 01-3.86.517L6.05 15.21a2 2 0 00-1.806.547M8 4h8l-1 1v5.172a2 2 0 00.586 1.414l5 5c1.26 1.26.367 3.414-1.415 3.414H4.828c-1.782 0-2.674-2.154-1.414-3.414l5-5A2 2 0 009 9.172V5L8 4z"></path></svg>
+                                    <span>[Sandbox Mode] Simulasikan Pembayaran Bank Transfer</span>
+                                </button>
+                            </form>
+                        @endif
+                    @else
+                        {{-- Kasus jika gagal memuat dari API Xendit --}}
+                        <div class="bg-white p-6 rounded-2xl border border-gray-100 shadow-sm flex flex-col items-center gap-2">
+                            <div class="w-48 h-48 bg-red-50/50 border border-red-100 rounded-xl flex items-center justify-center p-6 text-center text-xs text-red-500 font-bold">
+                                Gagal memuat tagihan bank transfer secara otomatis.<br>Hubungi admin atau silakan reload halaman.
+                            </div>
+                        </div>
+                        <button type="button" onclick="window.location.reload()" class="px-5 py-2.5 bg-[#A881C2] hover:bg-[#8A64A4] text-white rounded-xl font-bold text-xs transition-all active:scale-95 shadow-sm">
+                            Muat Ulang Halaman
+                        </button>
+                    @endif
                 </div>
             @else
                 <div class="space-y-4 flex flex-col items-center">
                     <div class="flex items-center gap-3 text-purple-900 font-bold mb-2 self-start">
                         <svg class="w-5 h-5" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M12 4v1m6 11h2m-6 0h-2v4m0-11v3m0 0h.01M12 12h.01M16 12h.01M21 12a9 9 0 11-18 0 9 9 0 0118 0z"></path></svg>
-                        <span>Pembayaran E-Wallet QRIS</span>
+                        <span>Pembayaran E-Wallet QRIS (Xendit)</span>
                     </div>
                     
-                    {{-- Simulasi QR Code --}}
-                    <div class="bg-white p-6 rounded-2xl border border-gray-100 shadow-sm flex flex-col items-center gap-2">
-                        <div class="w-48 h-48 bg-gray-50 border border-gray-200/80 rounded-xl flex items-center justify-center p-2 relative overflow-hidden">
-                            {{-- QR Placeholder styling using premium vector-like css patterns --}}
-                            <div class="absolute inset-0 bg-gradient-to-tr from-purple-50/20 to-indigo-50/20"></div>
-                            <svg class="w-40 h-40 text-gray-800" fill="currentColor" viewBox="0 0 24 24">
-                                <path d="M3 3h6v6H3V3zm1 1v4h4V4H4zm1 1h2v2H5V5zm6-2h10v10H11V3zm1 1v8h8V4h-8zm1 1h6v6h-6V5zM3 11h6v10H3V11zm1 1v8h4v-8H4zm1 1h2v2H5v-2zm9-2h2v2h-2v-2zm2 2h2v2h-2v-2zm-2 2h2v2h-2v-2zm4-4h2v2h-2v-2zm0 4h2v2h-2v-2zm2-2h2v2h-2v-2zm-6 4h2v2h-2v-2zm2 2h2v2h-2v-2zm4-4h2v2h-2v-2zm0 4h2v2h-2v-2zm-6 2h2v2h-2v-2zm2-2h2v2h-2v-2zm4 2h2v2h-2v-2z"/>
-                            </svg>
+                    @if($sesi->xendit_invoice_url)
+                        {{-- QR Code Dinamis Xendit --}}
+                        <div class="bg-white p-6 rounded-2xl border border-gray-100 shadow-sm flex flex-col items-center gap-2">
+                            <div class="w-52 h-52 bg-white border border-gray-100 rounded-xl flex items-center justify-center p-2 shadow-inner">
+                                <img src="https://api.qrserver.com/v1/create-qr-code/?size=200x200&data={{ urlencode($sesi->xendit_invoice_url) }}" alt="QRIS Xendit" class="w-full h-full object-contain">
+                            </div>
+                            <span class="text-[10px] font-black text-gray-400 uppercase tracking-widest mt-1">MindFlow QRIS Merchant</span>
                         </div>
-                        <span class="text-[10px] font-black text-gray-400 uppercase tracking-widest mt-1">MindFlow QRIS Merchant</span>
-                    </div>
-
-                    <div class="text-xs text-gray-500 leading-relaxed font-semibold text-center max-w-sm">
-                        <p class="mb-1">Pindai QRIS di atas menggunakan aplikasi e-wallet Anda (Gopay/OVO/Dana/LinkAja).</p>
-                        <p>Setelah selesai membayar, klik tombol **Selesaikan Pembayaran** di bawah untuk konfirmasi otomatis.</p>
-                    </div>
+                        <div class="text-xs text-gray-500 leading-relaxed font-semibold text-center max-w-sm">
+                            <p class="mb-1">Pindai QRIS di atas menggunakan aplikasi e-wallet Anda (Gopay/OVO/Dana/LinkAja/M-Banking).</p>
+                            <p>Setelah selesai melakukan transfer, klik tombol **"Saya Sudah Membayar via QRIS"** di bawah untuk memverifikasi pembayaran Anda.</p>
+                        </div>
+                        @if(config('app.env') === 'local')
+                            <form action="{{ route('booking.xendit.simulate-qris', $sesi->sesi_konseling_id) }}" method="POST" class="mt-4 w-full">
+                                @csrf
+                                <button type="submit" class="w-full py-2 bg-amber-50 hover:bg-amber-100 text-amber-700 border border-amber-200 rounded-xl font-bold text-xs transition-all active:scale-95 flex items-center justify-center gap-1.5 shadow-sm">
+                                    <svg class="w-4 h-4" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M19.428 15.428a2 2 0 00-1.022-.547l-2.387-.477a6 6 0 00-3.86.517l-.318.158a6 6 0 01-3.86.517L6.05 15.21a2 2 0 00-1.806.547M8 4h8l-1 1v5.172a2 2 0 00.586 1.414l5 5c1.26 1.26.367 3.414-1.415 3.414H4.828c-1.782 0-2.674-2.154-1.414-3.414l5-5A2 2 0 009 9.172V5L8 4z"></path></svg>
+                                    <span>[Sandbox Mode] Simulasikan Pembayaran QRIS</span>
+                                </button>
+                            </form>
+                        @endif
+                    @else
+                        {{-- Kasus jika gagal memuat dari API Xendit --}}
+                        <div class="bg-white p-6 rounded-2xl border border-gray-100 shadow-sm flex flex-col items-center gap-2">
+                            <div class="w-48 h-48 bg-red-50/50 border border-red-100 rounded-xl flex items-center justify-center p-6 text-center text-xs text-red-500 font-bold">
+                                Gagal memuat QRIS secara otomatis.<br>Hubungi admin atau silakan reload halaman.
+                            </div>
+                        </div>
+                        <button type="button" onclick="window.location.reload()" class="px-5 py-2.5 bg-[#A881C2] hover:bg-[#8A64A4] text-white rounded-xl font-bold text-xs transition-all active:scale-95 shadow-sm">
+                            Muat Ulang Halaman
+                        </button>
+                    @endif
                 </div>
             @endif
         </div>
@@ -103,7 +147,7 @@
         <form action="{{ route('booking.pay', $sesi->sesi_konseling_id) }}" method="POST" class="m-0">
             @csrf
             <button type="submit" class="w-full bg-[#A881C2] hover:bg-[#8A64A4] text-white py-4 rounded-2xl font-bold shadow-lg shadow-purple-500/20 transition-all duration-300 flex items-center justify-center gap-2">
-                <span>{{ $sesi->payment_method === 'transfer' ? 'Konfirmasi Transfer' : 'Selesaikan Pembayaran' }}</span>
+                <span>{{ $sesi->payment_method === 'transfer' ? 'Konfirmasi Pembayaran Transfer' : 'Saya Sudah Membayar via QRIS' }}</span>
                 <svg class="w-5 h-5" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2.5" d="M9 5l7 7-7 7"></path></svg>
             </button>
         </form>

@@ -298,10 +298,30 @@
                     <p class="text-[11px] font-black text-gray-400 uppercase tracking-widest mb-2">Jadwal Terdaftar</p>
                     <p class="font-bold text-gray-900 text-base mb-3">{{ \Carbon\Carbon::parse($contohSesi->jadwal)->translatedFormat('d F Y, H:i') }}</p>
                     
+                    @php
+                        $statusClasses = [
+                            'pending' => 'bg-amber-100 text-amber-700',
+                            'confirmed' => 'bg-emerald-100 text-emerald-700',
+                            'rescheduled' => 'bg-sky-100 text-sky-700',
+                            'change_requested' => 'bg-indigo-100 text-indigo-700',
+                            'completed' => 'bg-red-100 text-red-700',
+                            'cancelled' => 'bg-red-100 text-red-700',
+                        ];
+                        $dotClasses = [
+                            'pending' => 'bg-amber-500',
+                            'confirmed' => 'bg-emerald-500',
+                            'rescheduled' => 'bg-sky-500',
+                            'change_requested' => 'bg-indigo-500',
+                            'completed' => 'bg-red-500',
+                            'cancelled' => 'bg-red-500',
+                        ];
+                        $statusClass = $statusClasses[$contohSesi->status] ?? 'bg-gray-100 text-gray-700';
+                        $dotClass = $dotClasses[$contohSesi->status] ?? 'bg-gray-500';
+                    @endphp
                     <div class="flex flex-wrap gap-2">
-                        <span class="inline-flex items-center gap-1.5 px-3 py-1 bg-amber-100 text-amber-700 text-[11px] font-black uppercase tracking-wider rounded-lg">
-                            <span class="w-1.5 h-1.5 rounded-full bg-amber-500"></span>
-                            {{ $contohSesi->status }}
+                        <span class="inline-flex items-center gap-1.5 px-3 py-1 {{ $statusClass }} text-[11px] font-black uppercase tracking-wider rounded-lg">
+                            <span class="w-1.5 h-1.5 rounded-full {{ $dotClass }}"></span>
+                            {{ ucfirst($contohSesi->status) }}
                         </span>
                         
                         <span class="inline-flex items-center gap-1.5 px-3 py-1 bg-purple-50 text-[#A881C2] text-[11px] font-black uppercase tracking-wider rounded-lg border border-purple-100">
@@ -337,16 +357,20 @@
                             Masuk Ruangan
                         </a>
                     @endif
-                    <a href="{{ route('booking.edit', $contohSesi->sesi_konseling_id) }}" class="w-full text-center bg-purple-50 text-[#A881C2] hover:bg-purple-100 py-3.5 rounded-2xl text-sm font-bold transition-all duration-300">
-                        Ubah Jadwal
-                    </a>
-                    <form action="{{ route('booking.cancel', $contohSesi->sesi_konseling_id) }}" method="POST" class="w-full">
-                        @csrf
-                        @method('DELETE')
-                        <button type="submit" onclick="return confirm('Yakin ingin membatalkan sesi ini?')" class="w-full bg-red-50 text-red-500 hover:bg-red-100 py-3.5 rounded-2xl text-sm font-bold transition-all duration-300">
-                            Batalkan Sesi
-                        </button>
-                    </form>
+                    @if(!in_array($contohSesi->status, ['completed', 'cancelled', 'rejected']))
+                        <a href="{{ route('booking.edit', $contohSesi->sesi_konseling_id) }}" class="w-full text-center bg-purple-50 text-[#A881C2] hover:bg-purple-100 py-3.5 rounded-2xl text-sm font-bold transition-all duration-300">
+                            Ubah Jadwal
+                        </a>
+                        @if(!in_array($contohSesi->status, ['confirmed', 'rescheduled']))
+                            <form action="{{ route('booking.cancel', $contohSesi->sesi_konseling_id) }}" method="POST" class="w-full">
+                                @csrf
+                                @method('DELETE')
+                                <button type="submit" onclick="return confirm('Yakin ingin membatalkan sesi ini?')" class="w-full bg-red-50 text-red-500 hover:bg-red-100 py-3.5 rounded-2xl text-sm font-bold transition-all duration-300">
+                                    Batalkan Sesi
+                                </button>
+                            </form>
+                        @endif
+                    @endif
                 </div>
             </div>
             @endif

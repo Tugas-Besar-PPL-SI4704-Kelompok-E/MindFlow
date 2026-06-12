@@ -218,6 +218,7 @@ class CounselingTest extends TestCase
         $user = User::factory()->create();
         $konselor = ProfilKonselor::factory()->create();
         $sesi = SesiKonseling::factory()->create([
+            'user_id' => $user->id,
             'profil_konselor_id' => $konselor->profil_konselor_id,
             'status' => 'pending'
         ]);
@@ -263,6 +264,7 @@ class CounselingTest extends TestCase
         $user = User::factory()->create();
         $konselor = ProfilKonselor::factory()->create();
         $sesi = SesiKonseling::factory()->create([
+            'user_id' => $user->id,
             'profil_konselor_id' => $konselor->profil_konselor_id,
             'status' => 'pending'
         ]);
@@ -275,6 +277,51 @@ class CounselingTest extends TestCase
             'status' => 'cancelled'
         ]);
     }
+
+    public function test_confirmed_session_cannot_be_cancelled_by_user()
+    {
+        $user = User::factory()->create();
+        $konselor = ProfilKonselor::factory()->create();
+        $sesi = SesiKonseling::factory()->create([
+            'user_id' => $user->id,
+            'profil_konselor_id' => $konselor->profil_konselor_id,
+            'status' => 'confirmed'
+        ]);
+
+        $response = $this->actingAs($user)->delete(route('booking.cancel', $sesi->sesi_konseling_id));
+
+        $response->assertRedirect();
+        $response->assertSessionHas('error', 'Sesi yang sudah disetujui oleh konselor tidak dapat dibatalkan.');
+        
+        $this->assertDatabaseHas('sesi_konselings', [
+            'sesi_konseling_id' => $sesi->sesi_konseling_id,
+            'status' => 'confirmed'
+        ]);
+    }
+
+    public function test_paid_pending_session_cancellation_triggers_refund()
+    {
+        $user = User::factory()->create();
+        $konselor = ProfilKonselor::factory()->create();
+        $sesi = SesiKonseling::factory()->create([
+            'user_id' => $user->id,
+            'profil_konselor_id' => $konselor->profil_konselor_id,
+            'status' => 'pending',
+            'payment_status' => 'paid'
+        ]);
+
+        $response = $this->actingAs($user)->delete(route('booking.cancel', $sesi->sesi_konseling_id));
+
+        $response->assertRedirect();
+        $response->assertSessionHas('success', 'Jadwal konsultasi berhasil dibatalkan dan pembayaran Anda akan dikembalikan (Refunded).');
+        
+        $this->assertDatabaseHas('sesi_konselings', [
+            'sesi_konseling_id' => $sesi->sesi_konseling_id,
+            'status' => 'cancelled',
+            'payment_status' => 'refunded'
+        ]);
+    }
+
 
     /**
      * PBI 45: Pembatalan otomatis sesi yang kadaluarsa

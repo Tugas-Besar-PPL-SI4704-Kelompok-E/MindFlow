@@ -5,6 +5,44 @@
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
     <title>@yield('title', 'Dashboard Konselor - MindFlow')</title>
     <script src="https://cdn.tailwindcss.com"></script>
+    <style>
+        .konselor-sidebar {
+            transition: margin-left 0.3s cubic-bezier(0.4, 0, 0.2, 1);
+        }
+        .sidebar-collapsed-konselor .konselor-sidebar {
+            margin-left: -288px; /* w-72 = 18rem = 288px */
+        }
+        .floating-expand-btn {
+            position: fixed;
+            top: 20px;
+            left: 20px;
+            z-index: 99;
+            width: 44px;
+            height: 44px;
+            background: white;
+            border: 1px solid #e5e7eb;
+            border-radius: 12px;
+            display: none;
+            align-items: center;
+            justify-content: center;
+            cursor: pointer;
+            box-shadow: 0 4px 12px rgba(107, 33, 168, 0.1);
+            transition: all 0.3s ease;
+        }
+        .floating-expand-btn.visible { display: flex; }
+        .floating-expand-btn:hover {
+            transform: scale(1.05);
+            background: #f3e8ff;
+            border-color: #6b21a8;
+        }
+        .sidebar-nav-link {
+            transition: transform 0.3s cubic-bezier(0.34, 1.56, 0.64, 1), background-color 0.2s, color 0.2s;
+            transform-origin: left center;
+        }
+        .sidebar-nav-link:hover {
+            transform: scale(1.04) translateX(4px);
+        }
+    </style>
 </head>
 <body class="bg-gray-50 font-sans antialiased text-gray-900 text-lg">
     <div class="flex h-screen overflow-hidden">
