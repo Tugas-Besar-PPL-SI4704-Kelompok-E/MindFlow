@@ -35,7 +35,59 @@ class AdminController extends Controller
 
         // Aktivitas terbaru (gabungan thread & sesi terbaru)
         $recentThreads = \App\Models\Thread::with('user')->latest()->take(5)->get();
-        $recentReports = \App\Models\ThreadReport::with(['thread', 'user'])->latest()->take(5)->get();
+
+        $threadReports = \App\Models\ThreadReport::with(['thread' => function($q) { $q->withTrashed(); }, 'thread.user', 'user'])
+            ->latest()
+            ->take(5)
+            ->get()
+            ->map(function($r) {
+                return (object)[
+                    'type' => 'thread',
+                    'id' => $r->id,
+                    'target_id' => $r->thread_id,
+                    'pelapor' => $r->user,
+                    'pelanggar' => $r->thread ? $r->thread->user : null,
+                    'konten' => $r->thread ? $r->thread->content : 'Postingan telah dihapus',
+                    'alasan' => $r->reason,
+                    'created_at' => $r->created_at,
+                ];
+            });
+
+        $replyReports = \App\Models\ReplyReport::with(['reply' => function($q) { $q->withTrashed(); }, 'reply.user', 'user'])
+            ->latest()
+            ->take(5)
+            ->get()
+            ->map(function($r) {
+                return (object)[
+                    'type' => 'reply',
+                    'id' => $r->id,
+                    'target_id' => $r->thread_reply_id,
+                    'pelapor' => $r->user,
+                    'pelanggar' => $r->reply ? $r->reply->user : null,
+                    'konten' => $r->reply ? $r->reply->content : 'Balasan telah dihapus',
+                    'alasan' => $r->reason,
+                    'created_at' => $r->created_at,
+                ];
+            });
+
+        $artikelReports = \App\Models\ArtikelReport::with(['artikel', 'user'])
+            ->latest()
+            ->take(5)
+            ->get()
+            ->map(function($r) {
+                return (object)[
+                    'type' => 'artikel',
+                    'id' => $r->id,
+                    'target_id' => $r->artikel_id,
+                    'pelapor' => $r->user,
+                    'pelanggar' => $r->artikel ? $r->artikel->admin : null,
+                    'konten' => $r->artikel ? $r->artikel->judul : 'Artikel telah dihapus',
+                    'alasan' => $r->reason,
+                    'created_at' => $r->created_at,
+                ];
+            });
+
+        $recentReports = $threadReports->concat($replyReports)->concat($artikelReports)->sortByDesc('created_at')->take(5);
 
         $data = compact(
             'totalUsers', 'totalKonselor', 'totalReports',
@@ -169,6 +221,26 @@ class AdminController extends Controller
         $report = \App\Models\ArtikelReport::findOrFail($id);
         $report->delete();
         return back()->with('success', "Laporan artikel berhasil diabaikan.");
+    }
+
+    /**
+     * Hapus/Abaikan laporan forum (thread) secara permanen.
+     */
+    public function hapusLaporanForum($id)
+    {
+        $report = \App\Models\ThreadReport::findOrFail($id);
+        $report->delete();
+        return back()->with('success', "Laporan forum berhasil diabaikan.");
+    }
+
+    /**
+     * Hapus/Abaikan laporan balasan secara permanen.
+     */
+    public function hapusLaporanReply($id)
+    {
+        $report = \App\Models\ReplyReport::findOrFail($id);
+        $report->delete();
+        return back()->with('success', "Laporan balasan berhasil diabaikan.");
     }
 
     /**
