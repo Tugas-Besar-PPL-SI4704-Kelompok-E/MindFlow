@@ -22,6 +22,7 @@ class DatabaseSeeder extends Seeder
             ProfilKonselorSeeder::class,
             ArtikelSeeder::class,
             ThreadSeeder::class,
+            ModerationSeeder::class,
         ]);
     }
 }
