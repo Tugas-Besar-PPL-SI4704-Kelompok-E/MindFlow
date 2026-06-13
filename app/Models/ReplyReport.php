@@ -13,6 +13,11 @@ class ReplyReport extends Model
         return $this->belongsTo(ThreadReply::class);
     }
 
+    public function reply()
+    {
+        return $this->belongsTo(ThreadReply::class, 'thread_reply_id');
+    }
+
     public function user()
     {
         return $this->belongsTo(User::class);

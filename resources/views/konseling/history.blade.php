@@ -47,7 +47,8 @@
                         <tr class="bg-gray-50/50 border-b border-gray-100">
                             <th class="px-8 py-5 text-[12px] font-black text-gray-500 uppercase tracking-widest whitespace-nowrap">Konselor</th>
                             <th class="px-8 py-5 text-[12px] font-black text-gray-500 uppercase tracking-widest whitespace-nowrap">Jadwal Sesi</th>
-                            <th class="px-8 py-5 text-[12px] font-black text-gray-500 uppercase tracking-widest whitespace-nowrap">Status</th>
+                            <th class="px-8 py-5 text-[12px] font-black text-gray-500 uppercase tracking-widest whitespace-nowrap">Status Sesi</th>
+                            <th class="px-8 py-5 text-[12px] font-black text-gray-500 uppercase tracking-widest whitespace-nowrap">Status Pembayaran</th>
                         </tr>
                     </thead>
                     <tbody class="divide-y divide-gray-50">
@@ -78,8 +79,8 @@
                                     <div class="flex items-center gap-3">
                                                                 @if($history->status === 'completed')
                                                                     <span class="inline-flex items-center px-3 py-1 bg-red-50 text-red-600 border border-red-100 rounded-lg text-[10px] font-black uppercase tracking-widest">
-                                                                        Selesai
-                                                                    </span>
+                                                                         Selesai
+                                                                     </span>
                                         @elseif($history->status === 'cancelled')
                                             <span class="inline-flex items-center px-3 py-1 bg-red-50 text-red-600 border border-red-100 rounded-lg text-[10px] font-black uppercase tracking-widest">
                                                 Dibatalkan
@@ -108,6 +109,25 @@
                                             </button>
                                         @endif
                                     </div>
+                                </td>
+                                <td class="px-8 py-5 whitespace-nowrap">
+                                    @if($history->payment_status === 'paid')
+                                        <span class="inline-flex items-center px-3 py-1 bg-emerald-50 text-emerald-600 border border-emerald-100 rounded-lg text-[10px] font-black uppercase tracking-widest">
+                                            Lunas (Paid)
+                                        </span>
+                                    @elseif($history->payment_status === 'waiting_verification')
+                                        <span class="inline-flex items-center px-3 py-1 bg-yellow-50 text-yellow-600 border border-yellow-100 rounded-lg text-[10px] font-black uppercase tracking-widest">
+                                            Menunggu Verifikasi
+                                        </span>
+                                    @elseif($history->payment_status === 'refunded')
+                                        <span class="inline-flex items-center px-3 py-1 bg-red-50 text-red-600 border border-red-100 rounded-lg text-[10px] font-black uppercase tracking-widest">
+                                            Dikembalikan
+                                        </span>
+                                    @else
+                                        <span class="inline-flex items-center px-3 py-1 bg-gray-50 text-gray-500 border border-gray-200 rounded-lg text-[10px] font-black uppercase tracking-widest">
+                                            Belum Dibayar
+                                        </span>
+                                    @endif
                                 </td>
                             </tr>
 

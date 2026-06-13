@@ -378,13 +378,15 @@
                         <a href="{{ route('booking.edit', $contohSesi->sesi_konseling_id) }}" class="w-full text-center bg-purple-50 text-[#A881C2] hover:bg-purple-100 py-3.5 rounded-2xl text-sm font-bold transition-all duration-300">
                             Ubah Jadwal
                         </a>
-                        <form action="{{ route('booking.cancel', $contohSesi->sesi_konseling_id) }}" method="POST" class="w-full">
-                            @csrf
-                            @method('DELETE')
-                            <button type="submit" onclick="return confirm('Yakin ingin membatalkan sesi ini?')" class="w-full bg-red-50 text-red-500 hover:bg-red-100 py-3.5 rounded-2xl text-sm font-bold transition-all duration-300">
-                                Batalkan Sesi
-                            </button>
-                        </form>
+                        @if(!in_array($contohSesi->status, ['confirmed', 'rescheduled']))
+                            <form action="{{ route('booking.cancel', $contohSesi->sesi_konseling_id) }}" method="POST" class="w-full">
+                                @csrf
+                                @method('DELETE')
+                                <button type="submit" onclick="return confirm('Yakin ingin membatalkan sesi ini?')" class="w-full bg-red-50 text-red-500 hover:bg-red-100 py-3.5 rounded-2xl text-sm font-bold transition-all duration-300">
+                                    Batalkan Sesi
+                                </button>
+                            </form>
+                        @endif
                     @endif
                 </div>
             </div>

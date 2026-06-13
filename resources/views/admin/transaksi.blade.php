@@ -30,9 +30,9 @@
         </div>
         <div>
             <div class="text-2xl font-black text-yellow-600">
-                {{ $sessions->where('payment_status', 'waiting_verification')->count() }} Transaksi
+                {{ $sessions->where('payment_status', 'pending')->count() }} Transaksi
             </div>
-            <div class="text-xs text-gray-500 font-bold uppercase tracking-wider mt-0.5">Perlu Verifikasi Bayar</div>
+            <div class="text-xs text-gray-500 font-bold uppercase tracking-wider mt-0.5">Menunggu Dibayar</div>
         </div>
     </div>
 
@@ -51,16 +51,26 @@
 
 {{-- Tab Interface --}}
 <div class="bg-white rounded-2xl border border-gray-100 overflow-hidden shadow-sm">
-    <div class="border-b border-gray-100 bg-gray-50/50 flex">
-        <button id="tabBtnPayments" class="px-8 py-5 text-sm font-bold border-b-2 border-purple-600 text-purple-700 outline-none transition-all" onclick="switchTab('payments')">
-            Log & Verifikasi Pembayaran Sesi
-        </button>
-        <button id="tabBtnWithdrawals" class="px-8 py-5 text-sm font-bold border-b-2 border-transparent text-gray-500 hover:text-gray-700 outline-none transition-all" onclick="switchTab('withdrawals')">
-            Pengajuan Pencairan Saldo Konselor
-            @if($withdrawals->where('status', 'pending')->count() > 0)
-                <span class="ml-2 px-2 py-0.5 rounded-full bg-blue-100 text-blue-800 text-[10px] font-extrabold">{{ $withdrawals->where('status', 'pending')->count() }}</span>
-            @endif
-        </button>
+    <div class="border-b border-gray-100 bg-gray-50/50 flex justify-between items-center pr-6">
+        <div class="flex">
+            <button id="tabBtnPayments" class="px-8 py-5 text-sm font-bold border-b-2 border-purple-600 text-purple-700 outline-none transition-all" onclick="switchTab('payments')">
+                Log & Verifikasi Pembayaran Sesi
+            </button>
+            <button id="tabBtnWithdrawals" class="px-8 py-5 text-sm font-bold border-b-2 border-transparent text-gray-500 hover:text-gray-700 outline-none transition-all" onclick="switchTab('withdrawals')">
+                Pengajuan Pencairan Saldo Konselor
+                @if($withdrawals->where('status', 'pending')->count() > 0)
+                    <span class="ml-2 px-2 py-0.5 rounded-full bg-blue-100 text-blue-800 text-[10px] font-extrabold">{{ $withdrawals->where('status', 'pending')->count() }}</span>
+                @endif
+            </button>
+        </div>
+
+        <form action="{{ route('admin.transaksi.sync') }}" method="POST" class="m-0">
+            @csrf
+            <button type="submit" class="px-4 py-2 bg-purple-600 hover:bg-purple-700 text-white rounded-xl text-xs font-bold transition flex items-center gap-1.5 shadow-sm active:scale-95">
+                <svg class="w-3.5 h-3.5" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2.5" d="M4 4v5h.582m15.356 2A8.001 8.001 0 1121.21 8H18.5"></path></svg>
+                <span>Sinkronisasi Status Xendit</span>
+            </button>
+        </form>
     </div>
 
     {{-- Content Tab 1: Payments --}}
@@ -95,6 +105,15 @@
                     <td class="px-6 py-4">
                         <div class="font-extrabold text-gray-900">Rp{{ number_format($s->profilKonselor->harga_per_sesi ?? 0, 0, ',', '.') }}</div>
                         <div class="text-xs text-gray-400 mt-0.5 uppercase font-bold">{{ str_replace('-', ' ', $s->payment_method) }}</div>
+                        
+                        @if($s->payment_status === 'paid' && $s->xendit_payment_id)
+                            <div class="mt-2 text-[10px] text-gray-500 bg-purple-50 p-2 rounded-lg border border-purple-100/50 max-w-[200px]">
+                                <div class="font-bold text-purple-950 uppercase tracking-wider mb-0.5">Bukti Xendit:</div>
+                                <div class="truncate">ID: <span class="font-mono">{{ $s->xendit_payment_id }}</span></div>
+                                <div>Channel: <span class="badge uppercase bg-purple-100 text-purple-800 px-1 py-0.5 rounded text-[8px] font-black">{{ $s->payment_channel }}</span></div>
+                                <div>Waktu: <span class="font-semibold">{{ $s->payment_time ? \Carbon\Carbon::parse($s->payment_time)->format('d/m/Y H:i') : '-' }}</span></div>
+                            </div>
+                        @endif
                     </td>
                     <td class="px-6 py-4 text-center">
                         @if($s->payment_status === 'paid')

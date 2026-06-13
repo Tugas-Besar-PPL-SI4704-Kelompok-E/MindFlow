@@ -35,4 +35,8 @@ return [
         ],
     ],
 
+    'xendit' => [
+        'secret_key' => env('XENDIT_SECRET_KEY', 'xnd_development_TXI2TSJovIKXCpvkpD3tk0YSnwbpGCFSXgj3lsgLs7H3LFYEhWRxkF6uTasiYgS'),
+    ],
+
 ];

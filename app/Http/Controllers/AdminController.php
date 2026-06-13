@@ -35,7 +35,59 @@ class AdminController extends Controller
 
         // Aktivitas terbaru (gabungan thread & sesi terbaru)
         $recentThreads = \App\Models\Thread::with('user')->latest()->take(5)->get();
-        $recentReports = \App\Models\ThreadReport::with(['thread', 'user'])->latest()->take(5)->get();
+
+        $threadReports = \App\Models\ThreadReport::with(['thread' => function($q) { $q->withTrashed(); }, 'thread.user', 'user'])
+            ->latest()
+            ->take(5)
+            ->get()
+            ->map(function($r) {
+                return (object)[
+                    'type' => 'thread',
+                    'id' => $r->id,
+                    'target_id' => $r->thread_id,
+                    'pelapor' => $r->user,
+                    'pelanggar' => $r->thread ? $r->thread->user : null,
+                    'konten' => $r->thread ? $r->thread->content : 'Postingan telah dihapus',
+                    'alasan' => $r->reason,
+                    'created_at' => $r->created_at,
+                ];
+            });
+
+        $replyReports = \App\Models\ReplyReport::with(['reply' => function($q) { $q->withTrashed(); }, 'reply.user', 'user'])
+            ->latest()
+            ->take(5)
+            ->get()
+            ->map(function($r) {
+                return (object)[
+                    'type' => 'reply',
+                    'id' => $r->id,
+                    'target_id' => $r->thread_reply_id,
+                    'pelapor' => $r->user,
+                    'pelanggar' => $r->reply ? $r->reply->user : null,
+                    'konten' => $r->reply ? $r->reply->content : 'Balasan telah dihapus',
+                    'alasan' => $r->reason,
+                    'created_at' => $r->created_at,
+                ];
+            });
+
+        $artikelReports = \App\Models\ArtikelReport::with(['artikel', 'user'])
+            ->latest()
+            ->take(5)
+            ->get()
+            ->map(function($r) {
+                return (object)[
+                    'type' => 'artikel',
+                    'id' => $r->id,
+                    'target_id' => $r->artikel_id,
+                    'pelapor' => $r->user,
+                    'pelanggar' => $r->artikel ? $r->artikel->admin : null,
+                    'konten' => $r->artikel ? $r->artikel->judul : 'Artikel telah dihapus',
+                    'alasan' => $r->reason,
+                    'created_at' => $r->created_at,
+                ];
+            });
+
+        $recentReports = $threadReports->concat($replyReports)->concat($artikelReports)->sortByDesc('created_at')->take(5);
 
         $data = compact(
             'totalUsers', 'totalKonselor', 'totalReports',
@@ -169,6 +221,26 @@ class AdminController extends Controller
         $report = \App\Models\ArtikelReport::findOrFail($id);
         $report->delete();
         return back()->with('success', "Laporan artikel berhasil diabaikan.");
+    }
+
+    /**
+     * Hapus/Abaikan laporan forum (thread) secara permanen.
+     */
+    public function hapusLaporanForum($id)
+    {
+        $report = \App\Models\ThreadReport::findOrFail($id);
+        $report->delete();
+        return back()->with('success', "Laporan forum berhasil diabaikan.");
+    }
+
+    /**
+     * Hapus/Abaikan laporan balasan secara permanen.
+     */
+    public function hapusLaporanReply($id)
+    {
+        $report = \App\Models\ReplyReport::findOrFail($id);
+        $report->delete();
+        return back()->with('success', "Laporan balasan berhasil diabaikan.");
     }
 
     /**
@@ -377,9 +449,11 @@ class AdminController extends Controller
     }
 
     public function transaksi()
-        }
-    }
-}
+    {
+        $sessions = \App\Models\SesiKonseling::with(['user', 'profilKonselor'])
+            ->orderBy('created_at', 'desc')
+            ->get();
+
         $withdrawals = \App\Models\Transaction::where('type', 'withdrawal')
             ->with('profilKonselor')
             ->orderBy('created_at', 'desc')
@@ -446,9 +520,101 @@ class AdminController extends Controller
 
         $profil = $tx->profilKonselor;
         $profil->increment('saldo', $tx->amount);
-
         return back()->with('success', 'Pengajuan penarikan dana telah ditolak dan saldo dikembalikan ke konselor.');
     }
-=======
->>>>>>> 12c28e0 (merge)
+
+    public function syncXenditPayments()
+    {
+        $secretKey = config('services.xendit.secret_key');
+        if (empty($secretKey)) {
+            return back()->with('error', 'Kredensial Xendit belum dikonfigurasi.');
+        }
+
+        // Get all pending sessions that have a Xendit Invoice or QR Code ID
+        $pendingSessions = \App\Models\SesiKonseling::where('payment_status', 'pending')
+            ->whereNotNull('xendit_invoice_id')
+            ->get();
+
+        $updatedCount = 0;
+
+        foreach ($pendingSessions as $sesi) {
+            try {
+                // If it is QRIS (e-wallet)
+                if ($sesi->payment_method === 'e-wallet') {
+                    $response = \Illuminate\Support\Facades\Http::withBasicAuth($secretKey, '')
+                        ->withOptions([
+                            'curl' => [
+                                CURLOPT_IPRESOLVE => CURL_IPRESOLVE_V4,
+                                CURLOPT_RESOLVE => ['api.xendit.co:443:104.19.160.99,104.19.159.99']
+                            ]
+                        ])
+                        ->timeout(5)
+                        ->get('https://api.xendit.co/qr_codes/' . $sesi->xendit_invoice_id . '/payments');
+
+                    if ($response->successful()) {
+                        $payments = $response->json();
+                        $paymentList = isset($payments['data']) ? $payments['data'] : $payments;
+
+                        if (is_array($paymentList) && count($paymentList) > 0) {
+                            $payment = $paymentList[0];
+                            $channel = isset($payment['channel_code']) ? str_replace('ID_', '', $payment['channel_code']) : 'QRIS';
+                            
+                            $paidAt = null;
+                            if (!empty($payment['created'])) {
+                                try {
+                                    $paidAt = \Carbon\Carbon::parse($payment['created'])->toDateTimeString();
+                                } catch (\Exception $ex) {}
+                            }
+
+                            $sesi->update([
+                                'payment_status' => 'paid',
+                                'payment_channel' => $channel,
+                                'xendit_payment_id' => $payment['id'] ?? null,
+                                'payment_time' => $paidAt ?? now(),
+                            ]);
+                            $updatedCount++;
+                        }
+                    }
+                } 
+                // If it is Bank Transfer / Virtual Account (Xendit Invoice)
+                else {
+                    $response = \Illuminate\Support\Facades\Http::withBasicAuth($secretKey, '')
+                        ->withOptions([
+                            'curl' => [
+                                CURLOPT_IPRESOLVE => CURL_IPRESOLVE_V4,
+                                CURLOPT_RESOLVE => ['api.xendit.co:443:104.19.160.99,104.19.159.99']
+                            ]
+                        ])
+                        ->timeout(5)
+                        ->get('https://api.xendit.co/v2/invoices/' . $sesi->xendit_invoice_id);
+
+                    if ($response->successful()) {
+                        $data = $response->json();
+                        if (in_array($data['status'], ['PAID', 'SETTLED'])) {
+                            $channel = $data['payment_channel'] ?? ($data['payment_method'] ?? 'XENDIT');
+                            
+                            $paidAt = null;
+                            if (!empty($data['updated'])) {
+                                try {
+                                    $paidAt = \Carbon\Carbon::parse($data['updated'])->toDateTimeString();
+                                } catch (\Exception $ex) {}
+                            }
+
+                            $sesi->update([
+                                'payment_status' => 'paid',
+                                'payment_channel' => $channel,
+                                'xendit_payment_id' => $data['id'] ?? $sesi->xendit_invoice_id,
+                                'payment_time' => $paidAt ?? now(),
+                            ]);
+                            $updatedCount++;
+                        }
+                    }
+                }
+            } catch (\Exception $e) {
+                \Illuminate\Support\Facades\Log::error('Sync Xendit failed for session ' . $sesi->sesi_konseling_id . ': ' . $e->getMessage());
+            }
+        }
+
+        return back()->with('success', 'Sinkronisasi selesai! ' . $updatedCount . ' transaksi berhasil diperbarui.');
+    }
 }

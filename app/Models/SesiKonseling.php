@@ -23,6 +23,11 @@ class SesiKonseling extends Model
         'catatan_konselor',
         'payment_method',
         'payment_status',
+        'xendit_invoice_id',
+        'xendit_invoice_url',
+        'payment_channel',
+        'xendit_payment_id',
+        'payment_time',
     ];
     public function user()
     {

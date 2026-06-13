@@ -183,7 +183,6 @@ class CounselorController extends Controller
             'password' => 'nullable|min:8|confirmed',
             // Validasi Profil Profesional
             'spesialisasi' => 'required|string|max:255',
-            'nomor_whatsapp' => 'required|string|max:20',
             'no_sipp' => 'required|string|max:100',
             'harga_per_sesi' => 'required|numeric|min:0',
             'biografi' => 'nullable|string',
@@ -205,7 +204,6 @@ class CounselorController extends Controller
                 'nama' => $request->nama_asli, // sinkronisasi nama asli ke tabel profil
                 'spesialisasi' => $request->spesialisasi,
                 'harga_per_sesi' => $request->harga_per_sesi,
-                'nomor_whatsapp' => $request->nomor_whatsapp,
                 'no_sipp' => $request->no_sipp,
                 'biografi' => $request->biografi,
                 'keahlian' => $request->keahlian,

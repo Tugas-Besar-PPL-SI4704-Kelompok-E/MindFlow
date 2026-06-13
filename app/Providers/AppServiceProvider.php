@@ -31,6 +31,8 @@ class AppServiceProvider extends ServiceProvider
             $jadwalKonsultasi = $userId ? SesiKonseling::with('profilKonselor')
                 ->where('user_id', $userId)
                 ->where('status', '!=', 'cancelled')
+                ->orderByRaw("CASE WHEN status IN ('confirmed', 'rescheduled') THEN 0 ELSE 1 END ASC")
+                ->orderBy('jadwal', 'asc')
                 ->get() : collect();
             $view->with('jadwalKonsultasi', $jadwalKonsultasi);
         });
