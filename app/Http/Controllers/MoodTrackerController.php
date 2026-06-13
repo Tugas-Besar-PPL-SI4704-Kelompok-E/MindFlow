@@ -157,8 +157,16 @@ class MoodTrackerController extends Controller
             'detail_jawaban'     => $responses,
         ]);
 
-        return redirect()->route('mood-tracker.mendalam.hasil', $hasil->dass21_id)
+        $redirect = redirect()->route('mood-tracker.mendalam.hasil', $hasil->dass21_id)
             ->with('success', 'Evaluasi DASS-21 berhasil disimpan. Berikut adalah hasilnya.');
+
+        // Offer journal/open question if depression is berat or sangat berat
+        $katDepresi = strtolower($scores['kategori_depresi']);
+        if (str_contains($katDepresi, 'berat') || str_contains($katDepresi, 'parah')) {
+            $redirect->with('offer_journal', true);
+        }
+
+        return $redirect;
     }
 
     /**
