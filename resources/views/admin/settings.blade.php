@@ -3,7 +3,7 @@
 @section('title', 'Pengaturan Akun & Sistem')
 
 @section('content')
-<div class="bg-white rounded-2xl border border-gray-100 p-8 max-w-3xl">
+<div class="bg-white rounded-2xl border border-gray-100 p-8 max-w-3xl mx-auto">
     <form action="{{ route('admin.settings.update') }}" method="POST" class="space-y-6">
         @csrf
         @method('PUT')
@@ -38,14 +38,7 @@
             </div>
         </div>
         
-        <div class="pt-4">
-            <h3 class="text-lg font-bold text-gray-800 border-b border-gray-100 pb-2 mb-4">Pengaturan Sistem (Opsional)</h3>
-            
-            <div class="flex items-center gap-3">
-                <input type="checkbox" id="maintenance_mode" class="w-5 h-5 text-purple-600 rounded border-gray-300 focus:ring-purple-500">
-                <label for="maintenance_mode" class="text-sm font-medium text-gray-700">Aktifkan Mode Maintenance <span class="text-xs text-gray-400">(Fitur akan segera datang)</span></label>
-            </div>
-        </div>
+
 
         <div class="pt-6 border-t border-gray-100 flex justify-end">
             <button type="submit" class="px-8 py-3 bg-purple-600 text-white font-bold rounded-xl hover:bg-purple-700 transition-all shadow-lg shadow-purple-200">
