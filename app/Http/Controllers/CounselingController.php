@@ -4,6 +4,7 @@ namespace App\Http\Controllers;
 
 use App\Models\ProfilKonselor;
 use App\Models\SesiKonseling;
+use App\Models\CounselorSchedule;
 use App\Models\User;
 use Illuminate\Http\Request;
 
@@ -64,9 +65,63 @@ class CounselingController extends Controller
             ->pluck('jadwal')
             ->toArray();
 
+        // Ambil jadwal kerja aktif konselor (hari + jam)
+        $counselorSchedules = CounselorSchedule::where('profil_konselor_id', $id)
+            ->where('is_active', true)
+            ->get()
+            ->map(function ($s) {
+                return [
+                    'hari' => strtolower($s->hari),
+                    'jam_mulai' => $s->jam_mulai,
+                    'jam_selesai' => $s->jam_selesai,
+                ];
+            })->toArray();
+
         $userJournals = \App\Models\Journal::where('user_id', auth()->id())->latest()->get();
 
-        return view('konseling.show', compact('konselor', 'sesiTersedia', 'bookedSchedules', 'userJournals'));
+        // Generate available slots for the next 30 days based on counselor schedules
+        $minBooking = now()->addHours(3);
+        $endDate = now()->addDays(30)->endOfDay();
+
+        $bookedNormalized = collect($bookedSchedules)->map(function ($b) {
+            return \Carbon\Carbon::parse($b)->format('Y-m-d H:i');
+        })->toArray();
+
+        $dayNames = ['minggu','senin','selasa','rabu','kamis','jumat','sabtu'];
+        $dayNamesDisplay = ['Minggu','Senin','Selasa','Rabu','Kamis','Jumat','Sabtu'];
+        $availableSlots = [];
+
+        $cursor = $minBooking->copy()->startOfDay();
+        while ($cursor->lte($endDate)) {
+            $dayName = $dayNames[$cursor->dayOfWeek];
+            $dayNameDisplay = $dayNamesDisplay[$cursor->dayOfWeek];
+
+            foreach ($counselorSchedules as $s) {
+                if ($s['hari'] !== $dayName) continue;
+
+                $slotStart = \Carbon\Carbon::parse($cursor->format('Y-m-d') . ' ' . $s['jam_mulai']);
+                $slotEnd = \Carbon\Carbon::parse($cursor->format('Y-m-d') . ' ' . $s['jam_selesai']);
+
+                for ($t = $slotStart->copy(); $t->lt($slotEnd); $t->addMinutes(60)) {
+                    if ($t->lt($minBooking)) continue;
+
+                    $fmt = $t->format('Y-m-d H:i');
+                    if (in_array($fmt, $bookedNormalized)) continue;
+
+                    $availableSlots[] = [
+                        'datetime' => $fmt,
+                        'display' => $dayNameDisplay . ', ' . $t->format('d F Y H:i'),
+                        'date' => $t->format('d F Y'),
+                        'time' => $t->format('H:i'),
+                        'dayname' => $dayNameDisplay
+                    ];
+                }
+            }
+
+            $cursor->addDay();
+        }
+
+        return view('konseling.show', compact('konselor', 'sesiTersedia', 'bookedSchedules', 'userJournals', 'counselorSchedules', 'availableSlots'));
     }
 
     /**

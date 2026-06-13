@@ -143,10 +143,23 @@
                         <div class="space-y-2">
                             <label class="block text-[11px] font-black text-gray-400 uppercase tracking-widest ml-1">Jadwal Konsultasi</label>
                             <div class="relative group">
-                                <input type="text" name="jadwal" id="jadwal-picker" value="{{ old('jadwal') }}" class="w-full bg-gray-50 border @error('jadwal') border-red-500 @else border-gray-100 @enderror rounded-[14px] px-4 py-3 focus:outline-none focus:ring-4 focus:ring-[#A881C2]/10 focus:border-[#A881C2] focus:bg-white text-[13px] text-gray-700 font-bold shadow-sm transition-all cursor-pointer pr-12 placeholder-gray-400" placeholder="Pilih tanggal & waktu" required readonly>
-                                <div class="absolute right-4 top-1/2 -translate-y-1/2 text-gray-400 group-hover:text-[#A881C2] transition-colors pointer-events-none">
-                                    <svg class="w-4 h-4" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2.5" d="M19 9l-7 7-7-7"></path></svg>
-                                </div>
+                                <select name="jadwal" id="jadwal-select" class="w-full bg-gray-50 border @error('jadwal') border-red-500 @else border-gray-100 @enderror rounded-[14px] px-4 py-3 focus:outline-none focus:ring-4 focus:ring-[#A881C2]/10 focus:border-[#A881C2] focus:bg-white text-[13px] text-gray-700 font-bold shadow-sm transition-all cursor-pointer" required>
+                                    <option value="">Pilih sesi</option>
+                                    @php
+                                        $slotsByDate = collect($availableSlots ?? [])->groupBy('date');
+                                    @endphp
+                                    @forelse($slotsByDate as $date => $slots)
+                                        <optgroup label="{{ $slots->first()['dayname'] }} — {{ $date }}">
+                                            @foreach($slots as $slot)
+                                                <option value="{{ $slot['datetime'] }}" {{ old('jadwal') == $slot['datetime'] ? 'selected' : '' }}>
+                                                    {{ $slot['time'] }}
+                                                </option>
+                                            @endforeach
+                                        </optgroup>
+                                    @empty
+                                        <option disabled>Tidak ada sesi tersedia</option>
+                                    @endforelse
+                                </select>
                             </div>
                             @error('jadwal')<p class="text-sm text-red-600">{{ $message }}</p>@enderror
                         </div>
@@ -376,44 +389,8 @@
     </div>
 
 @push('styles')
-     <link rel="stylesheet" href="https://cdn.jsdelivr.net/npm/flatpickr/dist/flatpickr.min.css">
-     <link rel="stylesheet" href="https://cdn.jsdelivr.net/npm/flatpickr/dist/plugins/confirmDate/confirmDate.min.css">
+     <link rel="stylesheet" href="https://cdn.jsdelivr.net/npm/choices.js/public/assets/styles/choices.min.css" />
      <style>
-         .flatpickr-calendar {
-             z-index: 99999 !important;
-             position: absolute !important;
-             pointer-events: auto !important;
-             border-radius: 24px !important;
-             box-shadow: 0 25px 50px -12px rgba(0, 0, 0, 0.15) !important;
-             border: 1px solid #f3f4f6 !important;
-             padding: 10px !important;
-         }
-         .flatpickr-day.selected {
-             background: #A881C2 !important;
-             border-color: #A881C2 !important;
-         }
-         .flatpickr-confirm {
-             background: #A881C2 !important;
-             color: white !important;
-             padding: 12px 20px !important;
-             border-radius: 16px !important;
-             margin: 15px auto 5px !important;
-             cursor: pointer !important;
-             font-weight: 800 !important;
-             font-size: 13px !important;
-             display: flex !important;
-             justify-content: center !important;
-             align-items: center !important;
-             width: 90% !important;
-             transition: all 0.3s !important;
-             box-shadow: 0 10px 15px -3px rgba(168, 129, 194, 0.3) !important;
-         }
-         .flatpickr-confirm:hover {
-             background: #8A64A4 !important;
-             transform: translateY(-2px) !important;
-             box-shadow: 0 12px 20px -3px rgba(168, 129, 194, 0.4) !important;
-         }
-         
          /* Choices.js Custom Theme */
          .choices__inner {
              background-color: #f9fafb !important;
@@ -460,36 +437,22 @@
              color: #A881C2 !important;
          }
      </style>
-     <link rel="stylesheet" href="https://cdn.jsdelivr.net/npm/choices.js/public/assets/styles/choices.min.css" />
  @endpush
 
  @push('scripts')
-     <script src="https://cdn.jsdelivr.net/npm/flatpickr"></script>
-     <script src="https://cdn.jsdelivr.net/npm/flatpickr/dist/plugins/confirmDate/confirmDate.js"></script>
-     <script src="https://npmcdn.com/flatpickr/dist/l10n/id.js"></script>
      <script src="https://cdn.jsdelivr.net/npm/choices.js/public/assets/scripts/choices.min.js"></script>
      <script>
          document.addEventListener('DOMContentLoaded', function() {
-             const bookedSlots = @json($bookedSchedules ?? []);
-
-             flatpickr("#jadwal-picker", {
-                 appendTo: document.body,
-                 enableTime: true,
-                 dateFormat: "Y-m-d H:i",
-                 minDate: new Date(new Date().getTime() + 3 * 60 * 60 * 1000),
-                 time_24hr: true,
-                 locale: "id",
-                 clickOpens: true,
-                 disable: bookedSlots,
-                 defaultDate: "{{ old('jadwal') }}",
-                 plugins: [
-                     new confirmDatePlugin({
-                         confirmText: "OK, Simpan Jadwal",
-                         showAlways: true,
-                         theme: "light"
-                     })
-                 ]
-             });
+             // Replace datepicker with session dropdown. Initialize Choices.js for better UX.
+             const availableSlots = @json($availableSlots ?? []);
+             const jadwalSelect = document.getElementById('jadwal-select');
+             if (jadwalSelect) {
+                 new Choices(jadwalSelect, {
+                     searchEnabled: true,
+                     placeholderValue: 'Pilih sesi',
+                     shouldSort: false,
+                 });
+             }
 
              @if(isset($contohSesi) && $contohSesi->status == 'pending')
              // Trik simulasi real-time: cek auto-cancel setelah sesi pending sudah lewat batas waktu
