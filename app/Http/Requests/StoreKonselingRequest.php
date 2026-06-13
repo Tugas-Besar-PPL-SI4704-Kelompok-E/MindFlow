@@ -3,6 +3,9 @@
 namespace App\Http\Requests;
 
 use Illuminate\Foundation\Http\FormRequest;
+use App\Models\CounselorSchedule;
+use Carbon\Carbon;
+use Illuminate\Validation\Validator;
 
 class StoreKonselingRequest extends FormRequest
 {
@@ -32,6 +35,38 @@ class StoreKonselingRequest extends FormRequest
         return [
             'jadwal.after' => 'Jadwal tidak valid. Pemesanan tidak boleh mendadak, silakan pilih jadwal minimal 3 jam dari sekarang.',
         ];
+    }
+
+    public function withValidator($validator)
+    {
+        $validator->after(function ($validator) {
+            if (!$this->has('jadwal') || !$this->has('konselor_id')) {
+                return;
+            }
+
+            try {
+                $jadwal = Carbon::parse($this->input('jadwal'));
+            } catch (\Exception $e) {
+                return;
+            }
+
+            $dayNames = ['minggu','senin','selasa','rabu','kamis','jumat','sabtu'];
+            $dayName = $dayNames[$jadwal->dayOfWeek];
+
+            $schedules = CounselorSchedule::where('profil_konselor_id', $this->input('konselor_id'))
+                ->where('is_active', true)
+                ->get();
+
+            $time = $jadwal->format('H:i:s');
+
+            $allowed = $schedules->contains(function ($s) use ($dayName, $time) {
+                return strtolower($s->hari) === $dayName && $time >= $s->jam_mulai && $time < $s->jam_selesai;
+            });
+
+            if (!$allowed) {
+                $validator->errors()->add('jadwal', 'Jadwal tidak sesuai dengan ketersediaan konselor. Silakan pilih hari dan jam yang tersedia.');
+            }
+        });
     }
 
     protected function prepareForValidation()
