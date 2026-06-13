@@ -2,10 +2,12 @@
 
 namespace App\Models;
 
+use Illuminate\Database\Eloquent\Factories\HasFactory;
 use Illuminate\Database\Eloquent\Model;
 
 class LaporanForum extends Model
 {
+    use HasFactory;
     protected $table = 'laporan_forums';
     protected $primaryKey = 'laporan_forum_id';
     public $timestamps = false;

@@ -2,10 +2,12 @@
 
 namespace App\Models;
 
+use Illuminate\Database\Eloquent\Factories\HasFactory;
 use Illuminate\Database\Eloquent\Model;
 
 class ArtikelReport extends Model
 {
+    use HasFactory;
     // Fillable attributes for mass assignment
     protected $fillable = ['artikel_id', 'user_id', 'reason', 'status'];
 

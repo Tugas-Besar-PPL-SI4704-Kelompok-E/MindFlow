@@ -467,7 +467,13 @@ class AdminController extends Controller
         $sesi = \App\Models\SesiKonseling::findOrFail($id);
         
         if ($sesi->payment_status !== 'paid') {
-            $sesi->update(['payment_status' => 'paid']);
+            $updateData = ['payment_status' => 'paid'];
+            
+            if (in_array($sesi->status, ['pending', 'approved'])) {
+                $updateData['status'] = 'confirmed';
+            }
+            
+            $sesi->update($updateData);
             
             // Jika sesi sudah diselesaikan sebelumnya oleh konselor,
             // berikan honorarium sekarang agar saldonya langsung masuk.
@@ -567,6 +573,7 @@ class AdminController extends Controller
                             }
 
                             $sesi->update([
+                                'status' => 'confirmed',
                                 'payment_status' => 'paid',
                                 'payment_channel' => $channel,
                                 'xendit_payment_id' => $payment['id'] ?? null,
@@ -601,6 +608,7 @@ class AdminController extends Controller
                             }
 
                             $sesi->update([
+                                'status' => 'confirmed',
                                 'payment_status' => 'paid',
                                 'payment_channel' => $channel,
                                 'xendit_payment_id' => $data['id'] ?? $sesi->xendit_invoice_id,

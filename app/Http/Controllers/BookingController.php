@@ -47,7 +47,7 @@ class BookingController extends Controller
             $sesi->journals()->attach($data['journals']);
         }
 
-    return redirect()->route('booking.checkout', $sesi->sesi_konseling_id)->with('success', 'Sesi konsultasi berhasil direservasi. Silakan selesaikan pembayaran.');
+    return redirect()->route('konseling.show', $data['konselor_id'])->with('success', 'Sesi konsultasi berhasil diajukan. Menunggu persetujuan dari konselor sebelum Anda dapat melakukan pembayaran.');
     }
 
     public function edit($id)
@@ -103,7 +103,7 @@ class BookingController extends Controller
         }
 
         // Jika sesi sudah disetujui/acc oleh konselor, tidak dapat dibatalkan oleh user
-        if (in_array($sesi->status, ['confirmed', 'rescheduled'])) {
+        if (in_array($sesi->status, ['approved', 'confirmed', 'rescheduled'])) {
             return redirect()->back()->with('error', 'Sesi yang sudah disetujui oleh konselor tidak dapat dibatalkan.');
         }
 
@@ -116,6 +116,15 @@ class BookingController extends Controller
         if ($sesi->payment_status === 'paid') {
             $updateData['payment_status'] = 'refunded';
             $successMsg = 'Jadwal konsultasi berhasil dibatalkan dan pembayaran Anda akan dikembalikan (Refunded).';
+            
+            // Put in refund session
+            $existingRefunds = session()->get('refund_sessions', []);
+            $existingRefunds[] = [
+                'jadwal' => \Carbon\Carbon::parse($sesi->jadwal)->translatedFormat('d M Y, H:i'),
+                'konselor' => $sesi->profilKonselor ? $sesi->profilKonselor->nama : 'Konselor',
+                'reason' => 'Dibatalkan oleh Anda.',
+            ];
+            session()->put('refund_sessions', $existingRefunds);
         } else {
             $successMsg = 'Jadwal konsultasi berhasil dibatalkan.';
         }
@@ -130,7 +139,7 @@ class BookingController extends Controller
     {
         $cancelled = SesiKonseling::cancelExpiredPendingSessions();
         if ($cancelled) {
-            session()->flash('error', 'Pesanan Anda dibatalkan oleh sistem karena melebihi 24 jam tanpa respon. Pembayaran akan dikembalikan.');
+            session()->flash('error', 'Pesanan Anda dibatalkan oleh sistem karena melebihi batas waktu tanpa respon atau pembayaran. Pembayaran akan dikembalikan jika sudah dilakukan.');
         }
 
         return response()->json(['cancelled' => (bool) $cancelled]);
@@ -141,6 +150,12 @@ class BookingController extends Controller
         session()->forget('expired_cancelled_sessions');
         return response()->json(['success' => true]);
     }
+
+    public function clearRefundNotification()
+    {
+        session()->forget('refund_sessions');
+        return response()->json(['success' => true]);
+    }
     public function checkout($id)
     {
         $sesi = SesiKonseling::with('profilKonselor')->findOrFail($id);
@@ -148,7 +163,18 @@ class BookingController extends Controller
             abort(403);
         }
 
-        // Jika metode pembayarannya e-wallet (QRIS) dan belum membuat QR Code Xendit
+        // Pastikan hanya bisa checkout jika sudah approved
+        if ($sesi->status === 'pending') {
+            return redirect()->route('konseling.show', $sesi->profil_konselor_id)
+                ->with('error', 'Sesi Anda belum disetujui oleh konselor. Silakan tunggu persetujuan.');
+        }
+
+        if (in_array($sesi->status, ['confirmed', 'completed', 'cancelled', 'rejected'])) {
+            if ($sesi->payment_status === 'paid') {
+                return redirect()->route('konseling.show', $sesi->profil_konselor_id)
+                    ->with('success', 'Pembayaran untuk sesi ini sudah selesai.');
+            }
+        }
         if ($sesi->payment_method === 'e-wallet' && empty($sesi->xendit_invoice_url)) {
             $secretKey = config('services.xendit.secret_key');
             if (!empty($secretKey)) {
@@ -250,7 +276,10 @@ class BookingController extends Controller
         // Jika dalam unit test, bypass API Xendit dan langsung ubah status pembayaran
         if (app()->runningUnitTests()) {
             if ($sesi->payment_method === 'e-wallet') {
-                $sesi->update(['payment_status' => 'paid']);
+                $sesi->update([
+                    'status' => 'confirmed',
+                    'payment_status' => 'paid'
+                ]);
             } else {
                 $sesi->update(['payment_status' => 'waiting_verification']);
             }
@@ -301,6 +330,7 @@ class BookingController extends Controller
                         }
 
                         $sesi->update([
+                            'status' => 'confirmed',
                             'payment_status' => 'paid',
                             'payment_channel' => $channel,
                             'xendit_payment_id' => $payment['id'] ?? null,
@@ -348,6 +378,7 @@ class BookingController extends Controller
                     }
 
                     $sesi->update([
+                        'status' => 'confirmed',
                         'payment_status' => 'paid',
                         'payment_channel' => $channel,
                         'xendit_payment_id' => $data['id'] ?? $sesi->xendit_invoice_id,
@@ -408,6 +439,7 @@ class BookingController extends Controller
                     }
 
                     $sesi->update([
+                        'status' => 'confirmed',
                         'payment_status' => 'paid',
                         'payment_channel' => $channel,
                         'xendit_payment_id' => $data['id'] ?? $sesi->xendit_invoice_id,
@@ -477,6 +509,7 @@ class BookingController extends Controller
         }
 
         $sesi->update([
+            'status' => 'confirmed',
             'payment_status' => 'paid',
             'payment_channel' => 'MANDIRI_MOCK',
             'xendit_payment_id' => 'mock_inv_pay_' . time(),

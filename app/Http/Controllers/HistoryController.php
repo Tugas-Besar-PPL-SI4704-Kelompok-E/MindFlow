@@ -81,17 +81,22 @@ class HistoryController extends Controller
 
         // Ambil data Sesi Konseling (PBI 36)
         $sesiKonselings = \App\Models\SesiKonseling::where('user_id', $userId)
-            ->where('status', 'completed')
+            ->whereIn('status', ['completed', 'cancelled', 'system_cancelled', 'rejected'])
             ->orderBy('updated_at', 'desc')
             ->get()
             ->map(function ($item) {
+                $statusLabel = 'Selesai';
+                if ($item->status === 'cancelled') $statusLabel = 'Dibatalkan';
+                if ($item->status === 'system_cancelled') $statusLabel = 'Batal Otomatis';
+                if ($item->status === 'rejected') $statusLabel = 'Ditolak';
+
                 return (object)[
                     'type' => 'Sesi Konseling',
                     'date' => $item->updated_at,
-                    'status' => 'Selesai',
+                    'status' => $statusLabel,
                     'sort_date' => $item->updated_at,
                     'icon' => 'users',
-                    'color' => 'emerald',
+                    'color' => in_array($item->status, ['cancelled', 'system_cancelled', 'rejected']) ? 'red' : 'emerald',
                     'note' => $item->catatan_konselor,
                     'sesi_id' => $item->sesi_konseling_id
                 ];

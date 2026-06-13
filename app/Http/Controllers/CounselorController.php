@@ -85,18 +85,25 @@ class CounselorController extends Controller
             abort(403);
         }
 
+        $newStatus = $sesi->payment_status === 'paid' ? 'confirmed' : 'approved';
+        $updateData = [
+            'status' => $newStatus,
+            'approved_at' => now(),
+        ];
+
         if ($sesi->status === 'change_requested' && $sesi->requested_jadwal) {
-            $sesi->update([
-                'jadwal' => $sesi->requested_jadwal,
-                'requested_jadwal' => null,
-                'request_reason' => null,
-                'status' => 'confirmed'
-            ]);
-        } else {
-            $sesi->update(['status' => 'confirmed']);
+            $updateData['jadwal'] = $sesi->requested_jadwal;
+            $updateData['requested_jadwal'] = null;
+            $updateData['request_reason'] = null;
         }
 
-        return redirect()->back()->with('success', 'Perubahan jadwal berhasil dikonfirmasi.');
+        $sesi->update($updateData);
+
+        $msg = $newStatus === 'approved' 
+            ? 'Sesi berhasil disetujui. Menunggu pembayaran dari pengguna (Batas waktu 24 jam).'
+            : 'Perubahan jadwal berhasil dikonfirmasi.';
+
+        return redirect()->back()->with('success', $msg);
     }
 
     public function rejectSession($id)

@@ -63,6 +63,7 @@
                             @php
                                 $statusColor = match($item->status) {
                                     'pending' => 'bg-amber-100 text-amber-800',
+                                    'approved' => 'bg-blue-100 text-blue-800',
                                     'change_requested' => 'bg-blue-100 text-blue-800',
                                     'rescheduled' => 'bg-blue-100 text-blue-800',
                                     'confirmed' => 'bg-emerald-100 text-emerald-800',
@@ -71,9 +72,20 @@
                                     'cancelled' => 'bg-red-100 text-red-800',
                                     default => 'bg-gray-100 text-gray-800'
                                 };
+                                $statusLabel = match($item->status) {
+                                    'pending' => 'Menunggu Persetujuan',
+                                    'approved' => 'Menunggu Pembayaran',
+                                    'change_requested' => 'Permintaan Perubahan',
+                                    'rescheduled' => 'Jadwal Ulang',
+                                    'confirmed' => 'Terkonfirmasi',
+                                    'completed' => 'Selesai',
+                                    'rejected' => 'Ditolak',
+                                    'cancelled' => 'Dibatalkan',
+                                    default => ucfirst($item->status)
+                                };
                             @endphp
-                            <span class="px-3 py-1 inline-flex text-xs leading-5 font-semibold rounded-full {{ $statusColor }} uppercase tracking-wide">
-                                {{ $item->status }}
+                            <span class="px-3 py-1 inline-flex text-[10px] leading-5 font-bold rounded-full {{ $statusColor }} uppercase tracking-wide">
+                                {{ $statusLabel }}
                             </span>
                         </td>
                         <td class="px-6 py-4 whitespace-nowrap text-sm font-medium">

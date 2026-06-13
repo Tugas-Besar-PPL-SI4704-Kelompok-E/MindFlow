@@ -281,12 +281,41 @@
                 $contohSesi = \App\Models\SesiKonseling::with('profilKonselor')
                     ->where('profil_konselor_id', $konselor->profil_konselor_id)
                     ->where('user_id', Auth::id())
-                    ->whereIn('status', ['pending', 'rescheduled', 'confirmed', 'change_requested'])
+                    ->whereIn('status', ['pending', 'approved', 'rescheduled', 'confirmed', 'change_requested'])
                     ->first();
             @endphp
 
             @if($contohSesi)
             <div class="mt-8 bg-white rounded-[32px] p-8 shadow-[0_4px_20px_-4px_rgba(0,0,0,0.05)] border border-gray-100 animate-in fade-in slide-in-from-bottom-4 duration-700">
+                @if($contohSesi->status === 'pending')
+                    <div class="mb-6 rounded-[28px] bg-amber-50 border border-amber-100 p-5 text-amber-900">
+                        <div class="flex items-start gap-3">
+                            <div class="w-11 h-11 rounded-3xl bg-amber-100 text-amber-700 flex items-center justify-center">
+                                <svg class="w-6 h-6" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M12 8v4l3 3m6-3a9 9 0 11-18 0 9 9 0 0118 0z"></path></svg>
+                            </div>
+                            <div class="space-y-2">
+                                <p class="text-sm font-bold">Menunggu Persetujuan Konselor</p>
+                                <p class="text-sm text-gray-600">Sesi Anda telah diajukan. Pembayaran dapat dilakukan setelah konselor menyetujui jadwal ini.</p>
+                            </div>
+                        </div>
+                    </div>
+                @elseif($contohSesi->status === 'approved' && $contohSesi->payment_status === 'pending')
+                    <div class="mb-6 rounded-[28px] bg-blue-50 border border-blue-100 p-5 text-blue-900">
+                        <div class="flex items-start gap-3">
+                            <div class="w-11 h-11 rounded-3xl bg-blue-100 text-blue-700 flex items-center justify-center">
+                                <svg class="w-6 h-6" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M3 10h18M7 15h1m4 0h1m-7 4h12a3 3 0 003-3V8a3 3 0 00-3-3H6a3 3 0 00-3 3v8a3 3 0 003 3z"></path></svg>
+                            </div>
+                            <div class="space-y-2">
+                                <p class="text-sm font-bold">Disetujui! Segera Lakukan Pembayaran</p>
+                                <p class="text-sm text-gray-600">Konselor telah menyetujui sesi. Silakan lakukan pembayaran dalam 24 jam untuk mengonfirmasi sesi.</p>
+                                @if($contohSesi->approved_at)
+                                    <p class="text-[10px] font-black uppercase text-blue-500">Batas Waktu: {{ \Carbon\Carbon::parse($contohSesi->approved_at)->addHours(24)->translatedFormat('d M Y, H:i') }}</p>
+                                @endif
+                            </div>
+                        </div>
+                    </div>
+                @endif
+                
                 @if($contohSesi->payment_status === 'refunded')
                     <div class="mb-6 rounded-[28px] bg-emerald-50 border border-emerald-100 p-5 text-emerald-900">
                         <div class="flex items-start gap-3">
@@ -314,6 +343,7 @@
                     @php
                         $statusClasses = [
                             'pending' => 'bg-amber-100 text-amber-700',
+                            'approved' => 'bg-blue-100 text-blue-700',
                             'confirmed' => 'bg-emerald-100 text-emerald-700',
                             'rescheduled' => 'bg-sky-100 text-sky-700',
                             'change_requested' => 'bg-indigo-100 text-indigo-700',
@@ -322,6 +352,7 @@
                         ];
                         $dotClasses = [
                             'pending' => 'bg-amber-500',
+                            'approved' => 'bg-blue-500',
                             'confirmed' => 'bg-emerald-500',
                             'rescheduled' => 'bg-sky-500',
                             'change_requested' => 'bg-indigo-500',
@@ -330,11 +361,21 @@
                         ];
                         $statusClass = $statusClasses[$contohSesi->status] ?? 'bg-gray-100 text-gray-700';
                         $dotClass = $dotClasses[$contohSesi->status] ?? 'bg-gray-500';
+                        
+                        $statusLabel = [
+                            'pending' => 'Menunggu Persetujuan',
+                            'approved' => 'Menunggu Pembayaran',
+                            'confirmed' => 'Terkonfirmasi',
+                            'rescheduled' => 'Jadwal Ulang',
+                            'change_requested' => 'Permintaan Perubahan',
+                            'completed' => 'Selesai',
+                            'cancelled' => 'Dibatalkan',
+                        ][$contohSesi->status] ?? ucfirst($contohSesi->status);
                     @endphp
                     <div class="flex flex-wrap gap-2">
                         <span class="inline-flex items-center gap-1.5 px-3 py-1 {{ $statusClass }} text-[11px] font-black uppercase tracking-wider rounded-lg">
                             <span class="w-1.5 h-1.5 rounded-full {{ $dotClass }}"></span>
-                            {{ ucfirst($contohSesi->status) }}
+                            {{ $statusLabel }}
                         </span>
                         
                         <span class="inline-flex items-center gap-1.5 px-3 py-1 bg-purple-50 text-[#A881C2] text-[11px] font-black uppercase tracking-wider rounded-lg border border-purple-100">
@@ -358,7 +399,7 @@
                     </div>
                 </div>
                 <div class="flex flex-col gap-3">
-                    @if($contohSesi->payment_status === 'pending')
+                    @if($contohSesi->status === 'approved' && $contohSesi->payment_status === 'pending')
                         <a href="{{ route('booking.checkout', $contohSesi->sesi_konseling_id) }}" class="w-full text-center bg-purple-600 hover:bg-purple-700 text-white py-3.5 rounded-2xl text-sm font-bold transition-all duration-300 shadow-sm shadow-purple-200 flex items-center justify-center gap-2">
                             <svg class="w-5 h-5" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M3 10h18M7 15h1m4 0h1m-7 4h12a3 3 0 003-3V8a3 3 0 00-3-3H6a3 3 0 00-3 3v8a3 3 0 003 3z"></path></svg>
                             Bayar Sekarang

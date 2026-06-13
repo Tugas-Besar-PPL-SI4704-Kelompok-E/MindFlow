@@ -813,6 +813,58 @@
                 </script>
             @endif
 
+            @if(session('refund_sessions'))
+                <div class="fixed inset-0 bg-gray-900/50 backdrop-blur-sm z-[100] flex items-center justify-center animate-[fadeIn_0.2s_ease-out]" id="refundNotificationModal">
+                    <div class="bg-white rounded-[24px] w-full max-w-md shadow-xl p-8 text-center transform scale-100 mx-4 border border-purple-100">
+                        <div class="w-20 h-20 bg-purple-50 rounded-full flex items-center justify-center mx-auto mb-5 shadow-inner">
+                            <span class="text-4xl">💸</span>
+                        </div>
+                        <h3 class="text-xl font-bold text-gray-900 mb-2">Pengembalian Dana (Refund)</h3>
+                        <p class="text-[14px] text-gray-600 mb-4 leading-relaxed font-medium">
+                            Sesi konseling Anda telah dibatalkan, dan pembayaran Anda akan dikembalikan (Refunded). Silakan hubungi admin kami untuk detail lebih lanjut.
+                        </p>
+                        
+                        <div class="bg-purple-50/50 border border-purple-100 rounded-2xl p-4 mb-6 text-left max-h-48 overflow-y-auto">
+                            <p class="text-xs font-bold text-purple-800 uppercase tracking-wider mb-2">Detail Sesi:</p>
+                            <ul class="space-y-3">
+                                @foreach(session('refund_sessions') as $detail)
+                                    <li class="flex flex-col gap-0.5 border-b border-purple-100 pb-2 last:border-0 last:pb-0">
+                                        <span class="text-[13px] font-bold text-gray-800">{{ $detail['konselor'] }}</span>
+                                        <span class="text-[11px] font-medium text-gray-500">{{ $detail['jadwal'] }}</span>
+                                    </li>
+                                @endforeach
+                            </ul>
+                        </div>
+
+                        <div class="flex flex-col gap-3">
+                            <a href="https://wa.me/628123456789" target="_blank" class="w-full bg-emerald-500 hover:bg-emerald-600 text-white font-bold py-3.5 px-4 rounded-xl transition-colors shadow-sm shadow-emerald-500/30 flex items-center justify-center gap-2 text-sm">
+                                <svg class="w-5 h-5 fill-current" viewBox="0 0 24 24"><path d="M.057 24l1.687-6.163c-1.041-1.804-1.588-3.849-1.587-5.946C.06 5.348 5.397.01 12.008.01c3.202.001 6.212 1.246 8.477 3.514 2.266 2.268 3.507 5.28 3.505 8.484-.004 6.657-5.34 11.997-11.953 11.997-2.005-.001-3.973-.502-5.724-1.455L0 24zm6.59-4.846c1.6.95 3.498 1.45 5.441 1.451 5.58 0 10.121-4.544 10.125-10.13.002-2.707-1.05-5.251-2.962-7.163C17.34 1.4 14.793.35 12.008.35c-5.584 0-10.126 4.544-10.13 10.13-.001 1.905.498 3.766 1.448 5.372L2.302 21.72l5.975-1.566zM12.008 2.05c-4.636 0-8.411 3.774-8.415 8.413-.001 1.63.468 3.224 1.358 4.606l.325.508-.898 3.279 3.356-.88.498.295c1.332.79 2.85 1.206 4.417 1.207 4.64 0 8.415-3.774 8.418-8.414.002-2.25-.873-4.364-2.464-5.955C16.398 2.923 14.28 2.05 12.008 2.05zm5.132 11.396c-.281-.14-.1.666-.35-.747l-.767-.384c-.281-.14-.5-.14-.687.14l-.516.687c-.187.28-.374.316-.656.176-.28-.14-1.186-.438-2.26-1.4c-.836-.745-1.4-1.664-1.563-1.945-.164-.28-.018-.43.123-.57.127-.126.28-.328.422-.492.14-.164.188-.28.28-.47.094-.187.047-.35-.023-.492-.07-.14-.687-1.656-.941-2.266-.248-.596-.5-.516-.687-.526l-.586-.01c-.203 0-.532.076-.813.384-.28.307-1.07.12-1.07 2.617s1.805 4.906 2.055 5.242c.25.336 3.547 5.42 8.6 7.6 1.2.52 2.14.83 2.87 1.06 1.21.38 2.31.33 3.18.2 1 .15 2.05-.62 2.33-1.22.28-.6.28-1.12.2-1.22-.08-.1-.3-.24-.58-.38z"/></svg>
+                                Hubungi Admin via WhatsApp
+                            </a>
+                            <button onclick="clearRefundNotification()" id="btn-mengerti-refund" class="w-full bg-[#A881C2] hover:bg-[#8A64A4] text-white font-bold py-3.5 px-4 rounded-xl transition-colors shadow-sm shadow-purple-500/30 text-sm">
+                                Mengerti
+                            </button>
+                        </div>
+                    </div>
+                </div>
+                <script>
+                    function clearRefundNotification() {
+                        fetch("{{ route('booking.clear-refund-notification') }}", {
+                            method: 'POST',
+                            headers: {
+                                'X-CSRF-TOKEN': '{{ csrf_token() }}',
+                                'Content-Type': 'application/json',
+                                'Accept': 'application/json'
+                            }
+                        }).then(response => {
+                            document.getElementById('refundNotificationModal').remove();
+                        }).catch(err => {
+                            document.getElementById('refundNotificationModal').remove();
+                        });
+                    }
+                </script>
+            @endif
+
             @yield('content')
         </main>
 
@@ -894,7 +946,7 @@
                                         @csrf
                                         @method('DELETE')
                                         <button type="submit" class="w-full bg-gray-50 hover:bg-red-50 hover:text-red-500 text-gray-500 py-2.5 rounded-xl text-[11px] font-bold transition-all duration-300 border border-transparent hover:border-red-100">
-                                            Batal
+                                            {{ $jadwal->payment_status === 'paid' ? 'Refund' : 'Batal' }}
                                         </button>
                                     </form>
                                     @endif
