@@ -1,4 +1,4 @@
-@extends('layouts.konselor')
+@extends('layouts.dashboard')
 
 @section('title', 'Dashboard Konselor - MindFlow')
 @section('header', 'Ruang Kerja Dokter')

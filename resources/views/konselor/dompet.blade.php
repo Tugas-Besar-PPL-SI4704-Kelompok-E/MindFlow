@@ -1,4 +1,4 @@
-@extends('layouts.konselor')
+@extends('layouts.dashboard')
 
 @section('title', 'Dompet & Pencairan - MindFlow')
 @section('header', 'Dompet & Pencairan Dana')
