@@ -4,8 +4,12 @@
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
     <title>@yield('title', 'Dashboard Konselor - MindFlow')</title>
+    <link rel="preconnect" href="https://fonts.googleapis.com">
+    <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+    <link href="https://fonts.googleapis.com/css2?family=Poppins:wght@400;500;600;700;800&display=swap" rel="stylesheet">
     <script src="https://cdn.tailwindcss.com"></script>
     <style>
+        * { font-family: 'Poppins', sans-serif; }
         .konselor-sidebar {
             transition: margin-left 0.3s cubic-bezier(0.4, 0, 0.2, 1);
         }
@@ -88,9 +92,15 @@
                         </a>
                     </li>
                     <li>
-                        <a href="{{ route('forum.index') }}" class="flex items-center px-8 py-4 text-gray-700 hover:bg-purple-50 hover:text-purple-700 font-semibold transition-all">
+                        <a href="{{ route('forum.index') }}" class="flex items-center px-8 py-4 {{ request()->routeIs('forum.*') ? 'bg-purple-100 text-purple-800 font-bold border-l-4 border-purple-600' : 'text-gray-700 hover:bg-purple-50 hover:text-purple-700 font-semibold transition-all' }}">
                             <svg class="w-6 h-6 mr-4" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M17 20h5v-2a3 3 0 00-5.356-1.857M17 20H7m10 0v-2c0-.656-.126-1.283-.356-1.857M7 20H2v-2a3 3 0 015.356-1.857M7 20v-2c0-.656.126-1.283.356-1.857m0 0a5.002 5.002 0 019.288 0M15 7a3 3 0 11-6 0 3 3 0 016 0zm6 3a2 2 0 11-4 0 2 2 0 014 0zM7 10a2 2 0 11-4 0 2 2 0 014 0z"></path></svg>
                             Forum MindFlow
+                        </a>
+                    </li>
+                    <li>
+                        <a href="{{ route('artikel.index') }}" class="flex items-center px-8 py-4 {{ request()->routeIs('artikel.*') ? 'bg-purple-100 text-purple-800 font-bold border-l-4 border-purple-600' : 'text-gray-700 hover:bg-purple-50 hover:text-purple-700 font-semibold transition-all' }}">
+                            <svg class="w-6 h-6 mr-4" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M19 20H5a2 2 0 0 1-2-2V6a2 2 0 0 1 2-2h10a2 2 0 0 1 2 2v1m2 13a2 2 0 0 1-2-2V7m2 13a2 2 0 0 0 2-2V9a2 2 0 0 0-2-2h-2m-4-3H9M7 16h6M7 12h10"></path></svg>
+                            Artikel
                         </a>
                     </li>
                     <li>
@@ -114,18 +124,15 @@
 
         <!-- Main Content -->
         <div class="flex-1 flex flex-col overflow-hidden bg-gray-50">
-            <header class="h-24 bg-white border-b border-gray-100 flex items-center justify-between px-10">
-                <h2 class="text-3xl font-bold text-gray-800 tracking-tight">@yield('header', 'Ruang Kerja Dokter')</h2>
-                <div class="flex items-center space-x-4">
-                    <div class="text-right mr-2">
-                        <div class="font-bold text-gray-800">{{ explode(' ', Auth::user()->nama_asli ?? 'Dokter')[0] }}</div>
-                        <div class="text-sm text-gray-500">Konselor</div>
-                    </div>
-                    <img class="h-12 w-12 rounded-full border-2 border-purple-200 object-cover" src="https://ui-avatars.com/api/?name={{ urlencode(Auth::user()->nama_asli ?? 'Konselor') }}&background=f3e8ff&color=6b21a8" alt="Konselor">
+            <header class="h-[72px] bg-white border-b border-gray-100 flex items-center justify-between px-8 flex-shrink-0">
+                <h2 class="text-xl font-bold text-gray-800">@yield('header', 'Ruang Kerja Dokter')</h2>
+                <div class="flex items-center gap-3">
+                    <span class="text-sm text-gray-500">{{ Auth::user()->nama_asli ?? 'Konselor' }}</span>
+                    <img class="h-10 w-10 rounded-full border-2 border-purple-200 object-cover" src="https://ui-avatars.com/api/?name={{ urlencode(Auth::user()->nama_asli ?? 'Konselor') }}&background=f3e8ff&color=6b21a8" alt="Konselor">
                 </div>
             </header>
 
-            <main class="flex-1 overflow-y-auto p-10">
+            <main class="flex-1 overflow-y-auto p-8">
                 @yield('content')
             </main>
         </div>
