@@ -224,7 +224,24 @@
                 $moodLogsCount = \App\Models\HasilCheckInstan::where('user_id', $userId)->count();
                 $journalCount = \App\Models\Journal::where('user_id', $userId)->count();
                 $avgMoodAllTime = \App\Models\HasilCheckInstan::where('user_id', $userId)->avg('poin_skor') ?? 0;
-                $avgMoodWeekly = \App\Models\HasilCheckInstan::where('user_id', $userId)->where('created_at', '>=', now()->startOfWeek())->avg('poin_skor') ?? 0;
+                
+                $thisWeekMoods = \App\Models\HasilCheckInstan::where('user_id', $userId)
+                    ->where('created_at', '>=', now()->startOfWeek())
+                    ->orderBy('created_at', 'asc')
+                    ->get();
+                
+                $avgMoodWeekly = 0;
+                $moodTrend = null;
+
+                if ($thisWeekMoods->count() > 0) {
+                    $avgMoodWeekly = $thisWeekMoods->avg('poin_skor');
+                    
+                    if ($thisWeekMoods->count() > 1) {
+                        // Rata-rata minggu ini sebelum mood terakhir diinput
+                        $previousAvg = $thisWeekMoods->take($thisWeekMoods->count() - 1)->avg('poin_skor');
+                        $moodTrend = $avgMoodWeekly - $previousAvg;
+                    }
+                }
             @endphp
             <div class="stat-box">
                 <div class="stat-icon">
@@ -273,7 +290,22 @@
                             <svg width="18" height="18" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.5"><path d="M18 20V10M12 20V4M6 20v-6"/></svg>
                         </div>
                         <span style="font-size: 24px; font-weight: 800;">{{ number_format($avgMoodWeekly, 0) }} <span style="font-size: 14px; font-weight: 600; color: #8E8E93;">/ 10</span></span>
-                        <span style="color: #4CAF50; font-size: 12px; font-weight: 700; margin-left: auto;">▲ 0.3</span>
+                        @if($moodTrend !== null)
+                            @php
+                                $trendColor = '#8E8E93';
+                                $trendIcon = '-';
+                                if ($moodTrend > 0) {
+                                    $trendColor = '#4CAF50';
+                                    $trendIcon = '▲';
+                                } elseif ($moodTrend < 0) {
+                                    $trendColor = '#F44336';
+                                    $trendIcon = '▼';
+                                }
+                            @endphp
+                            <span style="color: {{ $trendColor }}; font-size: 12px; font-weight: 700; margin-left: auto;">{{ $trendIcon }} {{ abs(round($moodTrend, 1)) }}</span>
+                        @else
+                            <span style="color: #8E8E93; font-size: 12px; font-weight: 700; margin-left: auto;">-</span>
+                        @endif
                     </div>
                     <p style="font-size: 12px; color: #8E8E93; font-weight: 500;">Rata-rata minggu ini</p>
                 </div>
