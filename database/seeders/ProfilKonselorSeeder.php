@@ -105,6 +105,22 @@ class ProfilKonselorSeeder extends Seeder
             ]
         );
 
+        // Tambah sesi untuk testing room access (confirmed + paid)
+        SesiKonseling::firstOrCreate(
+            [
+                'user_id' => $user->id,
+                'profil_konselor_id' => $profil1->profil_konselor_id,
+                'jadwal' => '2026-06-15 10:00:00'
+            ],
+            [
+                'deskripsi' => 'Sesi konsultasi untuk testing room access.',
+                'status' => 'confirmed',
+                'payment_method' => 'e-wallet',
+                'payment_status' => 'paid',
+                'media_konseling' => 'video_call'
+            ]
+        );
+
         // Tambah jadwal konselor (PBI 34)
         \App\Models\CounselorSchedule::firstOrCreate([
             'profil_konselor_id' => $profil1->profil_konselor_id,

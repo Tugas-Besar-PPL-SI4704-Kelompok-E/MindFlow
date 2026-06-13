@@ -18,13 +18,13 @@ class AdminKonselingController extends Controller
             return back()->with('info', 'Sesi sudah terkonfirmasi.');
         }
 
-        $newStatus = $sesi->payment_status === 'paid' ? 'confirmed' : 'approved';
+        // Validasi: Pembayaran harus sudah selesai sebelum sesi bisa dikonfirmasi
+        if ($sesi->payment_status !== 'paid') {
+            return back()->with('error', 'Pembayaran sesi belum selesai. Tunggu hingga pasien menyelesaikan pembayaran.');
+        }
 
-        DB::transaction(function () use ($sesi, $newStatus) {
-            $sesi->update([
-                'status' => $newStatus,
-                'approved_at' => now(),
-            ]);
+        DB::transaction(function () use ($sesi) {
+            $sesi->update(['status' => 'confirmed']);
         });
 
         // Notify user outside transaction
@@ -34,11 +34,7 @@ class AdminKonselingController extends Controller
             // Do not fail the request if notification fails; log if needed
         }
 
-        $msg = $newStatus === 'approved' 
-            ? 'Sesi berhasil disetujui. Menunggu pembayaran dari pengguna.'
-            : 'Sesi berhasil dikonfirmasi.';
-
-        return back()->with('success', $msg);
+        return back()->with('success', 'Sesi berhasil dikonfirmasi.');
     }
 
     public function cancel(Request $request, $id)
