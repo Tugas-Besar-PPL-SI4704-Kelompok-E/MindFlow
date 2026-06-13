@@ -149,5 +149,3 @@
 </div>
 
 @endsection
-
-<!-- Modal Create -->
