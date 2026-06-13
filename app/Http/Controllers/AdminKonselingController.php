@@ -18,6 +18,11 @@ class AdminKonselingController extends Controller
             return back()->with('info', 'Sesi sudah terkonfirmasi.');
         }
 
+        // Validasi: Pembayaran harus sudah selesai sebelum sesi bisa dikonfirmasi
+        if ($sesi->payment_status !== 'paid') {
+            return back()->with('error', 'Pembayaran sesi belum selesai. Tunggu hingga pasien menyelesaikan pembayaran.');
+        }
+
         DB::transaction(function () use ($sesi) {
             $sesi->update(['status' => 'confirmed']);
         });

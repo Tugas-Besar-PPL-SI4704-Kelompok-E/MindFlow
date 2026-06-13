@@ -875,14 +875,21 @@
                             </div>
 
                             <div class="flex flex-col gap-2">
-                                @if(in_array($jadwal->status, ['confirmed', 'rescheduled']))
+                                @if($jadwal->canEnterRoom())
                                     <a href="{{ route('konseling.room', $jadwal->sesi_konseling_id) }}" class="w-full text-center bg-emerald-500 hover:bg-emerald-600 text-white py-3 rounded-xl text-[12px] font-bold transition-all duration-300 shadow-sm shadow-emerald-200 flex items-center justify-center gap-2">
                                         <svg class="w-4 h-4" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2.5" d="M15 10l4.553-2.276A1 1 0 0121 8.618v6.764a1 1 0 01-1.447.894L15 14M5 18h8a2 2 0 002-2V8a2 2 0 00-2-2H5a2 2 0 00-2 2v8a2 2 0 002 2z"></path></svg>
                                         Masuk Ruangan
                                     </a>
                                 @elseif(in_array($jadwal->status, ['confirmed', 'rescheduled']))
-                                    <button disabled class="w-full text-center bg-gray-200 text-gray-500 py-3 rounded-xl text-[12px] font-bold transition-all duration-300 border border-gray-200">
-                                        Ruangan tersedia 15 menit sebelum jadwal
+                                    @php
+                                        $accessMessage = $jadwal->getRoomAccessMessage();
+                                        $displayMessage = match(true) {
+                                            $jadwal->payment_status !== 'paid' => 'Pembayaran belum selesai',
+                                            default => 'Ruangan tersedia 15 menit sebelum jadwal'
+                                        };
+                                    @endphp
+                                    <button disabled class="w-full text-center bg-gray-200 text-gray-500 py-3 rounded-xl text-[12px] font-bold transition-all duration-300 border border-gray-200 cursor-not-allowed" title="{{ $accessMessage }}">
+                                        {{ $displayMessage }}
                                     </button>
                                 @endif
                                 <div class="flex gap-2">

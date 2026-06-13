@@ -85,6 +85,11 @@ class CounselorController extends Controller
             abort(403);
         }
 
+        // Validasi: Pembayaran harus sudah selesai sebelum konselor bisa accept
+        if ($sesi->payment_status !== 'paid') {
+            return redirect()->back()->with('error', 'Pasien belum menyelesaikan pembayaran. Tunggu hingga pembayaran dikonfirmasi.');
+        }
+
         if ($sesi->status === 'change_requested' && $sesi->requested_jadwal) {
             $sesi->update([
                 'jadwal' => $sesi->requested_jadwal,

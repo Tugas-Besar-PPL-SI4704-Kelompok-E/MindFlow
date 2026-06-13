@@ -71,21 +71,38 @@
                                     'cancelled' => 'bg-red-100 text-red-800',
                                     default => 'bg-gray-100 text-gray-800'
                                 };
+                                $paymentColor = match($item->payment_status) {
+                                    'paid' => 'bg-emerald-100 text-emerald-800',
+                                    'waiting_verification' => 'bg-yellow-100 text-yellow-800',
+                                    default => 'bg-red-100 text-red-800'
+                                };
                             @endphp
-                            <span class="px-3 py-1 inline-flex text-xs leading-5 font-semibold rounded-full {{ $statusColor }} uppercase tracking-wide">
-                                {{ $item->status }}
-                            </span>
+                            <div class="flex gap-2">
+                                <span class="px-3 py-1 inline-flex text-xs leading-5 font-semibold rounded-full {{ $statusColor }} uppercase tracking-wide">
+                                    {{ $item->status }}
+                                </span>
+                                <span class="px-3 py-1 inline-flex text-xs leading-5 font-semibold rounded-full {{ $paymentColor }} uppercase tracking-wide">
+                                    {{ $item->payment_status }}
+                                </span>
+                            </div>
                         </td>
                         <td class="px-6 py-4 whitespace-nowrap text-sm font-medium">
                             @if(in_array($item->status, ['pending', 'change_requested']))
                                 <div class="flex space-x-2">
-                                    <form action="{{ route('konselor.jadwal.accept', $item->sesi_konseling_id) }}" method="POST">
-                                        @csrf
-                                        <button type="submit" class="text-white bg-emerald-500 hover:bg-emerald-600 focus:ring-4 focus:outline-none focus:ring-emerald-300 font-medium rounded-lg text-xs px-3 py-1.5 text-center inline-flex items-center transition-colors">
-                                            <svg class="w-3.5 h-3.5 mr-1" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M5 13l4 4L19 7"></path></svg>
-                                            Terima
+                                    @if($item->payment_status === 'paid')
+                                        <form action="{{ route('konselor.jadwal.accept', $item->sesi_konseling_id) }}" method="POST">
+                                            @csrf
+                                            <button type="submit" class="text-white bg-emerald-500 hover:bg-emerald-600 focus:ring-4 focus:outline-none focus:ring-emerald-300 font-medium rounded-lg text-xs px-3 py-1.5 text-center inline-flex items-center transition-colors">
+                                                <svg class="w-3.5 h-3.5 mr-1" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M5 13l4 4L19 7"></path></svg>
+                                                Terima
+                                            </button>
+                                        </form>
+                                    @else
+                                        <button disabled class="text-gray-400 bg-gray-100 border border-gray-200 font-medium rounded-lg text-xs px-3 py-1.5 text-center inline-flex items-center cursor-not-allowed" title="Tunggu pembayaran pasien selesai">
+                                            <svg class="w-3.5 h-3.5 mr-1" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M12 8c-1.657 0-3 .895-3 2s1.343 2 3 2 3 .895 3 2-1.343 2-3 2m0-8c1.11 0 2.08.402 2.599 1M12 8V7m0 1v8m0 0v1m0-1c-1.11 0-2.08-.402-2.599-1M21 12a9 9 0 11-18 0 9 9 0 0118 0z"></path></svg>
+                                            Menunggu Pembayaran
                                         </button>
-                                    </form>
+                                    @endif
                                     <form action="{{ route('konselor.jadwal.reject', $item->sesi_konseling_id) }}" method="POST" onsubmit="return confirm('Apakah Anda yakin ingin menolak sesi ini?');">
                                         @csrf
                                         <button type="submit" class="text-white bg-red-500 hover:bg-red-600 focus:ring-4 focus:outline-none focus:ring-red-300 font-medium rounded-lg text-xs px-3 py-1.5 text-center inline-flex items-center transition-colors">
@@ -102,8 +119,15 @@
                                             Masuk Ruangan
                                         </a>
                                     @else
-                                        <button disabled class="text-gray-400 bg-gray-100 border border-gray-200 font-medium rounded-lg text-xs px-3 py-1.5 text-center inline-flex items-center transition-colors">
-                                            Ruangan tersedia 15 menit sebelum jadwal
+                                        @php
+                                            $accessMessage = $item->getRoomAccessMessage();
+                                            $displayMessage = match(true) {
+                                                $item->payment_status !== 'paid' => 'Belum dibayar',
+                                                default => '15 menit sebelum jadwal'
+                                            };
+                                        @endphp
+                                        <button disabled class="text-gray-400 bg-gray-100 border border-gray-200 font-medium rounded-lg text-xs px-3 py-1.5 text-center inline-flex items-center transition-colors cursor-not-allowed" title="{{ $accessMessage }}">
+                                            {{ $displayMessage }}
                                         </button>
                                     @endif
                                     <button onclick="document.getElementById('modal-eval-{{ $item->sesi_konseling_id }}').classList.remove('hidden')" class="text-white bg-purple-500 hover:bg-purple-600 focus:ring-4 focus:outline-none focus:ring-purple-300 font-medium rounded-lg text-xs px-3 py-1.5 text-center inline-flex items-center transition-colors">

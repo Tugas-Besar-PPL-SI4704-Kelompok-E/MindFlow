@@ -370,8 +370,15 @@
                             Masuk Ruangan
                         </a>
                     @elseif(in_array($contohSesi->status, ['confirmed', 'rescheduled']))
-                        <button disabled class="w-full text-center bg-gray-200 text-gray-500 py-3.5 rounded-2xl text-sm font-bold transition-all duration-300 shadow-sm border border-gray-200">
-                            Ruangan tersedia 15 menit sebelum jadwal
+                        @php
+                            $accessMessage = $contohSesi->getRoomAccessMessage();
+                            $displayMessage = match(true) {
+                                $contohSesi->payment_status !== 'paid' => 'Pembayaran belum selesai',
+                                default => 'Ruangan tersedia 15 menit sebelum jadwal'
+                            };
+                        @endphp
+                        <button disabled class="w-full text-center bg-gray-200 text-gray-500 py-3.5 rounded-2xl text-sm font-bold transition-all duration-300 shadow-sm border border-gray-200 cursor-not-allowed" title="{{ $accessMessage }}">
+                            {{ $displayMessage }}
                         </button>
                     @endif
                     @if(!in_array($contohSesi->status, ['completed', 'cancelled', 'rejected']))
