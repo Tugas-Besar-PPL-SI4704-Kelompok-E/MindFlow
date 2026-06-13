@@ -72,19 +72,8 @@
                         </select>
                     </div>
                     <div>
-                        <label class="block text-sm font-semibold text-gray-700 mb-2">Nomor WhatsApp Aktif</label>
-                        <input type="text" name="nomor_whatsapp" value="{{ old('nomor_whatsapp', $profil->nomor_whatsapp ?? '') }}" class="w-full px-4 py-3 rounded-xl border border-gray-200 focus:ring-2 focus:ring-purple-500 focus:border-purple-500 transition-all outline-none bg-gray-50" required>
-                    </div>
-                </div>
-
-                <div class="grid grid-cols-1 md:grid-cols-2 gap-6 mt-6">
-                    <div>
                         <label class="block text-sm font-semibold text-gray-700 mb-2">Harga per Sesi (IDR)</label>
                         <input type="number" name="harga_per_sesi" value="{{ old('harga_per_sesi', $profil->harga_per_sesi ?? '') }}" class="w-full px-4 py-3 rounded-xl border border-gray-200 focus:ring-2 focus:ring-purple-500 focus:border-purple-500 transition-all outline-none bg-gray-50" min="0" required>
-                    </div>
-                    <div>
-                        <label class="block text-sm font-semibold text-gray-700 mb-2">Nomor WhatsApp Aktif</label>
-                        <input type="text" name="nomor_whatsapp" value="{{ old('nomor_whatsapp', $profil->nomor_whatsapp ?? '') }}" class="w-full px-4 py-3 rounded-xl border border-gray-200 focus:ring-2 focus:ring-purple-500 focus:border-purple-500 transition-all outline-none bg-gray-50" required>
                     </div>
                 </div>
 

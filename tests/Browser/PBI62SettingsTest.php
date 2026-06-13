@@ -250,9 +250,6 @@ class PBI62SettingsTest extends DuskTestCase
                     ->type('input[name="nama_asli"]', 'Konselor Baru')
                     ->clear('input[name="nama_samaran"]')
                     ->type('input[name="nama_samaran"]', 'konselor_baru_62b')
-                    // Update nomor WA
-                    ->clear('input[name="nomor_whatsapp"]')
-                    ->type('input[name="nomor_whatsapp"]', '089999999999')
                     // Update biografi
                     ->clear('textarea[name="biografi"]')
                     ->type('textarea[name="biografi"]', 'Biografi yang sudah diperbarui.')
