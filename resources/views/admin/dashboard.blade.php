@@ -97,11 +97,20 @@
                              <svg class="w-4 h-4 text-red-500" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M12 9v2m0 4h.01"></path></svg>
                          </div>
                          <div class="min-w-0">
-                             <p class="text-xs font-semibold text-gray-700 truncate">"{{ Str::limit($r->thread->content ?? 'Dihapus', 50) }}"</p>
-                             <p class="text-[11px] text-gray-400 mt-1">{{ $r->reason }} · {{ $r->created_at->diffForHumans() }}</p>
+                             <p class="text-xs font-semibold text-gray-700 truncate">"{{ Str::limit($r->konten ?? 'Dihapus', 50) }}"</p>
+                             <p class="text-[11px] text-gray-400 mt-1">
+                                 @if($r->type === 'thread')
+                                     <span class="text-blue-600 font-bold">Forum</span>
+                                 @elseif($r->type === 'reply')
+                                     <span class="text-gray-500 font-bold">Balasan</span>
+                                 @elseif($r->type === 'artikel')
+                                     <span class="text-[#A881C2] font-bold">Artikel</span>
+                                 @endif
+                                 · {{ $r->alasan }} · {{ $r->created_at->diffForHumans() }}
+                             </p>
                          </div>
                      </div>
-                    @endforeach
+                     @endforeach
                 </div>
             @endif
             <a href="{{ route('admin.laporan') }}" class="mt-4 inline-block text-xs font-semibold text-purple-600 hover:text-purple-800">Lihat Semua →</a>
