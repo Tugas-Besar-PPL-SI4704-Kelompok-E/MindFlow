@@ -2,10 +2,12 @@
 
 namespace App\Models;
 
+use Illuminate\Database\Eloquent\Factories\HasFactory;
 use Illuminate\Database\Eloquent\Model;
 
 class ReplyReport extends Model
 {
+    use HasFactory;
     protected $fillable = ['thread_reply_id', 'user_id', 'reason', 'status'];
 
     public function threadReply()

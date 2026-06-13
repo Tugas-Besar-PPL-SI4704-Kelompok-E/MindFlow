@@ -90,12 +90,20 @@
                                                 Batal Otomatis
                                             </span>
                                         @elseif($history->status === 'confirmed')
+                                            <span class="inline-flex items-center px-3 py-1 bg-emerald-50 text-emerald-600 border border-emerald-100 rounded-lg text-[10px] font-black uppercase tracking-widest">
+                                                Terkonfirmasi
+                                            </span>
+                                        @elseif($history->status === 'approved')
                                             <span class="inline-flex items-center px-3 py-1 bg-blue-50 text-blue-600 border border-blue-100 rounded-lg text-[10px] font-black uppercase tracking-widest">
                                                 Disetujui
                                             </span>
                                         @elseif($history->status === 'pending')
                                             <span class="inline-flex items-center px-3 py-1 bg-amber-50 text-amber-600 border border-amber-100 rounded-lg text-[10px] font-black uppercase tracking-widest">
                                                 Menunggu
+                                            </span>
+                                        @elseif($history->status === 'change_requested')
+                                            <span class="inline-flex items-center px-3 py-1 bg-indigo-50 text-indigo-600 border border-indigo-100 rounded-lg text-[10px] font-black uppercase tracking-widest">
+                                                Ubah Jadwal
                                             </span>
                                         @else
                                             <span class="inline-flex items-center px-3 py-1 bg-gray-50 text-gray-600 border border-gray-100 rounded-lg text-[10px] font-black uppercase tracking-widest">

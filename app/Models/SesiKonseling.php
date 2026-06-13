@@ -20,6 +20,7 @@ class SesiKonseling extends Model
         'requested_jadwal',
         'request_reason',
         'status',
+        'approved_at',
         'catatan_konselor',
         'payment_method',
         'payment_status',
@@ -97,31 +98,54 @@ class SesiKonseling extends Model
         }
         self::$hasCancelledExpired = true;
 
-        $timeout = env('AUTO_CANCEL_SECONDS', 172800);
-
-        $expiredTimeoutSessions = self::where('status', 'pending')
-            ->where('created_at', '<', now()->subSeconds($timeout))
+        // 1. Batalkan sesi 'pending' yang tidak direspon konselor (Default 2 hari)
+        $timeoutPending = env('AUTO_CANCEL_SECONDS', 172800);
+        $expiredPendingSessions = self::where('status', 'pending')
+            ->where('created_at', '<', now()->subSeconds($timeoutPending))
             ->with('profilKonselor')
             ->get();
 
-        $cancelledCount = $expiredTimeoutSessions->count();
+        // 2. Batalkan sesi 'approved' yang tidak dibayar user dalam 24 jam
+        $expiredApprovedSessions = self::where('status', 'approved')
+            ->where('approved_at', '<', now()->subHours(24))
+            ->with('profilKonselor')
+            ->get();
+
+        $allExpired = $expiredPendingSessions->concat($expiredApprovedSessions);
+        $cancelledCount = $allExpired->count();
 
         if ($cancelledCount > 0) {
             $userId = \Illuminate\Support\Facades\Auth::id();
             $timeoutCancelledDetails = [];
+            $refundDetails = [];
 
-            foreach ($expiredTimeoutSessions as $session) {
-                $session->update([
-                    'status' => 'system_cancelled',
-                    'payment_status' => 'refunded',
-                ]);
+            foreach ($allExpired as $session) {
+                $isPaid = ($session->payment_status === 'paid');
+                $updateData = ['status' => 'system_cancelled'];
+                if ($isPaid) {
+                    $updateData['payment_status'] = 'refunded';
+                }
+                $session->update($updateData);
+
                 if ($userId && $session->user_id === $userId) {
                     $counselorName = $session->profilKonselor ? $session->profilKonselor->nama : 'Konselor';
-                    $timeoutCancelledDetails[] = [
-                        'jadwal' => \Carbon\Carbon::parse($session->jadwal)->translatedFormat('d M Y, H:i'),
-                        'konselor' => $counselorName,
-                        'reason' => 'Tidak ada respons dari konselor selama 2 hari.',
-                    ];
+                    $reason = $session->status === 'approved' 
+                        ? 'Pembayaran tidak dilakukan dalam 24 jam setelah disetujui.'
+                        : 'Tidak ada respons dari konselor selama 2 hari.';
+                        
+                    if ($isPaid) {
+                        $refundDetails[] = [
+                            'jadwal' => \Carbon\Carbon::parse($session->jadwal)->translatedFormat('d M Y, H:i'),
+                            'konselor' => $counselorName,
+                            'reason' => $reason,
+                        ];
+                    } else {
+                        $timeoutCancelledDetails[] = [
+                            'jadwal' => \Carbon\Carbon::parse($session->jadwal)->translatedFormat('d M Y, H:i'),
+                            'konselor' => $counselorName,
+                            'reason' => $reason,
+                        ];
+                    }
                 }
             }
 
@@ -129,41 +153,65 @@ class SesiKonseling extends Model
                 $existing = session()->get('expired_cancelled_sessions', []);
                 session()->put('expired_cancelled_sessions', array_merge($existing, $timeoutCancelledDetails));
             }
+            if (!empty($refundDetails)) {
+                $existingRefunds = session()->get('refund_sessions', []);
+                session()->put('refund_sessions', array_merge($existingRefunds, $refundDetails));
+            }
         }
 
         $userId = \Illuminate\Support\Facades\Auth::id();
         if ($userId) {
-            // Temukan sesi pending milik user tersebut yang sudah lewat waktunya (kadaluarsa)
+            // Temukan sesi pending/approved milik user tersebut yang sudah lewat waktunya (jadwal terlampaui)
             $expiredSessions = self::where('user_id', $userId)
-                ->where('status', 'pending')
+                ->whereIn('status', ['pending', 'approved'])
                 ->where('jadwal', '<', now())
                 ->with('profilKonselor')
                 ->get();
 
             if ($expiredSessions->isNotEmpty()) {
-                // Batalkan sesi-sesi tersebut
-                self::whereIn('sesi_konseling_id', $expiredSessions->pluck('sesi_konseling_id'))
-                    ->update(['status' => 'cancelled']);
-
-                // Kumpulkan informasi sesi untuk notifikasi
                 $cancelledDetails = [];
+                $refundDetails = [];
+                
                 foreach ($expiredSessions as $session) {
                     $counselorName = $session->profilKonselor ? $session->profilKonselor->nama : 'Konselor';
-                    $cancelledDetails[] = [
-                        'jadwal' => \Carbon\Carbon::parse($session->jadwal)->translatedFormat('d M Y, H:i'),
-                        'konselor' => $counselorName,
-                        'reason' => 'Tidak ada respons dari konselor hingga waktu yang dijadwalkan.',
-                    ];
+                    $isPaid = ($session->payment_status === 'paid');
+                    
+                    $updateData = ['status' => 'cancelled'];
+                    if ($isPaid) {
+                        $updateData['payment_status'] = 'refunded';
+                    }
+                    $session->update($updateData);
+
+                    $reason = 'Waktu jadwal telah terlampaui tanpa penyelesaian alur (Persetujuan/Pembayaran).';
+
+                    if ($isPaid) {
+                        $refundDetails[] = [
+                            'jadwal' => \Carbon\Carbon::parse($session->jadwal)->translatedFormat('d M Y, H:i'),
+                            'konselor' => $counselorName,
+                            'reason' => $reason,
+                        ];
+                    } else {
+                        $cancelledDetails[] = [
+                            'jadwal' => \Carbon\Carbon::parse($session->jadwal)->translatedFormat('d M Y, H:i'),
+                            'konselor' => $counselorName,
+                            'reason' => $reason,
+                        ];
+                    }
                 }
 
-                // Simpan ke session untuk ditampilkan ke user (sampai ditutup secara manual)
-                $existing = session()->get('expired_cancelled_sessions', []);
-                session()->put('expired_cancelled_sessions', array_merge($existing, $cancelledDetails));
+                if (!empty($cancelledDetails)) {
+                    $existing = session()->get('expired_cancelled_sessions', []);
+                    session()->put('expired_cancelled_sessions', array_merge($existing, $cancelledDetails));
+                }
+                if (!empty($refundDetails)) {
+                    $existingRefunds = session()->get('refund_sessions', []);
+                    session()->put('refund_sessions', array_merge($existingRefunds, $refundDetails));
+                }
             }
         }
 
-        // Batalkan seluruh sesi pending lainnya yang sudah kadaluarsa secara umum
-        self::where('status', 'pending')
+        // Batalkan seluruh sesi pending/approved lainnya yang sudah kadaluarsa secara umum
+        self::whereIn('status', ['pending', 'approved'])
             ->where('jadwal', '<', now())
             ->update(['status' => 'cancelled']);
 

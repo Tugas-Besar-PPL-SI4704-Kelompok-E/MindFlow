@@ -184,22 +184,22 @@
         $unpaidSession = \App\Models\SesiKonseling::with('profilKonselor')
             ->where('user_id', Auth::id())
             ->where('payment_status', 'pending')
-            ->where('status', '!=', 'cancelled')
+            ->where('status', 'approved')
             ->first();
     @endphp
 
     @if($unpaidSession)
-        <div class="bg-amber-50 border-l-4 border-amber-500 text-amber-900 p-5 rounded-2xl mb-8 flex flex-col md:flex-row justify-between items-start md:items-center gap-4 shadow-sm animate-in fade-in duration-500">
+        <div class="bg-blue-50 border-l-4 border-blue-500 text-blue-900 p-5 rounded-2xl mb-8 flex flex-col md:flex-row justify-between items-start md:items-center gap-4 shadow-sm animate-in fade-in duration-500">
             <div class="flex items-center gap-4">
-                <div class="w-12 h-12 bg-amber-500 rounded-full flex items-center justify-center text-white shadow-md shadow-amber-200 shrink-0">
+                <div class="w-12 h-12 bg-blue-500 rounded-full flex items-center justify-center text-white shadow-md shadow-blue-200 shrink-0">
                     <svg class="w-6 h-6" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2.5" d="M12 9v2m0 4h.01m-6.938 4h13.856c1.54 0 2.502-1.667 1.732-3L13.732 4c-.77-1.333-2.694-1.333-3.464 0L3.34 16c-.77 1.333.192 3 1.732 3z"></path></svg>
                 </div>
                 <div>
-                    <h4 class="font-bold text-sm text-amber-950">Menunggu Pembayaran Sesi Konseling</h4>
-                    <p class="text-xs text-amber-800 font-medium mt-1">Sesi dengan <strong>{{ $unpaidSession->profilKonselor->nama }}</strong> pada {{ \Carbon\Carbon::parse($unpaidSession->jadwal)->translatedFormat('d F Y, H:i') }} belum dibayar.</p>
+                    <h4 class="font-bold text-sm text-blue-950">Sesi Disetujui! Menunggu Pembayaran</h4>
+                    <p class="text-xs text-blue-800 font-medium mt-1">Sesi dengan <strong>{{ $unpaidSession->profilKonselor->nama }}</strong> pada {{ \Carbon\Carbon::parse($unpaidSession->jadwal)->translatedFormat('d F Y, H:i') }} telah disetujui. Silakan bayar dalam 24 jam.</p>
                 </div>
             </div>
-            <a href="{{ route('booking.checkout', $unpaidSession->sesi_konseling_id) }}" class="inline-flex items-center justify-center px-5 py-2.5 bg-amber-600 hover:bg-amber-700 text-white rounded-xl text-xs font-bold shadow-md shadow-amber-300/30 transition-all active:scale-[0.98] shrink-0">
+            <a href="{{ route('booking.checkout', $unpaidSession->sesi_konseling_id) }}" class="inline-flex items-center justify-center px-5 py-2.5 bg-blue-600 hover:bg-blue-700 text-white rounded-xl text-xs font-bold shadow-md shadow-blue-300/30 transition-all active:scale-[0.98] shrink-0">
                 Bayar Sekarang
             </a>
         </div>
@@ -478,26 +478,55 @@
             @php
                 $upcomingSessions = \App\Models\SesiKonseling::with('profilKonselor')
                     ->where('user_id', $userId)
-                    ->where('status', '!=', 'cancelled')
-                    ->where('jadwal', '>=', now()->startOfDay())
-                    ->orderBy('jadwal', 'asc')
-                    ->take(2)
+                    ->orderByRaw("FIELD(status, 'confirmed', 'rescheduled', 'approved', 'pending', 'change_requested', 'completed', 'system_cancelled', 'cancelled', 'rejected') ASC")
+                    ->orderBy('jadwal', 'desc')
+                    ->take(5)
                     ->get();
             @endphp
             @if($upcomingSessions->isNotEmpty())
                 <div style="display: flex; flex-direction: column; gap: 20px;">
                     @foreach($upcomingSessions as $session)
-                        <div style="padding: 20px; background: #FAFAFA; border-radius: 24px; border: 1px solid #F1F1F1; display: flex; align-items: center; gap: 15px; transition: all 0.3s ease;" onmouseover="this.style.backgroundColor='#FFFFFF'; this.style.boxShadow='0 8px 20px rgba(0,0,0,0.02)';" onmouseout="this.style.backgroundColor='#FAFAFA'; this.style.boxShadow='none';">
-                            <div style="width: 48px; height: 48px; border-radius: 16px; background: #F4EEFB; display: flex; align-items: center; justify-content: center; overflow: hidden; border: 1px solid #A881C2/10;">
-                                <img src="https://ui-avatars.com/api/?name={{ urlencode($session->profilKonselor->nama) }}&background=A881C2&color=fff&bold=true&size=48" style="width: 100%; height: 100%; object-fit: cover;">
-                            </div>
-                            <div style="flex: 1;">
-                                <p style="font-size: 14px; font-weight: 700; color: #1A1A1A; margin-bottom: 2px;">{{ $session->profilKonselor->nama }}</p>
-                                <p style="font-size: 12px; color: #8E8E93; font-weight: 600;">{{ \Carbon\Carbon::parse($session->jadwal)->translatedFormat('d M, H:i') }}</p>
-                            </div>
-                            <div style="padding: 5px 10px; background: #F4EEFB; color: #A881C2; border-radius: 8px; font-size: 10px; font-weight: 800; text-transform: uppercase; letter-spacing: 0.5px;">
-                                {{ $session->status }}
-                            </div>
+                        @php
+                            $statusConfig = [
+                                'pending'          => ['label' => 'Menunggu ACC', 'bg' => '#FFF8E1', 'color' => '#FFA000'],
+                                'approved'         => ['label' => 'Pembayaran',   'bg' => '#E3F2FD', 'color' => '#1976D2'],
+                                'confirmed'        => ['label' => 'Sesi Aktif',   'bg' => '#E8F5E9', 'color' => '#388E3C'],
+                                'rescheduled'      => ['label' => 'Jadwal Ulang', 'bg' => '#E8F5E9', 'color' => '#388E3C'],
+                                'change_requested' => ['label' => 'Request Ubah', 'bg' => '#F3E5F5', 'color' => '#7B1FA2'],
+                                'completed'        => ['label' => 'Selesai',      'bg' => '#F5F5F5', 'color' => '#616161'],
+                                'cancelled'        => ['label' => 'Batal',        'bg' => '#FFEBEE', 'color' => '#D32F2F'],
+                                'system_cancelled' => ['label' => 'Batal Sistem', 'bg' => '#FFEBEE', 'color' => '#D32F2F'],
+                                'rejected'         => ['label' => 'Ditolak',      'bg' => '#FFEBEE', 'color' => '#D32F2F'],
+                            ];
+                            $st = $statusConfig[$session->status] ?? ['label' => $session->status, 'bg' => '#F4EEFB', 'color' => '#A881C2'];
+                            
+                            $targetRoute = route('konseling.show', $session->profil_konselor_id);
+                            if ($session->status === 'approved') {
+                                $targetRoute = route('booking.checkout', $session->sesi_konseling_id);
+                            } elseif (in_array($session->status, ['completed', 'cancelled', 'system_cancelled', 'rejected'])) {
+                                $targetRoute = route('history.index');
+                            }
+                        @endphp
+                        <div style="padding: 20px; background: #FAFAFA; border-radius: 24px; border: 1px solid #F1F1F1; display: flex; flex-direction: column; gap: 15px; transition: all 0.3s ease;" onmouseover="this.style.backgroundColor='#FFFFFF'; this.style.boxShadow='0 8px 20px rgba(0,0,0,0.02)';" onmouseout="this.style.backgroundColor='#FAFAFA'; this.style.boxShadow='none';">
+                            <a href="{{ $targetRoute }}" style="text-decoration: none; display: flex; align-items: center; gap: 15px; width: 100%;">
+                                <div style="width: 48px; height: 48px; border-radius: 16px; background: #F4EEFB; display: flex; align-items: center; justify-content: center; overflow: hidden; border: 1px solid #A881C2/10;">
+                                    <img src="https://ui-avatars.com/api/?name={{ urlencode($session->profilKonselor->nama) }}&background=A881C2&color=fff&bold=true&size=48" style="width: 100%; height: 100%; object-fit: cover;">
+                                </div>
+                                <div style="flex: 1;">
+                                    <p style="font-size: 14px; font-weight: 700; color: #1A1A1A; margin-bottom: 2px;">{{ $session->profilKonselor->nama }}</p>
+                                    <p style="font-size: 12px; color: #8E8E93; font-weight: 600;">{{ \Carbon\Carbon::parse($session->jadwal)->translatedFormat('d M, H:i') }}</p>
+                                </div>
+                                <div style="padding: 5px 10px; background: {{ $st['bg'] }}; color: {{ $st['color'] }}; border-radius: 8px; font-size: 10px; font-weight: 800; text-transform: uppercase; letter-spacing: 0.5px; border: 1px solid {{ $st['color'] }}40;">
+                                    {{ $st['label'] }}
+                                </div>
+                            </a>
+                            
+                            @if(in_array($session->status, ['confirmed', 'rescheduled']))
+                                <a href="{{ route('konseling.room', $session->sesi_konseling_id) }}" style="text-decoration: none; background: #388E3C; color: white; text-align: center; padding: 10px; border-radius: 12px; font-size: 12px; font-weight: 700; display: flex; align-items: center; justify-content: center; gap: 8px; transition: background 0.2s;" onmouseover="this.style.backgroundColor='#2E7D32'" onmouseout="this.style.backgroundColor='#388E3C'">
+                                    <svg width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.5" stroke-linecap="round" stroke-linejoin="round"><path d="M15 10l4.553-2.276A1 1 0 0121 8.618v6.764a1 1 0 01-1.447.894L15 14M5 18h8a2 2 0 002-2V8a2 2 0 00-2-2H5a2 2 0 00-2 2v8a2 2 0 002 2z"></path></svg>
+                                    Masuk Ruangan
+                                </a>
+                            @endif
                         </div>
                     @endforeach
                     <a href="{{ route('konseling.index') }}" class="btn-link" style="text-align: center; margin-top: 5px; font-weight: 700; color: #A881C2;">Lihat Semua Jadwal →</a>
@@ -520,10 +549,10 @@
         </div>
     </div>
 
-    <!-- Riwayat Konsultasi & Catatan Konselor Section -->
+    <!-- Riwayat Catatan Konselor Section -->
     <div class="section-card mt-8">
         <h3 class="card-title flex justify-between items-center mb-6">
-            <span>Riwayat Konsultasi & Catatan Konselor</span>
+            <span>Riwayat Catatan Konselor</span>
             <a href="{{ route('konseling.history') }}" class="btn-link">Lihat Semua →</a>
         </h3>
         

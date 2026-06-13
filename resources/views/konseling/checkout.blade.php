@@ -2,6 +2,13 @@
 
 @section('content')
 <div class="max-w-2xl mx-auto py-10 px-4">
+    <div class="flex items-center justify-between mb-8">
+        <a href="{{ route('konseling.show', $sesi->profil_konselor_id) }}" class="inline-flex items-center gap-3 px-5 py-2.5 rounded-full border border-gray-200 bg-white hover:bg-gray-50 transition-all text-gray-600 hover:text-gray-900 group shadow-sm">
+            <svg class="w-5 h-5 group-hover:-translate-x-1 transition-transform" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M10 19l-7-7m0 0l7-7m-7 7h18"></path></svg>
+            <span class="font-semibold">Kembali</span>
+        </a>
+    </div>
+
     <div class="mb-8 flex items-center justify-between">
         <h2 class="text-3xl font-extrabold text-gray-900 tracking-tight">Checkout Pembayaran</h2>
         <span class="px-4 py-1.5 rounded-full bg-purple-50 text-[#A881C2] text-xs font-bold border border-purple-100 uppercase tracking-wider">
