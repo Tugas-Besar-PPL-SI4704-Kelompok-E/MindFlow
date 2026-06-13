@@ -157,6 +157,101 @@
         margin-top: 30px;
         line-height: 1.5;
     }
+
+    /* Elegant Modal */
+    .modal-overlay {
+        position: fixed;
+        inset: 0;
+        background: rgba(17, 24, 39, 0.4);
+        backdrop-filter: blur(8px);
+        display: flex;
+        align-items: center;
+        justify-content: center;
+        z-index: 1000;
+        opacity: 0;
+        pointer-events: none;
+        transition: opacity 0.4s ease;
+    }
+    .modal-overlay.show {
+        opacity: 1;
+        pointer-events: auto;
+    }
+    .modal-box {
+        background: #FFFFFF;
+        width: 100%;
+        max-width: 440px;
+        padding: 48px 40px;
+        border-radius: 32px;
+        text-align: center;
+        box-shadow: 0 25px 50px -12px rgba(0, 0, 0, 0.25);
+        transform: scale(0.95) translateY(20px);
+        transition: all 0.4s cubic-bezier(0.16, 1, 0.3, 1);
+    }
+    .modal-overlay.show .modal-box {
+        transform: scale(1) translateY(0);
+    }
+    .modal-icon {
+        font-size: 56px;
+        margin-bottom: 24px;
+        display: inline-block;
+        background: #FEF2F2;
+        width: 96px; height: 96px;
+        border-radius: 50%;
+        line-height: 96px;
+    }
+    .modal-title {
+        font-size: 24px;
+        font-weight: 700;
+        color: #111827;
+        margin-bottom: 12px;
+        letter-spacing: -0.5px;
+    }
+    .modal-text {
+        color: #6B7280;
+        font-size: 16px;
+        line-height: 1.6;
+        margin-bottom: 40px;
+    }
+    .modal-actions {
+        display: flex;
+        gap: 16px;
+    }
+    .modal-btn-secondary {
+        flex: 1;
+        padding: 16px 20px;
+        background: #F3F4F6;
+        color: #374151;
+        border-radius: 16px;
+        font-weight: 600;
+        font-size: 15px;
+        border: none;
+        cursor: pointer;
+        transition: all 0.2s;
+    }
+    .modal-btn-secondary:hover {
+        background: #E5E7EB;
+        color: #111827;
+    }
+    .modal-btn-primary {
+        flex: 1;
+        padding: 16px 20px;
+        background: #111827;
+        color: #FFFFFF;
+        border-radius: 16px;
+        font-weight: 600;
+        font-size: 15px;
+        border: none;
+        cursor: pointer;
+        text-decoration: none;
+        display: flex;
+        align-items: center;
+        justify-content: center;
+        transition: all 0.2s;
+    }
+    .modal-btn-primary:hover {
+        background: #1F2937;
+        transform: translateY(-2px);
+    }
 </style>
 @endsection
 
@@ -328,5 +423,39 @@
             Jika kamu merasa kesulitan atau butuh bantuan, sangat disarankan untuk berkonsultasi langsung dengan psikolog atau profesional kesehatan mental.
         </div>
     </div>
+
+    <!-- Modal Pop-up untuk Tawaran Jurnal -->
+    @if(session('offer_journal'))
+    <div class="modal-overlay show" id="journalOfferModal">
+        <div class="modal-box">
+            <div class="modal-icon">🫂</div>
+            <h3 class="modal-title">Sepertinya harimu berat</h3>
+            <p class="modal-text">Kami perhatikan kamu sedang merasa cukup tertekan saat ini. Maukah kamu menuangkan perasaanmu lewat tulisan jurnal agar bebanmu sedikit berkurang?</p>
+            <div class="modal-actions">
+                <button type="button" class="modal-btn-secondary" id="btnSkipJournalModal">Lewati</button>
+                <a href="{{ route('journals.create') }}" class="modal-btn-primary">Tulis Jurnal</a>
+            </div>
+        </div>
+    </div>
+    @endif
 </div>
+@endsection
+
+@section('scripts')
+<script>
+    document.addEventListener('DOMContentLoaded', function() {
+        const modal = document.getElementById('journalOfferModal');
+        const btnSkip = document.getElementById('btnSkipJournalModal');
+
+        if (btnSkip && modal) {
+            btnSkip.addEventListener('click', function() {
+                modal.classList.remove('show');
+                // Hapus elemen dari DOM setelah animasi transisi selesai (0.4s)
+                setTimeout(() => {
+                    modal.remove();
+                }, 400);
+            });
+        }
+    });
+</script>
 @endsection
