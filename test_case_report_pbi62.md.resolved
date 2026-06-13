@@ -1,0 +1,56 @@
+# Test Case Report — MindFlow (PBI #11, #12, #62)
+
+| PBI ID | Case ID | Test Scenario | Type | Test Case | Pre Condition | Steps | Steps Description | Expected Result | Status (Pass/Fail) | Keterangan |
+|--------|---------|---------------|------|-----------|---------------|:-----:|-------------------|-----------------|:------------------:|------------|
+| PBI-11 | TC-11-01 | User membuat jurnal baru | Positive | User dapat menulis dan menyimpan jurnal baru | User sudah login | 1 | Buka halaman `/journals` | | | |
+| | | | | | | 2 | Klik "Ketuk untuk menulis jurnal" | | | |
+| | | | | | | 3 | Tulis isi jurnal pada field konten | | | |
+| | | | | | | 4 | Klik tombol "Simpan Jurnal" | Jurnal tersimpan dan muncul di halaman riwayat jurnal | Pass | - |
+| PBI-11 | TC-11-02 | User mencoba menyimpan jurnal kosong | Negative | User tidak dapat menyimpan jurnal tanpa isi konten | User sudah login, berada di `/journals/create` | 1 | Buka halaman `/journals/create` | | | |
+| | | | | | | 2 | Biarkan field konten kosong | | | |
+| | | | | | | 3 | Klik tombol "Simpan Jurnal" | Halaman tetap di `/journals/create`, jurnal tidak tersimpan | Pass | - |
+| PBI-11 | TC-11-03 | User mengedit jurnal yang sudah ada | Positive | User dapat mengubah isi jurnal yang telah dibuat | User sudah login, memiliki minimal 1 jurnal | 1 | Buka halaman `/journals` | | | |
+| | | | | | | 2 | Klik tombol "Edit" pada jurnal | | | |
+| | | | | | | 3 | Hapus isi lama dan tulis isi baru | | | |
+| | | | | | | 4 | Klik tombol "Simpan Perubahan" | Jurnal diperbarui dan tampil label "(Diedit)" | Pass | - |
+| PBI-11 | TC-11-04 | User menghapus jurnal | Positive | User dapat menghapus jurnal dari riwayat | User sudah login, memiliki minimal 1 jurnal | 1 | Buka halaman `/journals` | | | |
+| | | | | | | 2 | Klik tombol "Hapus" pada jurnal | | | |
+| | | | | | | 3 | Konfirmasi dialog penghapusan | Jurnal tidak lagi tampil di halaman riwayat | Pass | - |
+| PBI-12 | TC-12-01 | Pemetaan warna kalender untuk mood senang | Positive | Tanggal dengan mood "senang" tampil warna hijau pada grid kalender | User sudah login, ada data mood "senang" di bulan berjalan | 1 | Buka halaman `/journals` | | | |
+| | | | | | | 2 | Scroll ke bagian "Kalender Mood" | | | |
+| | | | | | | 3 | Amati warna kotak tanggal yang memiliki mood "senang" | Kotak tanggal dengan mood "senang" berwarna hijau (emerald) | Pass | - |
+| PBI-12 | TC-12-02 | Pemetaan warna kalender untuk mood biasa dan buruk | Positive | Tanggal dengan mood "biasa" tampil kuning, mood "buruk" tampil merah | User sudah login, ada data mood di bulan berjalan | 1 | Buka halaman `/journals` | | | |
+| | | | | | | 2 | Scroll ke bagian "Kalender Mood" | | | |
+| | | | | | | 3 | Amati warna kotak tanggal dengan berbagai mood | Mood "biasa" berwarna kuning, mood "buruk" berwarna merah | Pass | - |
+| PBI-12 | TC-12-03 | User menyimpan cerita pemicu stres ke jurnal | Positive | User dapat menyimpan jurnal dengan konten panjang | User sudah login | 1 | Buka halaman `/journals/create` | | | |
+| | | | | | | 2 | Tulis teks panjang berisi cerita pemicu stres | | | |
+| | | | | | | 3 | Klik tombol "Simpan Jurnal" | Jurnal tersimpan dan konten tampil di halaman riwayat | Pass | - |
+| PBI-62 | TC-62-01 | Admin membuka halaman pengaturan | Positive | Admin dapat mengakses halaman settings akun dan sistem | User role admin, sudah login | 1 | Login sebagai admin | | | |
+| | | | | | | 2 | Kunjungi `/admin/settings` | Halaman menampilkan section "Profil Admin" dan "Keamanan Akun" | Pass | - |
+| PBI-62 | TC-62-02 | Admin memperbarui nama asli dan nama samaran | Positive | Admin dapat mengubah nama asli dan nama samaran | User role admin, sudah login, berada di `/admin/settings` | 1 | Hapus isi field Nama Asli dan isi dengan nama baru | | | |
+| | | | | | | 2 | Hapus isi field Nama Samaran dan isi dengan nama baru | | | |
+| | | | | | | 3 | Klik tombol "Simpan Perubahan" | Muncul notifikasi sukses yang mengandung kata "berhasil" | Pass | - |
+| PBI-62 | TC-62-03 | Admin memperbarui password | Positive | Admin dapat mengubah password dengan konfirmasi yang cocok | User role admin, sudah login, berada di `/admin/settings` | 1 | Isi field Password Baru | | | |
+| | | | | | | 2 | Isi field Konfirmasi Password Baru dengan nilai yang sama | | | |
+| | | | | | | 3 | Klik tombol "Simpan Perubahan" | Muncul notifikasi sukses; password berhasil diperbarui | Pass | - |
+| PBI-62 | TC-62-04 | Admin memasukkan konfirmasi password yang salah | Negative | Admin mendapat error validasi jika password konfirmasi tidak cocok | User role admin, sudah login, berada di `/admin/settings` | 1 | Isi field Password Baru | | | |
+| | | | | | | 2 | Isi field Konfirmasi Password Baru dengan nilai berbeda | | | |
+| | | | | | | 3 | Klik tombol "Simpan Perubahan" | Muncul pesan error validasi; password tidak diubah | Pass | - |
+| PBI-62 | TC-62-05 | Konselor membuka halaman pengaturan profil | Positive | Konselor dapat mengakses halaman settings profil profesional | User role konselor (approved), profil konselor ada, sudah login | 1 | Login sebagai konselor | | | |
+| | | | | | | 2 | Kunjungi `/konselor/settings` | Halaman menampilkan section "Keamanan & Akun" dan "Profil Profesional" | Pass | - |
+| PBI-62 | TC-62-06 | Konselor memperbarui informasi profil profesional | Positive | Konselor dapat mengubah nama, nomor WhatsApp, dan biografi | User role konselor (approved), sudah login, berada di `/konselor/settings` | 1 | Ubah field Nama Lengkap dengan nilai baru | | | |
+| | | | | | | 2 | Ubah field Nomor WhatsApp dengan nomor baru | | | |
+| | | | | | | 3 | Ubah field Biografi dengan teks baru | | | |
+| | | | | | | 4 | Klik tombol "Simpan Profil" | Muncul notifikasi sukses; data profil berhasil diperbarui | Pass | - |
+| PBI-62 | TC-62-07 | User biasa dilarang mengakses halaman settings konselor | Negative | User biasa tidak dapat mengakses halaman `/konselor/settings` | User terdaftar dengan role user (bukan konselor), sudah login | 1 | Login sebagai user biasa | | | |
+| | | | | | | 2 | Akses langsung URL `/konselor/settings` | Halaman tidak menampilkan "Profil Profesional" (di-redirect atau 403) | Pass | - |
+
+---
+**Total: 14 test case — semua Pass ✅**
+
+| PBI | Jumlah TC | Positive | Negative | Status |
+|-----|-----------|:--------:|:--------:|:------:|
+| PBI-11 (Grid Kalender Interaktif Visualisasi Emosi) | 4 | 3 | 1 | ✅ Pass |
+| PBI-12 (Pemetaan Kode Warna Berdasarkan Input Mood) | 3 | 3 | 0 | ✅ Pass |
+| PBI-62 (Setting untuk Admin dan Konselor) | 7 | 5 | 2 | ✅ Pass |
+| **Total** | **14** | **11** | **3** | **✅ Pass** |
