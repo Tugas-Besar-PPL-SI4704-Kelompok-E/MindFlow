@@ -164,10 +164,8 @@ class CounselingController extends Controller
             abort(403, 'Anda tidak memiliki akses ke ruangan ini.');
         }
 
-        // Cek status sesi (misal hanya izinkan jika confirmed atau ongoing)
-        // Kita izinkan jika statusnya tidak 'cancelled' atau 'pending'
-        if (in_array($sesi->status, ['pending', 'cancelled', 'rejected'])) {
-            return redirect()->back()->with('error', 'Sesi ini belum aktif atau sudah dibatalkan.');
+        if (!$sesi->canEnterRoom()) {
+            return redirect()->back()->with('error', $sesi->getRoomAccessMessage());
         }
 
         return view('konseling.room', compact('sesi', 'isPatient', 'isCounselor'));

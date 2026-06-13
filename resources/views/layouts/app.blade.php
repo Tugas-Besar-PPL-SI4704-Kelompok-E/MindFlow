@@ -528,9 +528,15 @@
                     </a>
                 </li>
                 <li>
-                    <a href="{{ route('konseling.index') }}" class="menu-item {{ request()->is('konseling*') ? 'active' : '' }}">
+                    <a href="{{ route('konseling.index') }}" class="menu-item {{ request()->is('konseling*') && !request()->is('konseling/history') ? 'active' : '' }}">
                         <svg viewBox="0 0 24 24"><path d="M14 2H6a2 2 0 0 0-2 2v16a2 2 0 0 0 2 2h12a2 2 0 0 0 2-2V8z"></path><polyline points="14 2 14 8 20 8"></polyline><line x1="16" y1="13" x2="8" y2="13"></line><line x1="16" y1="17" x2="8" y2="17"></line><polyline points="10 9 9 9 8 9"></polyline></svg>
                         Konsultasi
+                    </a>
+                </li>
+                <li>
+                    <a href="{{ route('konseling.history') }}" class="menu-item {{ request()->is('konseling/history*') ? 'active' : '' }}">
+                        <svg viewBox="0 0 24 24"><circle cx="12" cy="12" r="10"></circle><polyline points="12 6 12 12 16 14"></polyline></svg>
+                        Riwayat Sesi
                     </a>
                 </li>
                 <li>
@@ -820,11 +826,15 @@
                             </div>
 
                             <div class="flex flex-col gap-2">
-                                @if(in_array($jadwal->status, ['confirmed', 'rescheduled']))
+                                @if($jadwal->canEnterRoom())
                                     <a href="{{ route('konseling.room', $jadwal->sesi_konseling_id) }}" class="w-full text-center bg-emerald-500 hover:bg-emerald-600 text-white py-3 rounded-xl text-[12px] font-bold transition-all duration-300 shadow-sm shadow-emerald-200 flex items-center justify-center gap-2">
                                         <svg class="w-4 h-4" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M15 10l4.553-2.276A1 1 0 0121 8.618v6.764a1 1 0 01-1.447.894L15 14M5 18h8a2 2 0 002-2V8a2 2 0 00-2-2H5a2 2 0 00-2 2v8a2 2 0 002 2z"></path></svg>
                                         Masuk Ruangan
                                     </a>
+                                @elseif(in_array($jadwal->status, ['confirmed', 'rescheduled']))
+                                    <button disabled class="w-full text-center bg-gray-200 text-gray-500 py-3 rounded-xl text-[12px] font-bold transition-all duration-300 border border-gray-200">
+                                        Ruangan tersedia 15 menit sebelum jadwal
+                                    </button>
                                 @endif
                                 <div class="flex gap-2">
                                     <a href="{{ route('booking.edit', $jadwal->sesi_konseling_id) }}" class="flex-1 text-center bg-gray-50 hover:bg-purple-50 hover:text-[#A881C2] text-gray-500 py-2.5 rounded-xl text-[11px] font-bold transition-all duration-300 border border-transparent hover:border-purple-100">

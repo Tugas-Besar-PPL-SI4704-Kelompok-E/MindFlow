@@ -45,6 +45,38 @@ class SesiKonseling extends Model
         return $query->whereDate('jadwal', $date);
     }
 
+    public function canEnterRoom()
+    {
+        if (!in_array($this->status, ['confirmed', 'rescheduled'])) {
+            return false;
+        }
+
+        if ($this->payment_status !== 'paid') {
+            return false;
+        }
+
+        $availableAt = \Carbon\Carbon::parse($this->jadwal)->subMinutes(15);
+        return now()->gte($availableAt);
+    }
+
+    public function getRoomAccessMessage()
+    {
+        if (!in_array($this->status, ['confirmed', 'rescheduled'])) {
+            return 'Sesi ini belum dikonfirmasi oleh konselor.';
+        }
+
+        if ($this->payment_status !== 'paid') {
+            return 'Pembayaran belum selesai. Silakan selesaikan pembayaran terlebih dahulu.';
+        }
+
+        $availableAt = \Carbon\Carbon::parse($this->jadwal)->subMinutes(15);
+        if (now()->lt($availableAt)) {
+            return 'Ruangan dapat diakses mulai 15 menit sebelum jadwal dimulai.';
+        }
+
+        return 'Sesi sudah dapat diakses sekarang.';
+    }
+
     /**
      * Flag untuk mencegah eksekusi berulang dalam satu request.
      */
