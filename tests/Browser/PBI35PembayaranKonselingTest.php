@@ -3,6 +3,7 @@
 namespace Tests\Browser;
 
 use App\Models\ProfilKonselor;
+use App\Models\CounselorSchedule;
 use App\Models\User;
 use Illuminate\Foundation\Testing\DatabaseMigrations;
 use Carbon\Carbon;
@@ -24,26 +25,44 @@ class PBI35PembayaranKonselingTest extends DuskTestCase
                 'harga_per_sesi' => 120000,
             ]);
 
+            // Create counselor schedules for next 30 days
+            $dayNames = ['senin', 'selasa', 'rabu', 'kamis', 'jumat', 'sabtu', 'minggu'];
+            foreach ($dayNames as $day) {
+                CounselorSchedule::create([
+                    'profil_konselor_id' => $konselor->profil_konselor_id,
+                    'hari' => $day,
+                    'jam_mulai' => '09:00',
+                    'jam_selesai' => '17:00',
+                    'is_active' => true
+                ]);
+            }
+
             $jadwal = Carbon::now()->addDays(2)->startOfHour()->format('Y-m-d H:i');
 
             $browser->loginAs($user)
                     ->visit("/konseling/{$konselor->profil_konselor_id}")
-                    ->pause(1000)
+                    ->pause(2000)
                     ->waitForText('Booking Sesi', 5)
                     ->assertSee('Transfer Bank')
                     ->assertSee('E-Wallet')
                     ->assertDontSee('Kartu Kredit');
 
+            // Set the select value directly using JavaScript and trigger events
             $browser->script([
-                sprintf(
-                    'const picker = document.getElementById("jadwal-picker"); if (picker && picker._flatpickr) { picker._flatpickr.setDate("%s", true, "Y-m-d H:i"); } else if (picker) { picker.value = "%s"; picker.dispatchEvent(new Event("input", { bubbles: true })); picker.dispatchEvent(new Event("change", { bubbles: true })); }',
-                    $jadwal,
-                    $jadwal
-                )
+                'const select = document.querySelector("select[name=\"jadwal\"]"); 
+                if (select && select.options.length > 1) { 
+                    select.value = select.options[1].value;
+                    select.dispatchEvent(new Event("change", { bubbles: true }));
+                    // Trigger Choices.js update
+                    if (window.Choices && window.choicesInstances) {
+                        const instance = Object.values(window.choicesInstances).find(c => c._element === select);
+                        if (instance) instance._triggerChange(select.value);
+                    }
+                }'
             ]);
             $browser->pause(1000);
 
-                $browser->click('input[name="media_konseling"][value="video_call"] + div')
+            $browser->click('input[name="media_konseling"][value="video_call"] + div')
                     ->click('input[name="payment_method"][value="transfer"] + div')
                     ->type('deskripsi', 'Tes pembayaran dengan metode transfer')
                     ->pause(500)

@@ -3,6 +3,7 @@
 namespace Tests\Browser;
 
 use App\Models\ProfilKonselor;
+use App\Models\CounselorSchedule;
 use App\Models\User;
 use Carbon\Carbon;
 use Illuminate\Foundation\Testing\DatabaseMigrations;
@@ -21,15 +22,37 @@ class PBI59MemilihTipeKonselingTest extends DuskTestCase
         $this->browse(function (Browser $browser) {
             $user = User::factory()->create();
             $konselor = ProfilKonselor::factory()->create();
+            
+            // Create counselor schedules for next 30 days
+            $dayNames = ['senin', 'selasa', 'rabu', 'kamis', 'jumat', 'sabtu', 'minggu'];
+            foreach ($dayNames as $day) {
+                CounselorSchedule::create([
+                    'profil_konselor_id' => $konselor->profil_konselor_id,
+                    'hari' => $day,
+                    'jam_mulai' => '09:00',
+                    'jam_selesai' => '17:00',
+                    'is_active' => true
+                ]);
+            }
+            
             $jadwal = Carbon::now()->addDays(2)->startOfHour()->format('Y-m-d H:i');
 
             $browser->loginAs($user)
                     ->visit("/konseling/{$konselor->profil_konselor_id}")
-                    ->pause(1000);
+                    ->pause(2000);
 
-            // Set jadwal value dan dispatch change event agar form mengirim nilainya
+            // Set the select value directly using JavaScript and trigger events
             $browser->script([
-                sprintf('const picker = document.getElementById("jadwal-picker"); if (picker && picker._flatpickr) { picker._flatpickr.setDate("%s", true, "Y-m-d H:i"); } else if (picker) { picker.value = "%s"; picker.dispatchEvent(new Event("change", { bubbles: true })); }', $jadwal, $jadwal)
+                'const select = document.querySelector("select[name=\"jadwal\"]"); 
+                if (select && select.options.length > 1) { 
+                    select.value = select.options[1].value;
+                    select.dispatchEvent(new Event("change", { bubbles: true }));
+                    // Trigger Choices.js update
+                    if (window.Choices && window.choicesInstances) {
+                        const instance = Object.values(window.choicesInstances).find(c => c._element === select);
+                        if (instance) instance._triggerChange(select.value);
+                    }
+                }'
             ]);
             $browser->pause(1000);
             
@@ -47,8 +70,9 @@ class PBI59MemilihTipeKonselingTest extends DuskTestCase
                     ->pause(500);
 
             $browser->press('Konfirmasi Pembayaran')
-                    ->pause(500)
-                    ->waitForText('Sesi konsultasi berhasil direservasi. Menunggu konfirmasi.', 10)
+                    ->pause(1000);
+            
+            $browser->waitForText('Sesi konsultasi berhasil direservasi. Menunggu konfirmasi.', 10)
                     ->assertSee('Sesi konsultasi berhasil direservasi. Menunggu konfirmasi.');
 
             // Memastikan data tersimpan di database dengan media_konseling yang benar

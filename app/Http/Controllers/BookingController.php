@@ -39,7 +39,7 @@ class BookingController extends Controller
             'media_konseling' => $data['media_konseling'],
             'deskripsi' => $data['deskripsi'] ?? null,
             'payment_method' => $data['payment_method'],
-            'payment_status' => 'pending',
+            'payment_status' => 'paid',
             'status' => 'pending'
         ]);
 
@@ -47,7 +47,7 @@ class BookingController extends Controller
             $sesi->journals()->attach($data['journals']);
         }
 
-    return redirect()->route('konseling.show', $data['konselor_id'])->with('success', 'Sesi konsultasi berhasil diajukan. Menunggu persetujuan dari konselor sebelum Anda dapat melakukan pembayaran.');
+    return redirect()->route('konseling.show', $data['konselor_id'])->with('success', 'Sesi konsultasi berhasil direservasi. Menunggu konfirmasi.');
     }
 
     public function edit($id)

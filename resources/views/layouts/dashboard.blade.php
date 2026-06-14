@@ -610,8 +610,8 @@
         <div class="header">
             <img src="https://ui-avatars.com/api/?name={{ urlencode(Auth::user()->role === 'konselor' ? Auth::user()->nama_asli : (Auth::user()->nama_samaran ?? Auth::user()->nama_asli ?? 'User')) }}&background=E2E8F0&color=475569&size=65" alt="Profile" class="avatar">
             <div class="welcome-text">
-                <h1 class="premium-text-gradient">Welcome, {{ Auth::user()->nama_asli ?? 'User' }}!</h1>
-                <p>How's your day?</p>
+                <h1 class="premium-text-gradient">@yield('header', 'Welcome, ' . (Auth::user()->nama_asli ?? 'User') . '!')</h1>
+                <p>@yield('header-subtitle', 'How\'s your day?')</p>
             </div>
         </div>
         @endif
