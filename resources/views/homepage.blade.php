@@ -5,133 +5,141 @@
 @section('styles')
 <style>
     .home-container {
-        padding: 20px 40px;
-        max-width: 1400px;
+        padding: 0 20px;
+        max-width: 1280px;
         margin: 0 auto;
+        padding-bottom: 60px;
     }
 
     /* Welcome Banner */
     .welcome-banner {
         background: linear-gradient(135deg, #A881C2 0%, #8A64A4 100%);
         border-radius: 32px;
-        padding: 50px;
+        padding: 40px 50px;
         color: white;
         margin-bottom: 40px;
         position: relative;
         overflow: hidden;
-        box-shadow: 0 20px 40px rgba(168, 129, 194, 0.15);
+        box-shadow: 0 20px 40px rgba(168, 129, 194, 0.2);
     }
 
     .welcome-banner::after {
         content: '';
         position: absolute;
-        top: -50px;
+        top: -100px;
         right: -50px;
-        width: 300px;
-        height: 300px;
-        background: rgba(255, 255, 255, 0.05);
+        width: 400px;
+        height: 400px;
+        background: radial-gradient(circle, rgba(255,255,255,0.15) 0%, rgba(255,255,255,0) 70%);
+        border-radius: 50%;
+    }
+    
+    .welcome-banner::before {
+        content: '';
+        position: absolute;
+        bottom: -50px;
+        left: 10%;
+        width: 250px;
+        height: 250px;
+        background: radial-gradient(circle, rgba(255,255,255,0.08) 0%, rgba(255,255,255,0) 70%);
         border-radius: 50%;
     }
 
     .welcome-stats {
         display: flex;
+        flex-wrap: wrap;
         gap: 20px;
-        margin-top: 30px;
+        margin-top: 35px;
     }
 
     .stat-box {
-        background: rgba(255, 255, 255, 0.1);
-        backdrop-filter: blur(10px);
-        padding: 20px 25px;
-        border-radius: 20px;
+        background: rgba(255, 255, 255, 0.15);
+        backdrop-filter: blur(16px);
+        -webkit-backdrop-filter: blur(16px);
+        padding: 20px 24px;
+        border-radius: 24px;
         flex: 1;
+        min-width: 200px;
         display: flex;
         align-items: center;
-        gap: 15px;
-        border: 1px solid rgba(255, 255, 255, 0.1);
+        gap: 16px;
+        border: 1px solid rgba(255, 255, 255, 0.2);
+        transition: transform 0.3s ease, background 0.3s ease;
+    }
+    
+    .stat-box:hover {
+        transform: translateY(-5px);
+        background: rgba(255, 255, 255, 0.2);
     }
 
     .stat-icon {
-        width: 45px;
-        height: 45px;
-        background: rgba(255, 255, 255, 0.2);
-        border-radius: 12px;
+        width: 48px;
+        height: 48px;
+        background: rgba(255, 255, 255, 0.25);
+        border-radius: 16px;
         display: flex;
         align-items: center;
         justify-content: center;
-        font-size: 20px;
+        font-size: 22px;
+        color: #FFFFFF;
+        box-shadow: inset 0 2px 4px rgba(255,255,255,0.3);
     }
 
     .stat-info .value {
-        font-size: 20px;
-        font-weight: 700;
+        font-size: 22px;
+        font-weight: 800;
+        line-height: 1.2;
     }
 
     .stat-info .label {
-        font-size: 12px;
-        opacity: 0.8;
+        font-size: 13px;
+        font-weight: 600;
+        opacity: 0.85;
+        margin-top: 2px;
     }
 
-    /* Section Grid */
-    .dashboard-grid {
-        display: grid;
-        grid-template-columns: 1.5fr 1fr 1fr;
-        gap: 30px;
-    }
-
+    /* Section Components */
     .section-card {
-        background: white;
+        background: rgba(255, 255, 255, 0.7);
+        backdrop-filter: blur(20px);
+        -webkit-backdrop-filter: blur(20px);
         border-radius: 32px;
-        padding: 30px;
-        border: 1px solid #F1F1F1;
-        box-shadow: 0 10px 30px rgba(0, 0, 0, 0.02);
+        padding: 32px;
+        border: 1px solid rgba(255, 255, 255, 0.5);
+        box-shadow: 0 8px 32px rgba(0, 0, 0, 0.03);
+        transition: all 0.3s ease;
+        height: 100%;
+        display: flex;
+        flex-direction: column;
+    }
+
+    .section-card:hover {
+        box-shadow: 0 15px 40px rgba(0, 0, 0, 0.06);
+        background: rgba(255, 255, 255, 0.9);
     }
 
     .card-title {
-        font-size: 18px;
-        font-weight: 700;
-        margin-bottom: 25px;
-        color: #1A1A1A;
+        font-size: 20px;
+        font-weight: 800;
+        margin-bottom: 24px;
+        color: #111827;
         display: flex;
         justify-content: space-between;
         align-items: center;
     }
 
-    /* Mood Tracker Card Specifics */
-    .mood-summary-grid {
-        display: grid;
-        grid-template-columns: 1.2fr 1fr;
-        gap: 20px;
-        margin-bottom: 25px;
-    }
-
-    .summary-card {
-        background: #FAFAFA;
+    /* Sub Cards */
+    .inner-card {
+        background: #FFFFFF;
         padding: 24px;
-        border-radius: 28px;
-        border: 1px solid #F1F1F1;
+        border-radius: 24px;
+        border: 1px solid #F3F4F6;
         transition: all 0.3s ease;
     }
 
-    .summary-card:hover {
-        background: #FFFFFF;
-        box-shadow: 0 10px 25px rgba(0,0,0,0.03);
-        border-color: #A881C2/20;
-    }
-
-    .mood-today-card {
-        background: #FAFAFA;
-        padding: 24px;
-        border-radius: 28px;
-        margin-bottom: 25px;
-        border: 1px solid #F1F1F1;
-    }
-
-    .weekly-chart-card {
-        background: #FAFAFA;
-        padding: 24px;
-        border-radius: 28px;
-        border: 1px solid #F1F1F1;
+    .inner-card:hover {
+        box-shadow: 0 10px 25px rgba(0,0,0,0.04);
+        border-color: rgba(168, 129, 194, 0.3);
     }
 
     /* Empty States */
@@ -141,39 +149,37 @@
         align-items: center;
         justify-content: center;
         text-align: center;
-        height: 100%;
-        min-height: 300px;
         padding: 40px 20px;
-    }
-
-    .empty-illustration {
-        width: 150px;
-        height: 150px;
-        margin-bottom: 20px;
-        opacity: 0.6;
+        flex: 1;
     }
 
     .empty-text {
-        font-size: 13px;
-        color: #8E8E93;
+        font-size: 14px;
+        font-weight: 600;
+        color: #9CA3AF;
         line-height: 1.6;
     }
 
     .btn-link {
         color: #A881C2;
         text-decoration: none;
-        font-weight: 600;
-        font-size: 14px;
+        font-weight: 700;
+        font-size: 13px;
+        transition: color 0.2s;
+    }
+    
+    .btn-link:hover {
+        color: #8A64A4;
     }
 
     /* Animation */
     @keyframes fadeIn {
-        from { opacity: 0; transform: translateY(20px); }
+        from { opacity: 0; transform: translateY(15px); }
         to { opacity: 1; transform: translateY(0); }
     }
 
     .home-container {
-        animation: fadeIn 0.6s ease-out;
+        animation: fadeIn 0.5s ease-out;
     }
 </style>
 @endsection
@@ -278,13 +284,16 @@
         </div>
     </div>
 
-    <div class="dashboard-grid">
+    <div class="grid grid-cols-1 lg:grid-cols-12 gap-8 items-stretch">
         <!-- Mood Tracker Section -->
-        <div class="section-card">
-            <h3 class="card-title">Mood Tracker</h3>
+        <div class="col-span-1 lg:col-span-5 section-card">
+            <h3 class="card-title">
+                Mood Tracker
+                <a href="{{ route('mood-tracker.index') }}" class="btn-link text-xs">Catat →</a>
+            </h3>
             
-            <div class="mood-summary-grid">
-                <div class="summary-card">
+            <div class="grid grid-cols-2 gap-4 mb-6">
+                <div class="inner-card flex flex-col justify-center">
                     <div style="display: flex; align-items: center; gap: 10px; margin-bottom: 15px;">
                         <div style="width: 32px; height: 32px; background: #E8F5E9; border-radius: 8px; display: flex; align-items: center; justify-content: center; color: #4CAF50;">
                             <svg width="18" height="18" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.5"><path d="M18 20V10M12 20V4M6 20v-6"/></svg>
@@ -307,9 +316,9 @@
                             <span style="color: #8E8E93; font-size: 12px; font-weight: 700; margin-left: auto;">-</span>
                         @endif
                     </div>
-                    <p style="font-size: 12px; color: #8E8E93; font-weight: 500;">Rata-rata minggu ini</p>
+                    <p class="text-xs text-gray-400 font-bold uppercase tracking-wider mt-2">Rata-rata minggu ini</p>
                 </div>
-                <div class="summary-card">
+                <div class="inner-card flex flex-col justify-center">
                     @php
                         $bestMood = \App\Models\HasilCheckInstan::where('user_id', $userId)->orderByDesc('poin_skor')->latest('created_at')->first();
                     @endphp
@@ -346,11 +355,11 @@
                         <span style="font-size: 20px; font-weight: 800;">{{ $bestMood->kategori_hasil ?? '-' }}</span>
                         <span style="color: #4CAF50; font-size: 12px; font-weight: 700; margin-left: auto;">▲</span>
                     </div>
-                    <p style="font-size: 12px; color: #8E8E93; font-weight: 500;">Mood terbaik</p>
+                    <p class="text-xs text-gray-400 font-bold uppercase tracking-wider mt-2">Mood Terbaik</p>
                 </div>
             </div>
 
-            <div class="mood-today-card">
+            <div class="inner-card mb-6">
                 <p style="font-size: 11px; font-weight: 800; color: #8E8E93; text-transform: uppercase; letter-spacing: 1px; margin-bottom: 15px;">Mood Hari Ini</p>
                 @php
                     $todayMood = \App\Models\HasilCheckInstan::where('user_id', $userId)->whereDate('created_at', today())->latest('created_at')->first();
@@ -388,7 +397,7 @@
                 @endif
             </div>
 
-            <div class="weekly-chart-card">
+            <div class="inner-card mt-auto">
                 @php
                     $days = ['Minggu', 'Senin', 'Selasa', 'Rabu', 'Kamis', 'Jumat', 'Sabtu'];
                     $weeklyMoods = \App\Models\HasilCheckInstan::where('user_id', $userId)
@@ -440,20 +449,22 @@
         </div>
 
         <!-- Journal History Section -->
-        <div class="section-card">
+        <div class="col-span-1 lg:col-span-3 section-card">
             <h3 class="card-title">Riwayat Jurnal</h3>
             @php
                 $latestJournals = \App\Models\Journal::where('user_id', $userId)->latest()->take(3)->get();
             @endphp
             @if($latestJournals->isNotEmpty())
-                <div style="display: flex; flex-direction: column; gap: 20px;">
+                <div class="flex flex-col gap-4 flex-1">
                     @foreach($latestJournals as $journal)
-                        <div style="padding: 20px; background: #FAFAFA; border-radius: 24px; border: 1px solid #F1F1F1; transition: all 0.3s ease;" onmouseover="this.style.backgroundColor='#FFFFFF'; this.style.boxShadow='0 8px 20px rgba(0,0,0,0.02)';" onmouseout="this.style.backgroundColor='#FAFAFA'; this.style.boxShadow='none';">
-                            <p style="font-size: 11px; color: #A881C2; font-weight: 800; margin-bottom: 8px; text-transform: uppercase; letter-spacing: 0.5px;">{{ $journal->created_at->translatedFormat('d M Y') }}</p>
-                            <p style="font-size: 14px; color: #4B5563; line-height: 1.6; font-weight: 500;">{{ Str::limit($journal->content, 85) }}</p>
-                        </div>
+                        <a href="{{ route('journals.index') }}" class="block p-5 bg-white border border-gray-100 rounded-2xl hover:border-purple-200 hover:shadow-md transition-all group">
+                            <p class="text-[10px] text-purple-400 font-black mb-2 uppercase tracking-widest">{{ $journal->created_at->translatedFormat('d M Y') }}</p>
+                            <p class="text-[13px] text-gray-600 font-medium leading-relaxed group-hover:text-gray-900 transition-colors">{{ Str::limit($journal->content, 85) }}</p>
+                        </a>
                     @endforeach
-                    <a href="{{ route('journals.index') }}" class="btn-link" style="text-align: center; margin-top: 5px; font-weight: 700; color: #A881C2;">Lihat Semua Jurnal →</a>
+                    <div class="mt-auto text-center pt-2">
+                        <a href="{{ route('journals.index') }}" class="btn-link">Lihat Semua Jurnal →</a>
+                    </div>
                 </div>
             @else
                 <div class="empty-state">
@@ -470,7 +481,7 @@
         </div>
 
         <!-- Consultation Session Section -->
-        <div class="section-card">
+        <div class="col-span-1 lg:col-span-4 section-card">
             <div class="card-title">
                 <span>Sesi Konsultasi</span>
                 <a href="{{ route('konseling.index') }}" class="btn-link" style="font-size: 12px; color: #8E8E93;">Atur →</a>

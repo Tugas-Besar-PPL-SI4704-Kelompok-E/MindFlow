@@ -28,7 +28,10 @@
         width: 34px; height: 34px; border-radius: 10px;
         background: linear-gradient(135deg, var(--primary-500), var(--primary-700));
         display: flex; align-items: center; justify-content: center;
-        color: white; font-size: 1rem;
+        padding: 4px;
+    }
+    .rk-logo-icon img {
+        width: 100%; height: 100%; object-fit: contain;
     }
     .rk-nav-back {
         font-size: 0.85rem; font-weight: 600; color: var(--gray-500);
@@ -235,7 +238,9 @@
     <nav class="rk-navbar">
         <div class="rk-navbar-inner">
             <a href="{{ route('home') }}" class="rk-logo">
-                <div class="rk-logo-icon">🧠</div>
+                <div class="rk-logo-icon">
+                    <img src="{{ asset('images/logo.png') }}" alt="Logo">
+                </div>
                 MindFlow
             </a>
             <a href="{{ route('home') }}" class="rk-nav-back">

@@ -37,17 +37,6 @@
         gap: 0.5rem;
     }
     .navbar.scrolled .navbar-logo { color: var(--primary-700); }
-    .navbar-logo-icon {
-        width: 36px;
-        height: 36px;
-        background: linear-gradient(135deg, var(--primary-400), var(--primary-600));
-        border-radius: 10px;
-        display: flex;
-        align-items: center;
-        justify-content: center;
-        color: white;
-        font-size: 1.1rem;
-    }
     .navbar.scrolled .navbar-logo-icon {
         background: linear-gradient(135deg, var(--primary-500), var(--primary-700));
     }
@@ -137,7 +126,7 @@
         width: 800px;
         height: 800px;
         border-radius: 50%;
-        background: radial-gradient(circle, rgba(165,180,252,0.2) 0%, transparent 70%);
+        background: radial-gradient(circle, rgba(219,206,228,0.2) 0%, transparent 70%);
         animation: float 8s ease-in-out infinite;
     }
     .hero::after {
@@ -148,7 +137,7 @@
         width: 600px;
         height: 600px;
         border-radius: 50%;
-        background: radial-gradient(circle, rgba(129,140,248,0.15) 0%, transparent 70%);
+        background: radial-gradient(circle, rgba(196,172,209,0.15) 0%, transparent 70%);
         animation: float 10s ease-in-out infinite reverse;
     }
     @keyframes float {
@@ -197,7 +186,7 @@
         animation: fadeInUp 0.8s ease 0.1s both;
     }
     .hero h1 span {
-        background: linear-gradient(135deg, #c7d2fe, #a5b4fc);
+        background: linear-gradient(135deg, var(--primary-200), var(--primary-400));
         -webkit-background-clip: text;
         -webkit-text-fill-color: transparent;
         background-clip: text;
@@ -215,6 +204,7 @@
         align-items: center;
         justify-content: center;
         gap: 1rem;
+        flex-wrap: wrap;
         animation: fadeInUp 0.8s ease 0.3s both;
     }
     .btn-hero-primary {
@@ -226,15 +216,20 @@
         background: white;
         border: none;
         cursor: pointer;
-        transition: all 0.3s;
+        transition: all 0.3s cubic-bezier(0.16, 1, 0.3, 1);
         box-shadow: 0 4px 20px rgba(0,0,0,0.15);
         display: inline-flex;
         align-items: center;
+        justify-content: center;
         gap: 0.5rem;
+        white-space: nowrap;
     }
     .btn-hero-primary:hover {
         transform: translateY(-2px);
         box-shadow: 0 8px 30px rgba(0,0,0,0.2);
+    }
+    .btn-hero-primary:active {
+        transform: scale(0.97);
     }
     .btn-hero-secondary {
         padding: 0.85rem 2rem;
@@ -245,14 +240,20 @@
         background: rgba(255,255,255,0.1);
         border: 1.5px solid rgba(255,255,255,0.25);
         cursor: pointer;
-        transition: all 0.3s;
+        transition: all 0.3s cubic-bezier(0.16, 1, 0.3, 1);
         display: inline-flex;
         align-items: center;
+        justify-content: center;
         gap: 0.5rem;
+        white-space: nowrap;
     }
     .btn-hero-secondary:hover {
         background: rgba(255,255,255,0.2);
         border-color: rgba(255,255,255,0.4);
+        transform: translateY(-2px);
+    }
+    .btn-hero-secondary:active {
+        transform: scale(0.97);
     }
     .btn-hero-accent {
         padding: 0.85rem 2rem;
@@ -263,16 +264,21 @@
         background: #10b981;
         border: none;
         cursor: pointer;
-        transition: all 0.3s;
+        transition: all 0.3s cubic-bezier(0.16, 1, 0.3, 1);
         box-shadow: 0 4px 15px rgba(16, 185, 129, 0.3);
         display: inline-flex;
         align-items: center;
+        justify-content: center;
         gap: 0.5rem;
+        white-space: nowrap;
     }
     .btn-hero-accent:hover {
         transform: translateY(-2px);
         background: #059669;
         box-shadow: 0 8px 25px rgba(16, 185, 129, 0.4);
+    }
+    .btn-hero-accent:active {
+        transform: scale(0.97);
     }
 
     .hero-stats {
@@ -716,7 +722,7 @@
     <nav class="navbar" id="navbar">
         <div class="navbar-inner">
             <a href="/" class="navbar-logo">
-                <div class="navbar-logo-icon">🧠</div>
+                <img src="{{ asset('images/logo.png') }}" alt="Logo MindFlow" style="width: 36px; height: 36px; object-fit: contain;">
                 MindFlow
             </a>
             <ul class="navbar-links">
@@ -749,7 +755,8 @@
                     <svg width="18" height="18" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.5" stroke-linecap="round" stroke-linejoin="round"><path d="m9 18 6-6-6-6"/></svg>
                 </a>
                 <a href="{{ route('mood-tracker.mendalam') }}" class="btn-hero-accent">
-                    🩺 Cek Kesehatan Mental Gratis
+                    <svg width="18" height="18" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.5" stroke-linecap="round" stroke-linejoin="round"><path d="M22 12h-4l-3 9L9 3l-3 9H2"/></svg>
+                    Cek Kesehatan Mental Gratis
                 </a>
                 <a href="#features" class="btn-hero-secondary">
                     Pelajari Lebih Lanjut
@@ -914,7 +921,10 @@
     <!-- FOOTER -->
     <footer class="footer">
         <div class="footer-inner">
-            <div class="footer-logo">🧠 MindFlow</div>
+            <div class="footer-logo">
+                <img src="{{ asset('images/logo.png') }}" alt="Logo MindFlow" style="width: 32px; height: 32px; object-fit: contain;">
+                MindFlow
+            </div>
             <p>&copy; {{ date('Y') }} MindFlow. All rights reserved.</p>
             <ul class="footer-links">
                 <li><a href="#">Kebijakan Privasi</a></li>

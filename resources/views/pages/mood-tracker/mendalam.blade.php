@@ -5,7 +5,7 @@
 @section('styles')
 <style>
     .page-wrapper {
-        max-width: 900px;
+        max-width: 800px;
         margin: 0 auto;
         padding-bottom: 80px;
         animation: fadeUp 0.6s cubic-bezier(0.22, 1, 0.36, 1);
@@ -43,15 +43,17 @@
     }
 
     .header-card {
-        background: #FFFFFF;
-        border: 1px solid #E5E7EB;
+        background: rgba(255, 255, 255, 0.8);
+        backdrop-filter: blur(20px);
+        -webkit-backdrop-filter: blur(20px);
+        border: 1px solid rgba(255, 255, 255, 0.5);
         border-radius: 32px;
         padding: 48px;
         margin-bottom: 40px;
         display: flex;
         align-items: flex-start;
         gap: 32px;
-        box-shadow: 0 4px 6px -1px rgba(0, 0, 0, 0.05);
+        box-shadow: 0 10px 30px rgba(0, 0, 0, 0.03);
     }
     
     .icon-header {
@@ -96,16 +98,19 @@
 
     /* Questions */
     .q-row {
-        background: #FFFFFF;
-        border: 1px solid #E5E7EB;
+        background: rgba(255, 255, 255, 0.6);
+        backdrop-filter: blur(10px);
+        border: 1px solid rgba(255, 255, 255, 0.4);
         border-radius: 24px;
         padding: 40px;
         margin-bottom: 24px;
         transition: all 0.3s cubic-bezier(0.16, 1, 0.3, 1);
+        box-shadow: 0 4px 10px rgba(0,0,0,0.01);
     }
     .q-row:hover {
-        border-color: #D1D5DB;
-        box-shadow: 0 10px 15px -3px rgba(0, 0, 0, 0.05), 0 4px 6px -2px rgba(0, 0, 0, 0.025);
+        border-color: rgba(168, 129, 194, 0.3);
+        background: rgba(255, 255, 255, 0.9);
+        box-shadow: 0 15px 30px rgba(168, 129, 194, 0.08);
         transform: translateY(-2px);
     }
     
@@ -119,8 +124,14 @@
     
     .q-options-grid {
         display: grid;
-        grid-template-columns: repeat(4, 1fr);
+        grid-template-columns: repeat(2, 1fr);
         gap: 16px;
+    }
+    
+    @media (min-width: 640px) {
+        .q-options-grid {
+            grid-template-columns: repeat(4, 1fr);
+        }
     }
     
     .q-radio-label {
@@ -158,10 +169,10 @@
     }
     
     .q-radio-label input:checked ~ .q-radio-btn {
-        background: #F3E8FF;
-        border-color: #A855F7;
+        background: linear-gradient(135deg, #F4EEFB 0%, #E9DDF5 100%);
+        border-color: #A881C2;
         color: #7E22CE;
-        box-shadow: 0 4px 6px -1px rgba(168, 85, 247, 0.1);
+        box-shadow: 0 8px 16px rgba(168, 129, 194, 0.2);
     }
 
     .form-actions {
@@ -171,7 +182,7 @@
     }
     
     .btn-submit {
-        background: #111827;
+        background: linear-gradient(135deg, #111827 0%, #1F2937 100%);
         color: #FFFFFF;
         border: none;
         padding: 18px 48px;
@@ -184,8 +195,8 @@
     }
     .btn-submit:hover {
         transform: translateY(-3px);
-        background: #1F2937;
-        box-shadow: 0 15px 25px -5px rgba(17, 24, 39, 0.35);
+        background: linear-gradient(135deg, #A881C2 0%, #8A64A4 100%);
+        box-shadow: 0 15px 25px -5px rgba(168, 129, 194, 0.4);
     }
 </style>
 @endsection

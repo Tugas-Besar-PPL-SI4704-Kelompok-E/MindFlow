@@ -25,24 +25,28 @@
     .settings-tabs {
         display: flex;
         gap: 4px;
-        background: #F1F1F3;
-        border-radius: 14px;
-        padding: 4px;
+        background: rgba(255, 255, 255, 0.6);
+        backdrop-filter: blur(16px);
+        -webkit-backdrop-filter: blur(16px);
+        border: 1px solid rgba(255, 255, 255, 0.5);
+        border-radius: 16px;
+        padding: 6px;
         margin-bottom: 32px;
+        width: max-content;
     }
 
     .settings-tab {
         flex: 1;
-        padding: 12px 20px;
+        padding: 12px 32px;
         border: none;
         background: transparent;
-        border-radius: 11px;
+        border-radius: 12px;
         font-family: 'Poppins', sans-serif;
         font-size: 14px;
-        font-weight: 600;
+        font-weight: 700;
         color: var(--text-muted);
         cursor: pointer;
-        transition: all 0.25s ease;
+        transition: all 0.3s cubic-bezier(0.4, 0, 0.2, 1);
         text-align: center;
     }
 
@@ -51,9 +55,9 @@
     }
 
     .settings-tab.active {
-        background: var(--bg-surface);
+        background: white;
         color: var(--primary-purple);
-        box-shadow: 0 2px 8px rgba(0, 0, 0, 0.06);
+        box-shadow: 0 4px 12px rgba(168, 129, 194, 0.15);
     }
 
     .settings-tab-content {
@@ -72,11 +76,13 @@
 
     /* Card */
     .settings-card {
-        background: var(--bg-surface);
-        border-radius: 20px;
+        background: rgba(255, 255, 255, 0.8);
+        backdrop-filter: blur(24px);
+        -webkit-backdrop-filter: blur(24px);
+        border-radius: 32px;
         padding: 36px;
-        box-shadow: 0 1px 4px rgba(0, 0, 0, 0.04);
-        border: 1px solid var(--border-color);
+        box-shadow: 0 10px 30px rgba(0, 0, 0, 0.03);
+        border: 1px solid rgba(255, 255, 255, 0.5);
     }
 
     /* Form elements */

@@ -24,7 +24,7 @@
 @section('content')
 {{-- Summary --}}
 <div class="grid grid-cols-2 gap-5 mb-8">
-    <div class="bg-white rounded-2xl border border-gray-100 p-6 flex items-center gap-4">
+    <div class="bg-white/80 backdrop-blur-xl rounded-[32px] shadow-[0_10px_30px_rgba(0,0,0,0.03)] border border-white/50 p-6 flex items-center gap-4 transition-transform hover:-translate-y-1">
         <div class="w-12 h-12 bg-red-50 rounded-xl flex items-center justify-center">
             <svg class="w-6 h-6 text-red-500" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M12 9v2m0 4h.01M21 12a9 9 0 11-18 0 9 9 0 0118 0z"></path></svg>
         </div>
@@ -33,7 +33,7 @@
             <div class="text-xs text-gray-500 font-medium">Total Laporan</div>
         </div>
     </div>
-    <div class="bg-white rounded-2xl border border-gray-100 p-6 flex items-center gap-4">
+    <div class="bg-white/80 backdrop-blur-xl rounded-[32px] shadow-[0_10px_30px_rgba(0,0,0,0.03)] border border-white/50 p-6 flex items-center gap-4 transition-transform hover:-translate-y-1">
         <div class="w-12 h-12 bg-orange-50 rounded-xl flex items-center justify-center">
             <svg class="w-6 h-6 text-orange-500" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M12 8v4m0 4h.01M21 12a9 9 0 11-18 0 9 9 0 0118 0z"></path></svg>
         </div>
@@ -45,7 +45,7 @@
 </div>
 
 {{-- Table --}}
-<div class="bg-white rounded-2xl border border-gray-100 overflow-hidden">
+<div class="bg-white/80 backdrop-blur-xl rounded-[32px] shadow-[0_10px_30px_rgba(0,0,0,0.03)] border border-white/50 overflow-hidden">
     <div class="px-6 py-5 border-b border-gray-100">
         <h3 class="text-base font-bold text-gray-800">Daftar Laporan Pelanggaran</h3>
         <p class="text-xs text-gray-400 mt-0.5">Tindak lanjuti laporan dari pengguna forum</p>

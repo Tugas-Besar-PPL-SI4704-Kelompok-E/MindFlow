@@ -3,35 +3,42 @@
 @section('title', 'Riwayat Sesi Konseling - MindFlow')
 
 @section('content')
-<div class="max-w-4xl mx-auto pb-12">
+<div class="mb-12">
     <div class="mb-8 flex items-center justify-between">
-        <div>
-            <h3 class="text-gray-900 font-extrabold text-2xl tracking-tight mb-2">Riwayat Sesi Konseling</h3>
-            <p class="text-gray-500 text-[15px] font-medium">Pantau riwayat sesi konseling dan catatan konselor Anda</p>
+        <div class="text-left">
+            <h2 class="text-3xl font-extrabold text-gray-900 tracking-tight mb-3">Riwayat Sesi Konseling</h2>
+            <p class="text-gray-500 text-base max-w-lg">Pantau riwayat sesi konseling dan catatan konselor Anda dengan mudah.</p>
         </div>
-        <a href="{{ route('konseling.index') }}" class="w-10 h-10 bg-white border border-gray-100 rounded-full flex items-center justify-center text-gray-400 hover:text-[#A881C2] hover:border-purple-100 hover:bg-purple-50 transition-all shadow-sm" title="Kembali ke Konseling">
-            <svg class="w-5 h-5" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2.5" d="M15 19l-7-7 7-7"></path></svg>
+        <a href="{{ route('konseling.index') }}" class="w-12 h-12 bg-white border border-purple-100 rounded-full flex items-center justify-center text-[#A881C2] hover:text-white hover:bg-[#A881C2] transition-all shadow-sm hover:shadow-lg hover:shadow-purple-200 active:scale-95 group" title="Kembali ke Konseling">
+            <svg class="w-5 h-5 transition-transform group-hover:-translate-x-1" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2.5" d="M15 19l-7-7 7-7"></path></svg>
         </a>
     </div>
 
     <!-- Filter Form -->
-    <div class="mb-6 bg-white p-4 rounded-2xl shadow-sm border border-gray-100 flex items-center justify-between">
-        <div class="text-sm font-semibold text-gray-700 flex items-center gap-2">
-            <svg class="w-5 h-5 text-purple-500" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M3 4a1 1 0 011-1h16a1 1 0 011 1v2.586a1 1 0 01-.293.707l-6.414 6.414a1 1 0 00-.293.707V17l-4 4v-6.586a1 1 0 00-.293-.707L3.293 7.293A1 1 0 013 6.586V4z"></path></svg>
-            Filter Berdasarkan Waktu
+    <div class="mb-8 bg-white/80 backdrop-blur-xl p-4 px-6 rounded-[24px] shadow-[0_8px_30px_rgb(0,0,0,0.06)] border border-white/50 flex flex-col sm:flex-row items-center justify-between sticky top-6 z-40 transition-all hover:shadow-[0_15px_40px_rgb(0,0,0,0.08)] hover:-translate-y-1">
+        <div class="text-sm font-bold text-gray-700 flex items-center gap-3 mb-4 sm:mb-0">
+            <div class="p-2 bg-purple-50 rounded-xl text-[#A881C2]">
+                <svg class="w-5 h-5" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M3 4a1 1 0 011-1h16a1 1 0 011 1v2.586a1 1 0 01-.293.707l-6.414 6.414a1 1 0 00-.293.707V17l-4 4v-6.586a1 1 0 00-.293-.707L3.293 7.293A1 1 0 013 6.586V4z"></path></svg>
+            </div>
+            Filter Waktu
         </div>
-        <form action="{{ route('konseling.history') }}" method="GET" class="flex items-center gap-3" id="filterForm">
-            <select name="range" class="bg-gray-50 border border-gray-200 text-gray-700 text-sm rounded-xl focus:ring-purple-500 focus:border-purple-500 block p-2.5 transition-colors" onchange="document.getElementById('filterForm').submit()">
-                <option value="all" {{ $range == 'all' ? 'selected' : '' }}>Semua Waktu</option>
-                <option value="1_month" {{ $range == '1_month' ? 'selected' : '' }}>1 Bulan Terakhir</option>
-                <option value="3_months" {{ $range == '3_months' ? 'selected' : '' }}>3 Bulan Terakhir</option>
-                <option value="6_months" {{ $range == '6_months' ? 'selected' : '' }}>6 Bulan Terakhir</option>
-                <option value="1_year" {{ $range == '1_year' ? 'selected' : '' }}>1 Tahun Terakhir</option>
-            </select>
+        <form action="{{ route('konseling.history') }}" method="GET" class="flex items-center w-full sm:w-auto" id="filterForm">
+            <div class="relative w-full sm:w-64">
+                <select name="range" class="appearance-none w-full bg-gray-50/50 border border-transparent text-sm rounded-[16px] py-3 pl-5 pr-10 focus:bg-white focus:ring-4 focus:ring-[#A881C2]/10 focus:border-[#A881C2] transition-all cursor-pointer {{ $range != 'all' ? 'bg-purple-50 text-[#8A64A4] font-bold' : 'text-gray-700' }}" onchange="document.getElementById('filterForm').submit()">
+                    <option value="all" {{ $range == 'all' ? 'selected' : '' }}>Semua Waktu</option>
+                    <option value="1_month" {{ $range == '1_month' ? 'selected' : '' }}>1 Bulan Terakhir</option>
+                    <option value="3_months" {{ $range == '3_months' ? 'selected' : '' }}>3 Bulan Terakhir</option>
+                    <option value="6_months" {{ $range == '6_months' ? 'selected' : '' }}>6 Bulan Terakhir</option>
+                    <option value="1_year" {{ $range == '1_year' ? 'selected' : '' }}>1 Tahun Terakhir</option>
+                </select>
+                <div class="pointer-events-none absolute inset-y-0 right-0 flex items-center px-4 {{ $range != 'all' ? 'text-[#A881C2]' : 'text-gray-400' }}">
+                    <svg class="w-4 h-4" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M19 9l-7 7-7-7"></path></svg>
+                </div>
+            </div>
         </form>
     </div>
 
-    <div class="bg-white rounded-[32px] shadow-[0_4px_20px_-4px_rgba(0,0,0,0.03)] border border-gray-100 overflow-hidden">
+    <div class="bg-white/80 backdrop-blur-xl rounded-[32px] shadow-[0_10px_30px_rgba(0,0,0,0.03)] border border-white/50 overflow-hidden">
         @if ($histories->isEmpty())
             <div class="p-12 flex flex-col items-center justify-center min-h-[300px]">
                 <div class="w-20 h-20 bg-gray-50 rounded-full flex items-center justify-center mb-5">
@@ -54,9 +61,9 @@
                     <tbody class="divide-y divide-gray-50">
                         @foreach ($histories as $history)
                             <tr class="hover:bg-purple-50/30 transition-colors group">
-                                <td class="px-8 py-5 whitespace-nowrap">
+                                <td class="px-8 py-6 whitespace-nowrap">
                                     <div class="flex items-center gap-4">
-                                        <div class="w-10 h-10 rounded-full bg-purple-100 flex items-center justify-center text-purple-600 font-bold overflow-hidden">
+                                        <div class="w-12 h-12 rounded-[16px] bg-gradient-to-br from-purple-100 to-indigo-100 flex items-center justify-center text-[#A881C2] font-black text-lg overflow-hidden shadow-sm">
                                             @if($history->profilKonselor->foto_profil)
                                                 <img src="{{ Storage::url($history->profilKonselor->foto_profil) }}" alt="{{ $history->profilKonselor->user->name }}" class="w-full h-full object-cover">
                                             @else
@@ -64,8 +71,8 @@
                                             @endif
                                         </div>
                                         <div class="flex flex-col">
-                                            <span class="font-bold text-[14px] text-gray-900">{{ $history->profilKonselor->user->name }}</span>
-                                            <span class="text-[12px] font-medium text-gray-500">{{ $history->profilKonselor->spesialisasi }}</span>
+                                            <span class="font-extrabold text-[15px] text-gray-900">{{ $history->profilKonselor->user->name }}</span>
+                                            <span class="text-[12px] font-bold text-[#A881C2] bg-purple-50 px-2 py-0.5 rounded-md w-max mt-1">{{ $history->profilKonselor->spesialisasi }}</span>
                                         </div>
                                     </div>
                                 </td>
@@ -118,24 +125,35 @@
                                         @endif
                                     </div>
                                 </td>
-                                <td class="px-8 py-5 whitespace-nowrap">
-                                    @if($history->payment_status === 'paid')
-                                        <span class="inline-flex items-center px-3 py-1 bg-emerald-50 text-emerald-600 border border-emerald-100 rounded-lg text-[10px] font-black uppercase tracking-widest">
-                                            Lunas (Paid)
-                                        </span>
-                                    @elseif($history->payment_status === 'waiting_verification')
-                                        <span class="inline-flex items-center px-3 py-1 bg-yellow-50 text-yellow-600 border border-yellow-100 rounded-lg text-[10px] font-black uppercase tracking-widest">
-                                            Menunggu Verifikasi
-                                        </span>
-                                    @elseif($history->payment_status === 'refunded')
-                                        <span class="inline-flex items-center px-3 py-1 bg-red-50 text-red-600 border border-red-100 rounded-lg text-[10px] font-black uppercase tracking-widest">
-                                            Dikembalikan
-                                        </span>
-                                    @else
-                                        <span class="inline-flex items-center px-3 py-1 bg-gray-50 text-gray-500 border border-gray-200 rounded-lg text-[10px] font-black uppercase tracking-widest">
-                                            Belum Dibayar
-                                        </span>
-                                    @endif
+                                </td>
+                                <td class="px-8 py-6 whitespace-nowrap">
+                                    <div class="flex items-center justify-between">
+                                        @if($history->payment_status === 'paid')
+                                            <span class="inline-flex items-center px-3 py-1 bg-emerald-50 text-emerald-600 border border-emerald-100 rounded-lg text-[10px] font-black uppercase tracking-widest">
+                                                Lunas (Paid)
+                                            </span>
+                                        @elseif($history->payment_status === 'waiting_verification')
+                                            <span class="inline-flex items-center px-3 py-1 bg-yellow-50 text-yellow-600 border border-yellow-100 rounded-lg text-[10px] font-black uppercase tracking-widest">
+                                                Verifikasi
+                                            </span>
+                                        @elseif($history->payment_status === 'refunded')
+                                            <span class="inline-flex items-center px-3 py-1 bg-red-50 text-red-600 border border-red-100 rounded-lg text-[10px] font-black uppercase tracking-widest">
+                                                Dikembalikan
+                                            </span>
+                                        @else
+                                            <span class="inline-flex items-center px-3 py-1 bg-gray-50 text-gray-500 border border-gray-200 rounded-lg text-[10px] font-black uppercase tracking-widest">
+                                                Belum Dibayar
+                                            </span>
+                                        @endif
+
+                                        <!-- Fungsi Pesan Lagi -->
+                                        @if($history->status === 'completed' || $history->status === 'cancelled' || $history->status === 'system_cancelled')
+                                            <a href="{{ route('konseling.show', $history->profil_konselor_id) }}" class="ml-4 opacity-0 group-hover:opacity-100 inline-flex items-center gap-1.5 px-3 py-1.5 bg-[#A881C2] text-white rounded-xl text-[11px] font-black hover:bg-[#8A64A4] transition-all shadow-sm active:scale-95">
+                                                <svg class="w-3.5 h-3.5" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M4 4v5h.582m15.356 2A8.001 8.001 0 004.582 9m0 0H9m11 11v-5h-.581m0 0a8.003 8.003 0 01-15.357-2m15.357 2H15"></path></svg>
+                                                Pesan Lagi
+                                            </a>
+                                        @endif
+                                    </div>
                                 </td>
                             </tr>
 

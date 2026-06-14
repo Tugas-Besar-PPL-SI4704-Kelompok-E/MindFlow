@@ -10,7 +10,7 @@
     else { $badgeClass = 'bg-gray-100 text-gray-500'; $badgeText = 'Anonim'; }
 @endphp
 
-<div class="relative {{ $depth === 0 ? 'bg-white rounded-[32px] p-6 md:p-8 shadow-[0_4px_20px_-4px_rgba(0,0,0,0.03)] border border-gray-100 mt-6' : 'mt-4 ml-6 md:ml-10' }}">
+<div class="relative {{ $depth === 0 ? 'bg-white/80 backdrop-blur-xl rounded-[32px] p-6 md:p-8 shadow-[0_10px_30px_rgba(0,0,0,0.03)] border border-white/50 mt-6' : 'mt-4 ml-6 md:ml-10' }}">
     @if($depth > 0)
         <!-- Line connector for nested replies -->
         <div class="absolute left-[-20px] top-[-16px] bottom-0 w-[2px] bg-gray-100 rounded-full"></div>

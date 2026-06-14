@@ -13,12 +13,12 @@
 @endif
 
 <div class="mb-6">
-    <button onclick="document.getElementById('modal-create').classList.remove('hidden')" class="bg-purple-600 text-white px-4 py-2 rounded-xl text-sm font-medium hover:bg-purple-700 transition-colors">
+    <button onclick="document.getElementById('modal-create').classList.remove('hidden')" class="bg-[#A881C2] text-white px-6 py-3 rounded-2xl text-sm font-bold hover:bg-[#8A64A4] transition-all shadow-lg shadow-purple-200 active:scale-95">
         + Tambah Jadwal
     </button>
 </div>
 
-<div class="bg-white rounded-2xl shadow-sm border border-gray-100 overflow-hidden">
+<div class="bg-white/80 backdrop-blur-xl rounded-[32px] shadow-[0_10px_30px_rgba(0,0,0,0.03)] border border-white/50 overflow-hidden">
     @if(count($schedules) > 0)
         <table class="min-w-full divide-y divide-gray-200">
             <thead class="bg-gray-50">

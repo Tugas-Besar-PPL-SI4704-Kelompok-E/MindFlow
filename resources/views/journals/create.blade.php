@@ -3,7 +3,7 @@
 @section('title', 'Tulis Jurnal Baru - MindFlow')
 
 @section('content')
-<div class="max-w-4xl mx-auto pb-12">
+<div class="pb-12">
     <div class="mb-8 flex items-center justify-between">
         <div>
             <h3 class="text-gray-900 font-extrabold text-2xl tracking-tight mb-2">Tulis Jurnal Baru</h3>
@@ -14,7 +14,7 @@
         </a>
     </div>
 
-    <div class="bg-white rounded-[32px] shadow-[0_4px_20px_-4px_rgba(0,0,0,0.03)] border border-gray-100 p-8 md:p-10">
+    <div class="bg-white/80 backdrop-blur-xl rounded-[32px] shadow-[0_10px_30px_rgba(0,0,0,0.03)] border border-white/50 p-8 md:p-10">
         @if ($errors->any())
             <div class="bg-red-50 border border-red-100 text-red-800 px-6 py-4 rounded-2xl mb-8 shadow-sm">
                 <ul class="list-disc list-inside text-sm font-medium">

@@ -5,9 +5,9 @@
 @section('styles')
 <style>
     .page-wrapper {
-        max-width: 840px;
+        max-width: 768px;
         margin: 0 auto;
-        padding-bottom: 60px;
+        padding-bottom: 80px;
         animation: fadeUp 0.6s cubic-bezier(0.22, 1, 0.36, 1);
     }
     @keyframes fadeUp {
@@ -43,12 +43,20 @@
     }
 
     .survey-card {
-        background: #FFFFFF;
-        border: 1px solid #E5E7EB;
+        background: rgba(255, 255, 255, 0.8);
+        backdrop-filter: blur(20px);
+        -webkit-backdrop-filter: blur(20px);
+        border: 1px solid rgba(255, 255, 255, 0.5);
         border-radius: 32px;
-        padding: 70px 60px;
-        box-shadow: 0 10px 25px -5px rgba(0, 0, 0, 0.02), 0 8px 10px -6px rgba(0, 0, 0, 0.01);
+        padding: 60px 40px;
+        box-shadow: 0 10px 30px rgba(0, 0, 0, 0.03);
         text-align: center;
+        transition: all 0.3s ease;
+    }
+    
+    .survey-card:hover {
+        box-shadow: 0 15px 40px rgba(168, 129, 194, 0.1);
+        border-color: rgba(168, 129, 194, 0.3);
     }
 
     .survey-title {
@@ -72,9 +80,14 @@
     .emoji-row {
         display: flex;
         justify-content: space-between;
-        gap: 8px;
-        flex-wrap: nowrap;
+        gap: 12px;
+        flex-wrap: wrap;
         margin-bottom: 32px;
+    }
+    @media (min-width: 640px) {
+        .emoji-row {
+            flex-wrap: nowrap;
+        }
     }
 
     .emoji-item {
@@ -107,11 +120,11 @@
     }
 
     .emoji-btn.active {
-        transform: scale(1.25) translateY(-8px);
+        transform: scale(1.3) translateY(-8px);
         filter: grayscale(0%) opacity(100%);
         background: #FFFFFF;
-        box-shadow: 0 20px 25px -5px rgba(0, 0, 0, 0.1), 0 10px 10px -5px rgba(0, 0, 0, 0.04);
-        border-color: #E5E7EB;
+        box-shadow: 0 20px 25px -5px rgba(168, 129, 194, 0.2), 0 10px 10px -5px rgba(168, 129, 194, 0.1);
+        border-color: rgba(168, 129, 194, 0.4);
         z-index: 10;
     }
 
@@ -147,7 +160,8 @@
     }
 
     .btn-submit {
-        background: #111827;
+        background: linear-gradient(135deg, #111827 0%, #1F2937 100%);
+
         color: #FFFFFF;
         border: none;
         padding: 18px 48px;
@@ -168,8 +182,8 @@
 
     .btn-submit.ready:hover {
         transform: translateY(-3px);
-        background: #1F2937;
-        box-shadow: 0 15px 25px -5px rgba(17, 24, 39, 0.35);
+        background: linear-gradient(135deg, #A881C2 0%, #8A64A4 100%);
+        box-shadow: 0 15px 25px -5px rgba(168, 129, 194, 0.4);
     }
 
     /* Elegant Modal */

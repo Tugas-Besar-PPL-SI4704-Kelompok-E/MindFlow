@@ -5,9 +5,9 @@
 @section('styles')
 <style>
     .page-wrapper {
-        max-width: 960px;
+        max-width: 800px;
         margin: 0 auto;
-        padding: 20px 0 60px 0;
+        padding: 40px 20px 80px;
         animation: fadeUp 0.6s cubic-bezier(0.22, 1, 0.36, 1);
     }
 
@@ -18,115 +18,135 @@
 
     .header-section {
         text-align: center;
-        margin-bottom: 60px;
+        margin-bottom: 50px;
     }
 
     .badge {
-        display: inline-block;
-        background: #F3E8FF;
-        color: #7E22CE;
+        display: inline-flex;
+        align-items: center;
+        gap: 6px;
+        background: rgba(168, 129, 194, 0.1);
+        border: 1px solid rgba(168, 129, 194, 0.2);
+        color: #A881C2;
         padding: 6px 16px;
         border-radius: 100px;
-        font-size: 14px;
-        font-weight: 600;
+        font-size: 13px;
+        font-weight: 800;
         margin-bottom: 24px;
-        letter-spacing: 0.5px;
+        letter-spacing: 1px;
+        text-transform: uppercase;
     }
 
     .page-title {
-        font-size: 38px;
-        font-weight: 700;
+        font-size: 36px;
+        font-weight: 800;
         color: #111827;
         margin-bottom: 16px;
-        letter-spacing: -1.2px;
+        letter-spacing: -1px;
     }
 
     .page-desc {
-        font-size: 17px;
+        font-size: 16px;
         color: #6B7280;
-        max-width: 600px;
+        max-width: 550px;
         margin: 0 auto;
         line-height: 1.6;
+        font-weight: 500;
     }
 
     .cards-grid {
         display: grid;
-        grid-template-columns: 1fr 1fr;
-        gap: 30px;
+        grid-template-columns: 1fr;
+        gap: 24px;
+    }
+
+    @media (min-width: 768px) {
+        .cards-grid {
+            grid-template-columns: 1fr 1fr;
+        }
     }
 
     .premium-card {
-        background: #FFFFFF;
-        border: 1px solid #E5E7EB;
-        border-radius: 28px;
-        padding: 48px 40px;
+        background: rgba(255, 255, 255, 0.8);
+        backdrop-filter: blur(20px);
+        -webkit-backdrop-filter: blur(20px);
+        border: 1px solid rgba(255, 255, 255, 0.5);
+        border-radius: 32px;
+        padding: 40px 32px;
         text-decoration: none;
         color: inherit;
         display: flex;
         flex-direction: column;
         transition: all 0.4s cubic-bezier(0.16, 1, 0.3, 1);
+        box-shadow: 0 10px 30px rgba(0, 0, 0, 0.03);
         position: relative;
         overflow: hidden;
     }
 
     .premium-card:hover {
-        transform: translateY(-6px);
-        box-shadow: 0 25px 50px -12px rgba(0, 0, 0, 0.08), 0 10px 15px -3px rgba(0, 0, 0, 0.03);
-        border-color: #D1D5DB;
+        transform: translateY(-8px);
+        box-shadow: 0 20px 40px rgba(168, 129, 194, 0.15);
+        background: #FFFFFF;
+        border-color: rgba(168, 129, 194, 0.3);
     }
 
     .card-icon {
-        width: 72px;
-        height: 72px;
-        border-radius: 22px;
+        width: 64px;
+        height: 64px;
+        border-radius: 20px;
         display: flex;
         align-items: center;
         justify-content: center;
-        margin-bottom: 36px;
+        margin-bottom: 30px;
         transition: transform 0.4s cubic-bezier(0.16, 1, 0.3, 1);
     }
 
     .premium-card:hover .card-icon {
-        transform: scale(1.05) rotate(-4deg);
+        transform: scale(1.1) rotate(-5deg);
     }
 
     .icon-orange {
-        background: #FFF7ED;
-        color: #EA580C;
+        background: linear-gradient(135deg, #FFF7ED 0%, #FFEDD5 100%);
+        color: #F97316;
+        box-shadow: 0 8px 16px rgba(249, 115, 22, 0.15);
     }
 
     .icon-purple {
-        background: #F3E8FF;
-        color: #7E22CE;
+        background: linear-gradient(135deg, #F4EEFB 0%, #E9DDF5 100%);
+        color: #A881C2;
+        box-shadow: 0 8px 16px rgba(168, 129, 194, 0.15);
     }
 
     .premium-card h3 {
-        font-size: 24px;
-        font-weight: 700;
+        font-size: 22px;
+        font-weight: 800;
         color: #111827;
-        margin-bottom: 14px;
+        margin-bottom: 12px;
         letter-spacing: -0.5px;
     }
 
     .premium-card p {
         color: #6B7280;
-        font-size: 16px;
-        line-height: 1.65;
-        margin-bottom: 48px;
+        font-size: 15px;
+        line-height: 1.6;
+        margin-bottom: 40px;
         flex-grow: 1;
+        font-weight: 500;
     }
 
     .card-action {
         display: flex;
         align-items: center;
-        font-weight: 600;
-        font-size: 16px;
+        font-weight: 800;
+        font-size: 14px;
         color: #111827;
         transition: color 0.2s;
+        text-transform: uppercase;
+        letter-spacing: 0.5px;
     }
 
     .premium-card:hover .card-action {
-        color: var(--primary-purple);
+        color: #A881C2;
     }
 
     .card-action svg {
@@ -141,16 +161,18 @@
     /* Toast notification */
     .toast {
         position: fixed;
-        top: 32px;
-        right: 32px;
+        bottom: 40px;
+        left: 50%;
+        transform: translateX(-50%);
         z-index: 2000;
-        background: #111827;
+        background: rgba(17, 24, 39, 0.95);
+        backdrop-filter: blur(10px);
         color: #FFFFFF;
-        padding: 18px 28px;
-        border-radius: 16px;
-        font-size: 15px;
-        font-weight: 500;
-        box-shadow: 0 20px 25px -5px rgba(0, 0, 0, 0.15);
+        padding: 16px 24px;
+        border-radius: 100px;
+        font-size: 14px;
+        font-weight: 600;
+        box-shadow: 0 20px 40px rgba(0, 0, 0, 0.2);
         display: flex;
         align-items: center;
         gap: 12px;
@@ -158,8 +180,8 @@
                    toastOut 0.4s cubic-bezier(0.16, 1, 0.3, 1) 3.6s forwards;
     }
     .toast-icon {
-        width: 28px; height: 28px;
-        background: #059669;
+        width: 24px; height: 24px;
+        background: #10B981;
         border-radius: 50%;
         display: flex;
         align-items: center;
@@ -167,12 +189,12 @@
         flex-shrink: 0;
     }
     @keyframes toastIn {
-        from { opacity: 0; transform: translateX(40px); }
-        to   { opacity: 1; transform: translateX(0); }
+        from { opacity: 0; transform: translate(-50%, 40px); }
+        to   { opacity: 1; transform: translate(-50%, 0); }
     }
     @keyframes toastOut {
-        from { opacity: 1; transform: translateX(0); }
-        to   { opacity: 0; transform: translateX(40px); }
+        from { opacity: 1; transform: translate(-50%, 0); }
+        to   { opacity: 0; transform: translate(-50%, 40px); }
     }
 </style>
 @endsection
@@ -180,7 +202,10 @@
 @section('content')
 <div class="page-wrapper">
     <div class="header-section">
-        <span class="badge">MindFlow Tracker</span>
+        <span class="badge">
+            <svg width="14" height="14" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.5" stroke-linecap="round" stroke-linejoin="round"><path d="M12 2v20M17 5H9.5a3.5 3.5 0 0 0 0 7h5a3.5 3.5 0 0 1 0 7H6"></path></svg>
+            MindFlow Tracker
+        </span>
         <h1 class="page-title">Kenali Perasaanmu Hari Ini</h1>
         <p class="page-desc">Pilih metode yang paling sesuai dengan kebutuhanmu. Luangkan waktu sejenak untuk terhubung kembali dengan dirimu sendiri.</p>
     </div>
@@ -200,8 +225,8 @@
     <div class="cards-grid">
         <a href="{{ route('mood-tracker.singkat') }}" class="premium-card">
             <div class="card-icon icon-orange">
-                <svg width="36" height="36" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round">
-                    <path d="M12 2v20M17 5H9.5a3.5 3.5 0 0 0 0 7h5a3.5 3.5 0 0 1 0 7H6"/>
+                <svg width="32" height="32" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.5" stroke-linecap="round" stroke-linejoin="round">
+                    <polygon points="13 2 3 14 12 14 11 22 21 10 12 10 13 2"></polygon>
                 </svg>
             </div>
             <h3>Pemeriksaan Singkat</h3>
@@ -217,9 +242,10 @@
 
         <a href="{{ route('mood-tracker.mendalam') }}" class="premium-card">
             <div class="card-icon icon-purple">
-                <svg width="36" height="36" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round">
-                    <path d="M12 22s8-4 8-10V5l-8-3-8 3v7c0 6 8 10 8 10z"/>
-                    <circle cx="12" cy="11" r="3"/>
+                <svg width="32" height="32" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.5" stroke-linecap="round" stroke-linejoin="round">
+                    <circle cx="12" cy="12" r="10"></circle>
+                    <line x1="12" y1="8" x2="12" y2="12"></line>
+                    <line x1="12" y1="16" x2="12.01" y2="16"></line>
                 </svg>
             </div>
             <h3>Pemeriksaan Mendalam</h3>

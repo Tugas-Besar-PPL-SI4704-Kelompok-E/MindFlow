@@ -4,7 +4,7 @@
 @section('header', 'Pengaturan Profil')
 
 @section('content')
-<div class="max-w-4xl mx-auto">
+<div class="w-full">
     
     @if (session('success'))
         <div class="bg-green-50 border border-green-200 text-green-700 px-6 py-4 rounded-xl mb-6 flex items-center gap-3">
@@ -23,7 +23,7 @@
         </div>
     @endif
 
-    <div class="bg-white rounded-2xl shadow-sm border border-gray-100 p-8">
+    <div class="bg-white/80 backdrop-blur-xl rounded-[32px] shadow-[0_10px_30px_rgba(0,0,0,0.03)] border border-white/50 p-8">
         <form action="{{ route('konselor.settings.update') }}" method="POST" class="space-y-8">
             @csrf
             @method('PUT')

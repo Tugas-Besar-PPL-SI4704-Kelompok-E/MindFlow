@@ -10,7 +10,7 @@
     </div>
     @auth
     <a href="{{ route('artikel.bookmarks') }}" class="flex items-center justify-center gap-2 bg-white hover:bg-purple-50 text-[#A881C2] border border-purple-100 px-5 py-2.5 rounded-xl font-bold text-sm shadow-[0_2px_8px_-2px_rgba(168,129,194,0.15)] transition-all group">
-        <svg class="w-4.5 h-4.5" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2">
+        <svg class="w-5 h-5" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2">
             <path stroke-linecap="round" stroke-linejoin="round" d="M5 5a2 2 0 012-2h10a2 2 0 012 2v16l-7-3.5L5 21V5z"/>
         </svg>
         Bookmark Saya
@@ -19,7 +19,7 @@
 </div>
 
 {{-- Search & Filter Bar --}}
-<div class="bg-white rounded-[24px] p-5 shadow-[0_4px_20px_-4px_rgba(0,0,0,0.03)] border border-gray-100 mb-8">
+<div class="bg-white/80 backdrop-blur-xl rounded-[24px] p-5 shadow-[0_10px_30px_rgba(0,0,0,0.03)] border border-white/50 mb-8">
     <form action="{{ route('artikel.index') }}" method="GET" class="flex flex-col sm:flex-row gap-3">
         {{-- Search Input --}}
         <div class="relative flex-1">
@@ -103,7 +103,7 @@
 <div class="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-6 mb-8">
     @foreach($artikels as $artikel)
         <article 
-            class="group bg-white rounded-[24px] overflow-hidden shadow-[0_4px_20px_-4px_rgba(0,0,0,0.03)] border border-gray-100 hover:shadow-[0_12px_40px_-8px_rgba(168,129,194,0.15)] hover:border-purple-100 transition-all duration-300 flex flex-col cursor-pointer" 
+            class="group bg-white/80 backdrop-blur-xl rounded-[24px] overflow-hidden shadow-[0_10px_30px_rgba(0,0,0,0.03)] border border-white/50 hover:shadow-[0_15px_40px_rgba(168,129,194,0.1)] hover:border-[#A881C2]/30 hover:-translate-y-1 transition-all duration-300 flex flex-col cursor-pointer" 
             id="artikel-card-{{ $artikel->artikel_id }}"
             onclick="openArtikelModal({{ $artikel->artikel_id }})"
         >
@@ -151,7 +151,7 @@
                         class="w-9 h-9 flex items-center justify-center transition-all group/bm {{ $artikel->isBookmarkedBy(Auth::id()) ? 'text-[#A881C2]' : 'text-gray-400 hover:text-[#A881C2] drop-shadow-sm' }}"
                         title="{{ $artikel->isBookmarkedBy(Auth::id()) ? 'Hapus Bookmark' : 'Bookmark' }}"
                     >
-                        <svg class="w-4.5 h-4.5" viewBox="0 0 24 24" fill="{{ $artikel->isBookmarkedBy(Auth::id()) ? 'currentColor' : 'none' }}" stroke="currentColor" stroke-width="2">
+                        <svg class="w-5 h-5" viewBox="0 0 24 24" fill="{{ $artikel->isBookmarkedBy(Auth::id()) ? 'currentColor' : 'none' }}" stroke="currentColor" stroke-width="2">
                             <path stroke-linecap="round" stroke-linejoin="round" d="M5 5a2 2 0 012-2h10a2 2 0 012 2v16l-7-3.5L5 21V5z"/>
                         </svg>
                     </button>
@@ -324,7 +324,7 @@
 
 @else
 {{-- Empty State --}}
-<div class="bg-white rounded-[32px] shadow-sm border border-gray-100 p-12 flex flex-col items-center justify-center min-h-[400px]">
+<div class="bg-white/80 backdrop-blur-xl rounded-[32px] shadow-[0_10px_30px_rgba(0,0,0,0.03)] border border-white/50 p-12 flex flex-col items-center justify-center min-h-[400px]">
     <div class="w-24 h-24 bg-purple-50 rounded-full flex items-center justify-center mb-6">
         <svg class="w-12 h-12 text-[#A881C2]" fill="none" stroke="currentColor" viewBox="0 0 24 24">
             <path stroke-linecap="round" stroke-linejoin="round" stroke-width="1.5" d="M19 20H5a2 2 0 01-2-2V6a2 2 0 012-2h10a2 2 0 012 2v1m2 13a2 2 0 01-2-2V7m2 13a2 2 0 002-2V9a2 2 0 00-2-2h-2m-4-3H9M7 16h6M7 12h10"/>

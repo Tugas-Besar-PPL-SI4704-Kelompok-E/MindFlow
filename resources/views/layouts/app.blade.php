@@ -62,6 +62,10 @@
             margin-left: calc(-1 * var(--sidebar-left-w)) !important;
         }
 
+        .layout.right-sidebar-collapsed .sidebar-right {
+            margin-right: calc(-1 * var(--sidebar-right-w)) !important;
+        }
+
         /* Floating Sidebar Toggle Button */
         .floating-sidebar-toggle {
             position: fixed;
@@ -97,6 +101,43 @@
 
         .floating-sidebar-toggle:active {
             transform: scale(0.95);
+        }
+
+        /* Floating Right Sidebar Toggle Button */
+        .floating-right-sidebar-toggle {
+            position: fixed;
+            top: 20px;
+            right: 20px;
+            z-index: 99;
+            width: 44px;
+            height: 44px;
+            background-color: #FFFFFF;
+            border: 1px solid var(--border-dark);
+            border-radius: 12px;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            cursor: pointer;
+            box-shadow: 0 4px 12px rgba(168, 129, 194, 0.08);
+            transition: all 0.3s cubic-bezier(0.4, 0, 0.2, 1);
+        }
+
+        .floating-right-sidebar-toggle:hover {
+            transform: scale(1.05);
+            background-color: #F4EEFB;
+            border-color: #A881C2;
+        }
+
+        .floating-right-sidebar-toggle:active {
+            transform: scale(0.95);
+        }
+
+        .floating-right-sidebar-toggle svg {
+            width: 22px;
+            height: 22px;
+            stroke: #A881C2;
+            stroke-width: 2;
+            fill: none;
         }
 
         .sidebar-toggle-btn {
@@ -397,6 +438,7 @@
             flex-shrink: 0;
             overflow-y: auto;
             background-color: var(--bg-color);
+            transition: margin-right 0.3s cubic-bezier(0.4, 0, 0.2, 1);
         }
 
         .right-header {
@@ -481,12 +523,59 @@
             color: var(--text-main);
             border-color: var(--text-muted);
         }
+
+        /* ── Premium UI Designer 2026 Additions ── */
+        /* Scrollbar */
+        ::-webkit-scrollbar { width: 6px; height: 6px; }
+        ::-webkit-scrollbar-track { background: transparent; }
+        ::-webkit-scrollbar-thumb { background: rgba(168, 129, 194, 0.3); border-radius: 10px; }
+        ::-webkit-scrollbar-thumb:hover { background: rgba(168, 129, 194, 0.6); }
+        
+        /* Input Focus State */
+        input:focus, textarea:focus, select:focus {
+            background-color: #ffffff !important;
+            border-color: rgba(168, 129, 194, 0.5) !important;
+            box-shadow: 0 0 0 4px rgba(168, 129, 194, 0.15) !important;
+            outline: none !important;
+        }
+
+        /* Button Bouncy Micro-Interaction */
+        button, a.btn, a[class*="bg-"] {
+            transition: transform 0.2s cubic-bezier(0.16, 1, 0.3, 1), background-color 0.2s ease, box-shadow 0.2s ease, border-color 0.2s ease, color 0.2s ease !important;
+        }
+        button:active:not(:disabled), a.btn:active, a[class*="bg-"]:active {
+            transform: scale(0.97) !important;
+        }
+
+        /* Ambient Blobs */
+        .ambient-blob {
+            position: fixed;
+            border-radius: 50%;
+            filter: blur(100px);
+            opacity: 0.15;
+            z-index: -1;
+            pointer-events: none;
+            animation: pulse-blob 8s infinite alternate ease-in-out;
+        }
+        .ambient-blob-1 { top: -10%; left: -5%; width: 40vw; height: 40vw; background: #A881C2; }
+        .ambient-blob-2 { bottom: -15%; right: -5%; width: 50vw; height: 50vw; background: #8A64A4; animation-delay: -4s; }
+        @keyframes pulse-blob {
+            0% { transform: scale(1) translate(0, 0); opacity: 0.15; }
+            100% { transform: scale(1.1) translate(10px, -10px); opacity: 0.25; }
+        }
     </style>
     @stack('styles')
-</head><body>
+</head><body class="relative">
+    <div class="ambient-blob ambient-blob-1"></div>
+    <div class="ambient-blob ambient-blob-2"></div>
     <!-- Floating Expand Sidebar Button -->
     <button type="button" id="sidebarExpandBtn" class="floating-sidebar-toggle" style="display: none;" title="Expand Sidebar">
         <svg fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M4 6h16M4 12h16M4 18h16"></path></svg>
+    </button>
+    
+    <!-- Floating Expand Right Sidebar Button -->
+    <button type="button" id="rightSidebarExpandBtn" class="floating-right-sidebar-toggle" style="display: none;" title="Buka Jadwal Konsultasi">
+        <svg fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M15 19l-7-7 7-7"></path></svg>
     </button>
     <div class="layout">
         <!-- Sidebar Kiri -->
@@ -877,11 +966,15 @@
         </main>
 
         <!-- Sidebar Kanan -->
-        @unless(request()->routeIs('artikel.*'))
         <aside class="sidebar-right">
-            <div class="right-header">
-                <h3 class="text-gray-900 font-bold">Jadwal Konsultasi</h3>
-                <a href="{{ route('konseling.history') }}" class="text-[#A881C2] hover:text-[#8A64A4] font-bold text-xs transition-colors">Riwayat Sesi</a>
+            <div class="flex items-center justify-between mb-6">
+                <h3 class="text-gray-900 font-bold text-[15px] leading-snug">Jadwal<br>Konsultasi</h3>
+                <div class="flex items-center gap-2">
+                    <a href="{{ route('konseling.history') }}" class="text-[#A881C2] hover:text-white hover:bg-[#A881C2] font-bold text-[11px] whitespace-nowrap bg-purple-50 px-3 py-1.5 rounded-xl transition-all">Riwayat Sesi</a>
+                    <button type="button" id="rightSidebarCollapseBtn" class="p-1.5 rounded-xl bg-gray-50 text-gray-400 hover:bg-gray-200 hover:text-gray-600 transition-all border border-gray-100 shadow-sm" title="Sembunyikan Sidebar">
+                        <svg class="w-4 h-4" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2.5" d="M9 5l7 7-7 7"></path></svg>
+                    </button>
+                </div>
             </div>
             
             @if(isset($jadwalKonsultasi) && $jadwalKonsultasi->whereNotIn('status', ['cancelled', 'system_cancelled', 'completed'])->isEmpty())
@@ -894,7 +987,7 @@
             @elseif(isset($jadwalKonsultasi))
                 <div class="flex flex-col gap-5">
                     @foreach($jadwalKonsultasi->whereNotIn('status', ['cancelled', 'system_cancelled', 'completed']) as $jadwal)
-                        <div class="bg-white p-5 rounded-3xl border border-gray-100 shadow-[0_4px_12px_-2px_rgba(0,0,0,0.03)] hover:shadow-md transition-all duration-300 group">
+                        <div class="bg-white/80 backdrop-blur-xl p-5 rounded-[32px] border border-white/50 shadow-[0_10px_30px_rgba(0,0,0,0.03)] hover:-translate-y-1 transition-all duration-300 group">
                             <div class="flex items-start justify-between mb-4">
                                 <div>
                                     <h4 class="font-bold text-gray-900 text-[14px] leading-tight mb-1 group-hover:text-[#A881C2] transition-colors">{{ $jadwal->profilKonselor ? $jadwal->profilKonselor->nama : 'Konselor' }}</h4>
@@ -936,7 +1029,7 @@
 
                             <div class="flex flex-col gap-2">
                                 @if($jadwal->canEnterRoom())
-                                    <a href="{{ route('konseling.room', $jadwal->sesi_konseling_id) }}" class="w-full text-center bg-emerald-500 hover:bg-emerald-600 text-white py-3 rounded-xl text-[12px] font-bold transition-all duration-300 shadow-sm shadow-emerald-200 flex items-center justify-center gap-2">
+                                    <a href="{{ route('konseling.room', $jadwal->sesi_konseling_id) }}" class="w-full text-center bg-emerald-500 hover:bg-emerald-600 text-white py-3 rounded-[20px] text-[12px] font-bold transition-all duration-300 shadow-sm shadow-emerald-500/30 flex items-center justify-center gap-2 active:scale-95">
                                         <svg class="w-4 h-4" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2.5" d="M15 10l4.553-2.276A1 1 0 0121 8.618v6.764a1 1 0 01-1.447.894L15 14M5 18h8a2 2 0 002-2V8a2 2 0 00-2-2H5a2 2 0 00-2 2v8a2 2 0 002 2z"></path></svg>
                                         Masuk Ruangan
                                     </a>
@@ -948,19 +1041,19 @@
                                             default => 'Ruangan tersedia 15 menit sebelum jadwal'
                                         };
                                     @endphp
-                                    <button disabled class="w-full text-center bg-gray-200 text-gray-500 py-3 rounded-xl text-[12px] font-bold transition-all duration-300 border border-gray-200 cursor-not-allowed" title="{{ $accessMessage }}">
+                                    <button disabled class="w-full text-center bg-gray-100/80 text-gray-400 py-3 rounded-[20px] text-[12px] font-bold transition-all duration-300 border border-gray-200 cursor-not-allowed" title="{{ $accessMessage }}">
                                         {{ $displayMessage }}
                                     </button>
                                 @endif
                                 <div class="flex gap-2">
-                                    <a href="{{ route('booking.edit', $jadwal->sesi_konseling_id) }}" class="{{ in_array($jadwal->status, ['confirmed', 'rescheduled']) ? 'w-full' : 'flex-1' }} text-center bg-gray-50 hover:bg-purple-50 hover:text-[#A881C2] text-gray-500 py-2.5 rounded-xl text-[11px] font-bold transition-all duration-300 border border-transparent hover:border-purple-100">
+                                     <a href="{{ route('booking.edit', $jadwal->sesi_konseling_id) }}" class="{{ in_array($jadwal->status, ['confirmed', 'rescheduled']) ? 'w-full' : 'flex-1' }} text-center bg-white hover:bg-purple-50 hover:text-[#A881C2] text-gray-600 py-2.5 rounded-[20px] text-[11px] font-bold transition-all duration-300 border border-gray-100 hover:border-purple-200 shadow-sm shadow-gray-200/50 active:scale-95">
                                         Ubah
                                     </a>
                                     @if(!in_array($jadwal->status, ['confirmed', 'rescheduled']))
                                     <form action="{{ route('booking.cancel', $jadwal->sesi_konseling_id) }}" method="POST" onsubmit="return confirm('Yakin ingin membatalkan sesi ini?')" class="flex-1">
                                         @csrf
                                         @method('DELETE')
-                                        <button type="submit" class="w-full bg-gray-50 hover:bg-red-50 hover:text-red-500 text-gray-500 py-2.5 rounded-xl text-[11px] font-bold transition-all duration-300 border border-transparent hover:border-red-100">
+                                         <button type="submit" class="w-full bg-white hover:bg-red-50 hover:text-red-500 text-gray-600 py-2.5 rounded-[20px] text-[11px] font-bold transition-all duration-300 border border-gray-100 hover:border-red-200 shadow-sm shadow-gray-200/50 active:scale-95">
                                             {{ $jadwal->payment_status === 'paid' ? 'Refund' : 'Batal' }}
                                         </button>
                                     </form>
@@ -979,7 +1072,6 @@
                 </div>
             @endif
         </aside>
-        @endunless
     </div>
 
     <!-- Profile Popup Toggle Script -->
@@ -1054,6 +1146,46 @@
             if (expandBtn) {
                 expandBtn.addEventListener('click', function() {
                     setSidebarState(false, true);
+                });
+            }
+
+            // ── Right Sidebar Collapse / Expand Toggle ───────────
+            const collapseRightBtn = document.getElementById('rightSidebarCollapseBtn');
+            const expandRightBtn   = document.getElementById('rightSidebarExpandBtn');
+            const STORAGE_RIGHT_KEY = 'mindflow_right_sidebar_collapsed';
+
+            function setRightSidebarState(collapsed, animate) {
+                if (!animate) {
+                    const sidebarRight = document.querySelector('.sidebar-right');
+                    if (sidebarRight) sidebarRight.style.transition = 'none';
+                    requestAnimationFrame(function() {
+                        if (sidebarRight) sidebarRight.style.transition = '';
+                    });
+                }
+
+                if (collapsed) {
+                    layout.classList.add('right-sidebar-collapsed');
+                    if (expandRightBtn) expandRightBtn.style.display = 'flex';
+                } else {
+                    layout.classList.remove('right-sidebar-collapsed');
+                    if (expandRightBtn) expandRightBtn.style.display = 'none';
+                }
+
+                localStorage.setItem(STORAGE_RIGHT_KEY, collapsed ? '1' : '0');
+            }
+
+            const storedRightCollapsed = localStorage.getItem(STORAGE_RIGHT_KEY) === '1';
+            setRightSidebarState(storedRightCollapsed, false);
+
+            if (collapseRightBtn) {
+                collapseRightBtn.addEventListener('click', function() {
+                    setRightSidebarState(true, true);
+                });
+            }
+
+            if (expandRightBtn) {
+                expandRightBtn.addEventListener('click', function() {
+                    setRightSidebarState(false, true);
                 });
             }
         });

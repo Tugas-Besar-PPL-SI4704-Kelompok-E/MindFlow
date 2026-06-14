@@ -4,13 +4,13 @@
 
 
 @section('content')
-<div class="max-w-4xl mx-auto pb-12">
+<div class="pb-12">
 
 
     {{-- Jurnal Section --}}
     <div class="mb-10">
         <h3 class="text-gray-900 font-extrabold text-xl mb-4 tracking-tight">Jurnal</h3>
-        <a href="{{ route('journals.create') }}" class="flex flex-col items-center justify-center w-full bg-white border border-gray-100 rounded-[24px] p-10 hover:bg-purple-50 hover:border-purple-100 transition-all shadow-[0_4px_20px_-4px_rgba(0,0,0,0.03)] hover:shadow-[0_8px_30px_-4px_rgba(0,0,0,0.06)] group">
+        <a href="{{ route('journals.create') }}" class="flex flex-col items-center justify-center w-full bg-white/80 backdrop-blur-xl border border-white/50 rounded-[24px] p-10 hover:bg-white/90 hover:border-[#A881C2]/30 transition-all shadow-[0_10px_30px_rgba(0,0,0,0.03)] hover:shadow-[0_15px_40px_rgba(168,129,194,0.1)] group">
             <div class="flex items-center gap-4 mb-3">
                 <svg class="w-12 h-12 text-[#A881C2] group-hover:scale-110 transition-transform" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="1.5" d="M12 6.253v13m0-13C10.832 5.477 9.246 5 7.5 5S4.168 5.477 3 6.253v13C4.168 18.477 5.754 18 7.5 18s3.332.477 4.5 1.253m0-13C13.168 5.477 14.754 5 16.5 5c1.747 0 3.332.477 4.5 1.253v13C19.832 18.477 18.247 18 16.5 18c-1.746 0-3.332.477-4.5 1.253"></path></svg>
                 <span class="text-3xl font-light text-gray-400 group-hover:text-[#A881C2] transition-colors">+</span>
@@ -36,7 +36,7 @@
         @endif
 
         @if ($journals->isEmpty())
-            <div class="bg-white rounded-[32px] shadow-[0_4px_20px_-4px_rgba(0,0,0,0.03)] border border-gray-100 p-12 flex flex-col items-center justify-center min-h-[300px]">
+            <div class="bg-white/80 backdrop-blur-xl rounded-[32px] shadow-[0_10px_30px_rgba(0,0,0,0.03)] border border-white/50 p-12 flex flex-col items-center justify-center min-h-[300px]">
                 <div class="w-20 h-20 bg-gray-50 rounded-full flex items-center justify-center mb-5">
                     <svg class="w-10 h-10 text-gray-300" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="1.5" d="M19 11H5m14 0a2 2 0 012 2v6a2 2 0 01-2 2H5a2 2 0 01-2-2v-6a2 2 0 012-2m14 0V9a2 2 0 00-2-2M5 11V9a2 2 0 012-2m0 0V5a2 2 0 012-2h6a2 2 0 012 2v2M7 7h10"></path></svg>
                 </div>
@@ -46,7 +46,7 @@
         @else
             <div class="grid grid-cols-1 md:grid-cols-2 gap-5">
                 @foreach ($journals as $journal)
-                    <div class="bg-white border border-gray-100 rounded-[24px] shadow-[0_4px_20px_-4px_rgba(0,0,0,0.03)] hover:shadow-[0_8px_30px_-4px_rgba(0,0,0,0.06)] transition-all p-6 flex flex-col relative group">
+                    <div class="bg-white/80 backdrop-blur-xl border border-white/50 rounded-[24px] shadow-[0_10px_30px_rgba(0,0,0,0.03)] hover:shadow-[0_15px_40px_rgba(168,129,194,0.1)] hover:border-[#A881C2]/30 hover:-translate-y-1 transition-all p-6 flex flex-col relative group">
                         <div class="flex items-center justify-between mb-3">
                             <div class="text-[12px] font-black text-[#A881C2] uppercase tracking-widest flex items-center gap-2">
                                 {{ $journal->updated_at->translatedFormat('d M Y, H:i') }}
@@ -77,7 +77,7 @@
     {{-- Kalender Mood Section --}}
     <div class="mb-6">
         <h3 class="text-gray-900 font-extrabold text-xl mb-4 tracking-tight">Kalender Mood</h3>
-        <div class="bg-white rounded-[32px] shadow-[0_4px_20px_-4px_rgba(0,0,0,0.03)] border border-gray-100 p-8 md:p-10">
+        <div class="bg-white/80 backdrop-blur-xl rounded-[32px] shadow-[0_10px_30px_rgba(0,0,0,0.03)] border border-white/50 p-8 md:p-10">
             <div class="flex justify-center items-center gap-6 mb-8">
                 <a href="{{ route('journals.index', ['month' => $prevMonth->month, 'year' => $prevMonth->year]) }}" class="w-10 h-10 rounded-full bg-purple-50 text-[#A881C2] hover:bg-[#A881C2] hover:text-white flex items-center justify-center transition-colors">
                     <svg class="w-5 h-5" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2.5" d="M15 19l-7-7 7-7"></path></svg>

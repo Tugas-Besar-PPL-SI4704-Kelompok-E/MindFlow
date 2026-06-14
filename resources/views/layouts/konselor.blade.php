@@ -46,9 +46,51 @@
         .sidebar-nav-link:hover {
             transform: scale(1.04) translateX(4px);
         }
+
+        /* ── Premium UI Designer 2026 Additions ── */
+        /* Scrollbar */
+        ::-webkit-scrollbar { width: 6px; height: 6px; }
+        ::-webkit-scrollbar-track { background: transparent; }
+        ::-webkit-scrollbar-thumb { background: rgba(168, 129, 194, 0.3); border-radius: 10px; }
+        ::-webkit-scrollbar-thumb:hover { background: rgba(168, 129, 194, 0.6); }
+        
+        /* Input Focus State */
+        input:focus, textarea:focus, select:focus {
+            background-color: #ffffff !important;
+            border-color: rgba(168, 129, 194, 0.5) !important;
+            box-shadow: 0 0 0 4px rgba(168, 129, 194, 0.15) !important;
+            outline: none !important;
+        }
+
+        /* Button Bouncy Micro-Interaction */
+        button, a.btn, a[class*="bg-"] {
+            transition: transform 0.2s cubic-bezier(0.16, 1, 0.3, 1), background-color 0.2s ease, box-shadow 0.2s ease, border-color 0.2s ease, color 0.2s ease !important;
+        }
+        button:active:not(:disabled), a.btn:active, a[class*="bg-"]:active {
+            transform: scale(0.97) !important;
+        }
+
+        /* Ambient Blobs */
+        .ambient-blob {
+            position: fixed;
+            border-radius: 50%;
+            filter: blur(100px);
+            opacity: 0.15;
+            z-index: -1;
+            pointer-events: none;
+            animation: pulse-blob 8s infinite alternate ease-in-out;
+        }
+        .ambient-blob-1 { top: -10%; left: -5%; width: 40vw; height: 40vw; background: #A881C2; }
+        .ambient-blob-2 { bottom: -15%; right: -5%; width: 50vw; height: 50vw; background: #8A64A4; animation-delay: -4s; }
+        @keyframes pulse-blob {
+            0% { transform: scale(1) translate(0, 0); opacity: 0.15; }
+            100% { transform: scale(1.1) translate(10px, -10px); opacity: 0.25; }
+        }
     </style>
 </head>
-<body class="bg-gray-50 font-sans antialiased text-gray-900 text-lg">
+<body class="bg-gray-50 font-sans antialiased text-gray-900 text-lg relative">
+    <div class="ambient-blob ambient-blob-1"></div>
+    <div class="ambient-blob ambient-blob-2"></div>
     <div class="flex h-screen overflow-hidden">
         
         <!-- Sidebar Kiri -->

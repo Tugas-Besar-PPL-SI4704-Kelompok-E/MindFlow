@@ -3,7 +3,7 @@
 @section('title', 'Pengaturan Akun & Sistem')
 
 @section('content')
-<div class="bg-white rounded-2xl border border-gray-100 p-8 max-w-3xl mx-auto">
+<div class="bg-white/80 backdrop-blur-xl rounded-[32px] shadow-[0_10px_30px_rgba(0,0,0,0.03)] border border-white/50 p-8 w-full">
     <form action="{{ route('admin.settings.update') }}" method="POST" class="space-y-6">
         @csrf
         @method('PUT')
@@ -41,7 +41,7 @@
 
 
         <div class="pt-6 border-t border-gray-100 flex justify-end">
-            <button type="submit" class="px-8 py-3 bg-purple-600 text-white font-bold rounded-xl hover:bg-purple-700 transition-all shadow-lg shadow-purple-200">
+            <button type="submit" class="px-8 py-3 bg-[#A881C2] text-white font-bold rounded-2xl hover:bg-[#8A64A4] transition-all shadow-lg shadow-purple-200 active:scale-95">
                 Simpan Perubahan
             </button>
         </div>

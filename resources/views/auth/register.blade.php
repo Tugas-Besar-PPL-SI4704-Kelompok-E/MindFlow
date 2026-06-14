@@ -62,12 +62,18 @@
         width: 50px;
         height: 50px;
         border-radius: 14px;
-        background: rgba(255,255,255,0.15);
+        background: rgba(255,255,255,0.2);
         backdrop-filter: blur(10px);
         display: flex;
         align-items: center;
         justify-content: center;
-        font-size: 1.5rem;
+        box-shadow: 0 8px 32px rgba(0, 0, 0, 0.1);
+        padding: 8px;
+    }
+    .auth-brand-logo-icon img {
+        width: 100%;
+        height: 100%;
+        object-fit: contain;
     }
     .auth-brand h2 {
         font-size: 1.75rem;
@@ -149,18 +155,19 @@
     }
     .form-input {
         width: 100%;
-        padding: 0.75rem 1rem;
-        border: 1.5px solid var(--gray-200);
-        border-radius: 10px;
+        padding: 0.85rem 1.2rem;
+        border: 1px solid var(--gray-200);
+        border-radius: 14px;
         font-size: 0.95rem;
         color: var(--gray-800);
-        background: white;
-        transition: all 0.2s;
+        background: var(--gray-50);
+        transition: all 0.3s cubic-bezier(0.16, 1, 0.3, 1);
         outline: none;
     }
     .form-input:focus {
+        background: white;
         border-color: var(--primary-400);
-        box-shadow: 0 0 0 3px rgba(99,102,241,0.1);
+        box-shadow: 0 0 0 4px rgba(168, 129, 194, 0.15);
     }
     .form-input.is-invalid {
         border-color: var(--danger);
@@ -180,15 +187,22 @@
     }
     .form-input-icon {
         position: absolute;
-        left: 1rem;
+        left: 1.2rem;
         top: 50%;
         transform: translateY(-50%);
         color: var(--gray-400);
-        font-size: 1.1rem;
         pointer-events: none;
+        display: flex;
+        align-items: center;
+        justify-content: center;
+    }
+    .form-input-icon svg {
+        width: 20px;
+        height: 20px;
+        stroke-width: 2;
     }
     .form-input.with-icon {
-        padding-left: 2.75rem;
+        padding-left: 3rem;
     }
 
     .form-row-2 {
@@ -199,24 +213,25 @@
 
     .btn-submit {
         width: 100%;
-        padding: 0.85rem;
+        padding: 0.9rem;
         border: none;
-        border-radius: 10px;
+        border-radius: 14px;
         font-size: 1rem;
         font-weight: 700;
         color: white;
-        background: linear-gradient(135deg, var(--primary-500), var(--primary-700));
+        background: linear-gradient(135deg, var(--primary-400), var(--primary-600));
         cursor: pointer;
-        transition: all 0.3s;
-        box-shadow: 0 4px 15px rgba(79,70,229,0.3);
+        transition: all 0.3s cubic-bezier(0.16, 1, 0.3, 1);
+        box-shadow: 0 8px 20px -6px rgba(168, 129, 194, 0.5);
         margin-top: 0.5rem;
     }
     .btn-submit:hover {
-        transform: translateY(-1px);
-        box-shadow: 0 6px 25px rgba(79,70,229,0.4);
+        transform: translateY(-2px);
+        box-shadow: 0 12px 25px -8px rgba(168, 129, 194, 0.6);
+        background: linear-gradient(135deg, var(--primary-500), var(--primary-700));
     }
     .btn-submit:active {
-        transform: translateY(0);
+        transform: scale(0.97);
     }
 
     .auth-alt-link {
@@ -313,7 +328,9 @@
     <div class="auth-brand">
         <div class="auth-brand-content">
             <div class="auth-brand-logo">
-                <div class="auth-brand-logo-icon">🧠</div>
+                <div class="auth-brand-logo-icon">
+                    <img src="{{ asset('images/logo.png') }}" alt="MindFlow Logo">
+                </div>
                 MindFlow
             </div>
             <h2>Mulai Perjalanan Anda Sekarang</h2>
@@ -358,7 +375,9 @@
                     <div class="form-group">
                         <label class="form-label" for="nama_asli">Nama Asli <span class="required">*</span></label>
                         <div class="form-input-wrapper">
-                            <span class="form-input-icon">👤</span>
+                            <span class="form-input-icon">
+                                <svg viewBox="0 0 24 24" fill="none" stroke="currentColor"><path stroke-linecap="round" stroke-linejoin="round" d="M16 7a4 4 0 11-8 0 4 4 0 018 0zM12 14a7 7 0 00-7 7h14a7 7 0 00-7-7z"/></svg>
+                            </span>
                             <input
                                 type="text"
                                 id="nama_asli"
@@ -378,7 +397,9 @@
                     <div class="form-group">
                         <label class="form-label" for="nama_samaran">Nama Samaran <span class="required">*</span></label>
                         <div class="form-input-wrapper">
-                            <span class="form-input-icon">🎭</span>
+                            <span class="form-input-icon">
+                                <svg viewBox="0 0 24 24" fill="none" stroke="currentColor"><path stroke-linecap="round" stroke-linejoin="round" d="M14.828 14.828a4 4 0 01-5.656 0M9 10h.01M15 10h.01M21 12a9 9 0 11-18 0 9 9 0 0118 0z"/></svg>
+                            </span>
                             <input
                                 type="text"
                                 id="nama_samaran"
@@ -399,7 +420,9 @@
                 <div class="form-group">
                     <label class="form-label" for="email">Email <span class="required">*</span></label>
                     <div class="form-input-wrapper">
-                        <span class="form-input-icon">📧</span>
+                        <span class="form-input-icon">
+                            <svg viewBox="0 0 24 24" fill="none" stroke="currentColor"><path stroke-linecap="round" stroke-linejoin="round" d="M3 8l7.89 5.26a2 2 0 002.22 0L21 8M5 19h14a2 2 0 002-2V7a2 2 0 00-2-2H5a2 2 0 00-2 2v10a2 2 0 002 2z"/></svg>
+                        </span>
                         <input
                             type="email"
                             id="email"
@@ -418,7 +441,9 @@
                 <div class="form-group">
                     <label class="form-label" for="password">Password <span class="required">*</span></label>
                     <div class="form-input-wrapper">
-                        <span class="form-input-icon">🔒</span>
+                        <span class="form-input-icon">
+                            <svg viewBox="0 0 24 24" fill="none" stroke="currentColor"><path stroke-linecap="round" stroke-linejoin="round" d="M12 15v2m-6 4h12a2 2 0 002-2v-6a2 2 0 00-2-2H6a2 2 0 00-2 2v6a2 2 0 002 2zm10-10V7a4 4 0 00-8 0v4h8z"/></svg>
+                        </span>
                         <input
                             type="password"
                             id="password"
@@ -443,7 +468,9 @@
                 <div class="form-group">
                     <label class="form-label" for="password_confirmation">Konfirmasi Password <span class="required">*</span></label>
                     <div class="form-input-wrapper">
-                        <span class="form-input-icon">🔒</span>
+                        <span class="form-input-icon">
+                            <svg viewBox="0 0 24 24" fill="none" stroke="currentColor"><path stroke-linecap="round" stroke-linejoin="round" d="M12 15v2m-6 4h12a2 2 0 002-2v-6a2 2 0 00-2-2H6a2 2 0 00-2 2v6a2 2 0 002 2zm10-10V7a4 4 0 00-8 0v4h8z"/></svg>
+                        </span>
                         <input
                             type="password"
                             id="password_confirmation"
