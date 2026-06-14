@@ -1002,6 +1002,7 @@
                                 @php
                                     $statusColor = match($jadwal->status) {
                                             'pending' => 'bg-amber-50 text-amber-600 border-amber-100',
+                                            'approved' => 'bg-blue-50 text-blue-600 border-blue-100',
                                             'rescheduled' => 'bg-blue-50 text-blue-600 border-blue-100',
                                             'confirmed' => 'bg-emerald-50 text-emerald-600 border-emerald-100',
                                             'completed' => 'bg-red-50 text-red-600 border-red-100',
@@ -1044,6 +1045,11 @@
                                     <button disabled class="w-full text-center bg-gray-100/80 text-gray-400 py-3 rounded-[20px] text-[12px] font-bold transition-all duration-300 border border-gray-200 cursor-not-allowed" title="{{ $accessMessage }}">
                                         {{ $displayMessage }}
                                     </button>
+                                @elseif($jadwal->status === 'approved' && $jadwal->payment_status === 'pending')
+                                    <a href="{{ route('booking.checkout', $jadwal->sesi_konseling_id) }}" class="w-full text-center bg-[#A881C2] hover:bg-[#8A64A4] text-white py-3 rounded-[20px] text-[12px] font-bold transition-all duration-300 shadow-sm shadow-purple-500/30 flex items-center justify-center gap-2 active:scale-95">
+                                        <svg class="w-4 h-4" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2.5" d="M17 9V7a2 2 0 00-2-2H5a2 2 0 00-2 2v6a2 2 0 002 2h2m2 4h10a2 2 0 002-2v-6a2 2 0 00-2-2H9a2 2 0 00-2 2v6a2 2 0 002 2zm7-5a2 2 0 11-4 0 2 2 0 014 0z"></path></svg>
+                                        Bayar
+                                    </a>
                                 @endif
                                 <div class="flex gap-2">
                                      <a href="{{ route('booking.edit', $jadwal->sesi_konseling_id) }}" class="{{ in_array($jadwal->status, ['confirmed', 'rescheduled']) ? 'w-full' : 'flex-1' }} text-center bg-white hover:bg-purple-50 hover:text-[#A881C2] text-gray-600 py-2.5 rounded-[20px] text-[11px] font-bold transition-all duration-300 border border-gray-100 hover:border-purple-200 shadow-sm shadow-gray-200/50 active:scale-95">
