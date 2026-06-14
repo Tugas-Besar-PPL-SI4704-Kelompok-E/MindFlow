@@ -12,7 +12,7 @@
 
 {{-- Dashboard Ringkasan Keuangan --}}
 <div class="grid grid-cols-1 md:grid-cols-3 gap-6 mb-8">
-    <div class="bg-white rounded-2xl border border-gray-100 p-6 flex items-center gap-4 shadow-sm">
+    <div class="bg-white/80 backdrop-blur-xl rounded-[32px] border border-white/50 p-6 flex items-center gap-4 shadow-[0_10px_30px_rgba(0,0,0,0.03)] transition-transform hover:-translate-y-1">
         <div class="w-12 h-12 bg-purple-50 rounded-xl flex items-center justify-center">
             <svg class="w-6 h-6 text-purple-600" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M12 8c-1.657 0-3 .895-3 2s1.343 2 3 2 3 .895 3 2-1.343 2-3 2m0-8c1.11 0 2.08.402 2.599 1M12 8V7m0 1v8m0 0v1m0-1c-1.11 0-2.08-.402-2.599-1M21 12a9 9 0 11-18 0 9 9 0 0118 0z"></path></svg>
         </div>
@@ -24,7 +24,7 @@
         </div>
     </div>
     
-    <div class="bg-white rounded-2xl border border-gray-100 p-6 flex items-center gap-4 shadow-sm">
+    <div class="bg-white/80 backdrop-blur-xl rounded-[32px] border border-white/50 p-6 flex items-center gap-4 shadow-[0_10px_30px_rgba(0,0,0,0.03)] transition-transform hover:-translate-y-1">
         <div class="w-12 h-12 bg-yellow-50 rounded-xl flex items-center justify-center">
             <svg class="w-6 h-6 text-yellow-600" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M12 8v4l3 3m6-3a9 9 0 11-18 0 9 9 0 0118 0z"></path></svg>
         </div>
@@ -36,7 +36,7 @@
         </div>
     </div>
 
-    <div class="bg-white rounded-2xl border border-gray-100 p-6 flex items-center gap-4 shadow-sm">
+    <div class="bg-white/80 backdrop-blur-xl rounded-[32px] border border-white/50 p-6 flex items-center gap-4 shadow-[0_10px_30px_rgba(0,0,0,0.03)] transition-transform hover:-translate-y-1">
         <div class="w-12 h-12 bg-blue-50 rounded-xl flex items-center justify-center">
             <svg class="w-6 h-6 text-blue-600" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M12 18h.01M8 21h8a2 2 0 002-2V5a2 2 0 00-2-2H8a2 2 0 00-2 2v14a2 2 0 002 2z"></path></svg>
         </div>
@@ -50,7 +50,7 @@
 </div>
 
 {{-- Tab Interface --}}
-<div class="bg-white rounded-2xl border border-gray-100 overflow-hidden shadow-sm">
+<div class="bg-white/80 backdrop-blur-xl rounded-[32px] border border-white/50 overflow-hidden shadow-[0_10px_30px_rgba(0,0,0,0.03)]">
     <div class="border-b border-gray-100 bg-gray-50/50 flex justify-between items-center pr-6">
         <div class="flex">
             <button id="tabBtnPayments" class="px-8 py-5 text-sm font-bold border-b-2 border-purple-600 text-purple-700 outline-none transition-all" onclick="switchTab('payments')">

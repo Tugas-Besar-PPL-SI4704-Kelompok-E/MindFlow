@@ -58,7 +58,7 @@
 
     {{-- Form Pencairan --}}
     <div class="lg:col-span-7">
-        <div class="bg-white rounded-[28px] border border-gray-100 p-8 shadow-sm h-full">
+        <div class="bg-white/80 backdrop-blur-xl rounded-[32px] border border-white/50 p-8 shadow-[0_10px_30px_rgba(0,0,0,0.03)] h-full">
             <h4 class="text-lg font-bold text-gray-900 mb-6 flex items-center gap-2">
                 <svg class="w-5 h-5 text-purple-600" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M12 8c-1.1 0-2 .9-2 2 0 .62.31 1.16.78 1.48L12 16l1.22-4.52A1.99 1.99 0 0014 10c0-1.1-.9-2-2-2zm0 10v2m0-16V2m4 4l1.5-1.5m-11 0L8 4m8 12l1.5 1.5M5.5 17.5L7 19.5"></path></svg>
                 Tarik Dana / Cairkan Honorarium
@@ -101,7 +101,7 @@
 </div>
 
 {{-- Riwayat Transaksi --}}
-<div class="bg-white rounded-[28px] border border-gray-100 overflow-hidden shadow-sm">
+<div class="bg-white/80 backdrop-blur-xl rounded-[32px] border border-white/50 overflow-hidden shadow-[0_10px_30px_rgba(0,0,0,0.03)]">
     <div class="px-8 py-6 border-b border-gray-100 flex items-center justify-between">
         <div>
             <h3 class="text-lg font-bold text-gray-800">Riwayat Keuangan & Transaksi</h3>

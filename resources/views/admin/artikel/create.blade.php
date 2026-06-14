@@ -10,7 +10,7 @@
     <h2 class="text-xl font-bold text-gray-800">Tambah Artikel Baru</h2>
 </div>
 
-<form action="{{ route('admin.artikel.store') }}" method="POST" enctype="multipart/form-data" class="max-w-4xl bg-white border border-gray-100 rounded-2xl shadow-sm overflow-hidden">
+<form action="{{ route('admin.artikel.store') }}" method="POST" enctype="multipart/form-data" class="max-w-4xl bg-white/80 backdrop-blur-xl border border-white/50 rounded-[32px] shadow-[0_10px_30px_rgba(0,0,0,0.03)] overflow-hidden">
     @csrf
     <div class="p-6 md:p-8 space-y-6">
         <div class="grid grid-cols-1 md:grid-cols-2 gap-6">
@@ -71,9 +71,9 @@
             </div>
         </div>
     </div>
-    <div class="px-6 py-5 border-t border-gray-100 bg-gray-50 flex items-center justify-end gap-3">
-        <a href="{{ route('admin.artikel.index') }}" class="px-5 py-2.5 bg-white border border-gray-200 hover:bg-gray-50 text-gray-600 rounded-xl font-bold text-sm transition-all text-center">Batal</a>
-        <button type="submit" class="px-6 py-2.5 bg-[#A881C2] hover:bg-[#8A64A4] text-white rounded-xl font-bold text-sm transition-all shadow-md shadow-purple-200 active:scale-95">Simpan Artikel</button>
+    <div class="px-6 py-5 border-t border-gray-100 bg-gray-50/50 flex items-center justify-end gap-3">
+        <a href="{{ route('admin.artikel.index') }}" class="px-6 py-3 bg-white/50 border border-gray-200 hover:bg-white text-gray-600 rounded-2xl font-bold text-sm transition-all text-center shadow-sm">Batal</a>
+        <button type="submit" class="px-6 py-3 bg-[#A881C2] hover:bg-[#8A64A4] text-white rounded-2xl font-bold text-sm transition-all shadow-lg shadow-purple-200 active:scale-95">Simpan Artikel</button>
     </div>
 </form>
 @endsection

@@ -2,8 +2,9 @@
 
 @section('content')
 
+<div class="pb-12">
 <div class="mb-8">
-    <div class="bg-white rounded-[32px] p-6 md:p-8 shadow-[0_4px_20px_-4px_rgba(0,0,0,0.03)] border border-gray-100">
+    <div class="bg-white/80 backdrop-blur-xl rounded-[32px] p-6 md:p-8 shadow-[0_10px_30px_rgba(0,0,0,0.03)] border border-white/50 relative overflow-hidden transition-all hover:shadow-[0_15px_40px_rgba(168,129,194,0.1)] hover:border-[#A881C2]/30">
         <form action="{{ route('forum.store') }}" method="POST">
             @csrf
             <div class="flex gap-4 md:gap-5">
@@ -64,7 +65,7 @@
 
 <div class="space-y-6">
     @forelse($threads as $thread)
-        <div class="bg-white rounded-[32px] p-6 md:p-8 shadow-[0_4px_20px_-4px_rgba(0,0,0,0.03)] border border-gray-100 relative group transition-all hover:shadow-[0_8px_30px_-4px_rgba(0,0,0,0.06)]">
+        <div class="bg-white/80 backdrop-blur-xl rounded-[32px] p-6 md:p-8 shadow-[0_10px_30px_rgba(0,0,0,0.03)] border border-white/50 relative group transition-all hover:shadow-[0_15px_40px_rgba(168,129,194,0.1)] hover:border-[#A881C2]/30 hover:-translate-y-1">
             @php
                 $role = $thread->user->role ?? 'user';
                 $isAnon = $role === 'user';
@@ -163,7 +164,7 @@
             </div>
         </div>
     @empty
-        <div class="bg-white rounded-[32px] shadow-sm border border-gray-100 p-12 flex flex-col items-center justify-center min-h-[400px]">
+        <div class="bg-white/80 backdrop-blur-xl rounded-[32px] shadow-[0_10px_30px_rgba(0,0,0,0.03)] border border-white/50 p-12 flex flex-col items-center justify-center min-h-[400px]">
             <div class="w-24 h-24 bg-purple-50 rounded-full flex items-center justify-center mb-6">
                 <svg class="w-12 h-12 text-[#A881C2]" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="1.5" d="M17 8h2a2 2 0 012 2v6a2 2 0 01-2 2h-2v4l-4-4H9a1.994 1.994 0 01-1.414-.586m0 0L11 14h4a2 2 0 002-2V6a2 2 0 00-2-2H5a2 2 0 00-2 2v6a2 2 0 002 2h2v4l.586-.586z"></path></svg>
             </div>
@@ -171,6 +172,7 @@
             <p class="text-gray-500 text-[15px] text-center max-w-xs leading-relaxed">Jadilah yang pertama untuk memulai percakapan di forum ini!</p>
         </div>
     @endforelse
+</div>
 </div>
 
 <!-- Delete Confirm Modal -->

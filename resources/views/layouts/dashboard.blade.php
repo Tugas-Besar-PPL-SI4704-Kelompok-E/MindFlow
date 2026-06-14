@@ -315,7 +315,7 @@
         }
 
         .sidebar-popup-item:hover {
-            background-color: var(--active-bg);
+            background-color: #F4EEFB;
             color: var(--primary-purple);
         }
 
@@ -338,6 +338,47 @@
             background: var(--border-color);
             margin: 4px 8px;
         }
+
+        /* ── Premium UI Designer 2026 Additions ── */
+        /* Scrollbar */
+        ::-webkit-scrollbar { width: 6px; height: 6px; }
+        ::-webkit-scrollbar-track { background: transparent; }
+        ::-webkit-scrollbar-thumb { background: rgba(168, 129, 194, 0.3); border-radius: 10px; }
+        ::-webkit-scrollbar-thumb:hover { background: rgba(168, 129, 194, 0.6); }
+        
+        /* Input Focus State */
+        input:focus, textarea:focus, select:focus {
+            background-color: #ffffff !important;
+            border-color: rgba(168, 129, 194, 0.5) !important;
+            box-shadow: 0 0 0 4px rgba(168, 129, 194, 0.15) !important;
+            outline: none !important;
+        }
+
+        /* Button Bouncy Micro-Interaction */
+        button, a.btn, a[class*="bg-"] {
+            transition: transform 0.2s cubic-bezier(0.16, 1, 0.3, 1), background-color 0.2s ease, box-shadow 0.2s ease, border-color 0.2s ease, color 0.2s ease !important;
+        }
+        button:active:not(:disabled), a.btn:active, a[class*="bg-"]:active {
+            transform: scale(0.97) !important;
+        }
+
+        /* Ambient Blobs */
+        .ambient-blob {
+            position: fixed;
+            border-radius: 50%;
+            filter: blur(100px);
+            opacity: 0.15;
+            z-index: -1;
+            pointer-events: none;
+            animation: pulse-blob 8s infinite alternate ease-in-out;
+        }
+        .ambient-blob-1 { top: -10%; left: -5%; width: 40vw; height: 40vw; background: #A881C2; }
+        .ambient-blob-2 { bottom: -15%; right: -5%; width: 50vw; height: 50vw; background: #8A64A4; animation-delay: -4s; }
+        @keyframes pulse-blob {
+            0% { transform: scale(1) translate(0, 0); opacity: 0.15; }
+            100% { transform: scale(1.1) translate(10px, -10px); opacity: 0.25; }
+        }
+
 
         /* --- MAIN CONTENT --- */
         .main-content {
@@ -377,7 +418,9 @@
     </style>
     <script src="https://cdn.tailwindcss.com"></script>
 </head>
-<body>
+<body class="relative">
+    <div class="ambient-blob ambient-blob-1"></div>
+    <div class="ambient-blob ambient-blob-2"></div>
     <!-- Floating Expand Sidebar Button -->
     <button type="button" id="sidebarExpandBtn" class="floating-sidebar-toggle" title="Expand Sidebar">
         <svg fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M4 6h16M4 12h16M4 18h16"></path></svg>
@@ -567,7 +610,7 @@
         <div class="header">
             <img src="https://ui-avatars.com/api/?name={{ urlencode(Auth::user()->role === 'konselor' ? Auth::user()->nama_asli : (Auth::user()->nama_samaran ?? Auth::user()->nama_asli ?? 'User')) }}&background=E2E8F0&color=475569&size=65" alt="Profile" class="avatar">
             <div class="welcome-text">
-                <h1>Welcome 👋, {{ Auth::user()->nama_asli ?? 'User' }}!</h1>
+                <h1 class="premium-text-gradient">Welcome, {{ Auth::user()->nama_asli ?? 'User' }}!</h1>
                 <p>How's your day?</p>
             </div>
         </div>

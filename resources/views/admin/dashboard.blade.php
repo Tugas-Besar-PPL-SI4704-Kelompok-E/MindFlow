@@ -5,8 +5,8 @@
 @push('styles')
 <script src="https://cdn.jsdelivr.net/npm/chart.js"></script>
 <style>
-    .stat-card { background:#fff; border-radius:16px; padding:24px; border:1px solid #f3f4f6; transition:transform .2s,box-shadow .2s; }
-    .stat-card:hover { transform:translateY(-4px); box-shadow:0 8px 25px rgba(0,0,0,.08); }
+    .stat-card { background:rgba(255, 255, 255, 0.8); backdrop-filter:blur(24px); -webkit-backdrop-filter:blur(24px); border-radius:32px; padding:24px; border:1px solid rgba(255, 255, 255, 0.5); box-shadow:0 10px 30px rgba(0,0,0,0.03); transition:transform .3s cubic-bezier(0.4, 0, 0.2, 1), box-shadow .3s cubic-bezier(0.4, 0, 0.2, 1); }
+    .stat-card:hover { transform:translateY(-4px); box-shadow:0 15px 40px rgba(168,129,194,0.1); }
     .gradient-header { background:linear-gradient(135deg,#7c3aed 0%,#a78bfa 50%,#c4b5fd 100%); border-radius:20px; padding:28px 32px; color:#fff; position:relative; overflow:hidden; }
     .gradient-header::before { content:''; position:absolute; top:-40px; right:-40px; width:160px; height:160px; background:rgba(255,255,255,.1); border-radius:50%; }
     .gradient-header::after { content:''; position:absolute; bottom:-60px; right:80px; width:200px; height:200px; background:rgba(255,255,255,.06); border-radius:50%; }
@@ -77,12 +77,12 @@
 
     {{-- Chart + Recent Reports --}}
     <div class="grid grid-cols-1 lg:grid-cols-5 gap-6 mb-8">
-        <div class="lg:col-span-3 bg-white rounded-2xl border border-gray-100 p-6">
+        <div class="lg:col-span-3 bg-white/80 backdrop-blur-xl rounded-[32px] border border-white/50 shadow-[0_10px_30px_rgba(0,0,0,0.03)] p-6">
             <h3 class="text-base font-bold text-gray-800 mb-1">Pertumbuhan Pengguna</h3>
             <p class="text-xs text-gray-400 mb-4">Pendaftaran pengguna baru 7 hari terakhir</p>
             <div class="h-[260px]"><canvas id="userGrowthChart"></canvas></div>
         </div>
-        <div class="lg:col-span-2 bg-white rounded-2xl border border-gray-100 p-6">
+        <div class="lg:col-span-2 bg-white/80 backdrop-blur-xl rounded-[32px] border border-white/50 shadow-[0_10px_30px_rgba(0,0,0,0.03)] p-6">
             <h3 class="text-base font-bold text-gray-800 mb-4">Laporan Terbaru</h3>
             @if($recentReports->isEmpty())
                 <div class="flex flex-col items-center justify-center h-[220px] text-gray-400">
@@ -118,7 +118,7 @@
     </div>
 
     {{-- Recent Forum Posts --}}
-    <div class="bg-white rounded-2xl border border-gray-100 p-6">
+    <div class="bg-white/80 backdrop-blur-xl rounded-[32px] border border-white/50 shadow-[0_10px_30px_rgba(0,0,0,0.03)] p-6">
         <div class="flex justify-between items-center mb-4">
             <h3 class="text-base font-bold text-gray-800">Postingan Forum Terbaru</h3>
             <a href="{{ route('forum.index') }}" class="text-xs font-semibold text-purple-600 hover:text-purple-800">Lihat Forum →</a>

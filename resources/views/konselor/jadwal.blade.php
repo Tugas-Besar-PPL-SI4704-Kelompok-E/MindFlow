@@ -18,7 +18,7 @@
     </div>
 @endif
 
-<div class="bg-white rounded-2xl shadow-sm border border-gray-100 overflow-hidden">
+<div class="bg-white/80 backdrop-blur-xl rounded-[32px] shadow-[0_10px_30px_rgba(0,0,0,0.03)] border border-white/50 overflow-hidden">
     @if(count($sesi) > 0)
         <table class="min-w-full divide-y divide-gray-200">
             <thead class="bg-gray-50">

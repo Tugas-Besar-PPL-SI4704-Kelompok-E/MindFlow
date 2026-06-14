@@ -15,16 +15,16 @@
         }
 
         :root {
-            --primary-50: #eef2ff;
-            --primary-100: #e0e7ff;
-            --primary-200: #c7d2fe;
-            --primary-300: #a5b4fc;
-            --primary-400: #818cf8;
-            --primary-500: #6366f1;
-            --primary-600: #4f46e5;
-            --primary-700: #4338ca;
-            --primary-800: #3730a3;
-            --primary-900: #312e81;
+            --primary-50: #f8f5fa;
+            --primary-100: #eee8f3;
+            --primary-200: #dbcee4;
+            --primary-300: #c4acd1;
+            --primary-400: #A881C2;
+            --primary-500: #996db5;
+            --primary-600: #8A64A4;
+            --primary-700: #714f88;
+            --primary-800: #5c416e;
+            --primary-900: #4e385c;
 
             --gray-50: #f9fafb;
             --gray-100: #f3f4f6;

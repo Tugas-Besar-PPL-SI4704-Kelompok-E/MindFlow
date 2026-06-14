@@ -2,6 +2,7 @@
 
 @section('content')
 
+<div class="pb-12">
     <div class="mb-10">
         <a href="{{ route('forum.index') }}" class="inline-flex items-center gap-3 px-5 py-2.5 rounded-full border border-gray-200 bg-white hover:bg-gray-50 transition-all text-gray-600 hover:text-gray-900 group shadow-sm">
             <svg class="w-5 h-5 group-hover:-translate-x-1 transition-transform" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M10 19l-7-7m0 0l7-7m-7 7h18"></path></svg>
@@ -9,7 +10,7 @@
         </a>
     </div>
 
-<div class="bg-white rounded-[32px] p-6 md:p-8 shadow-[0_4px_20px_-4px_rgba(0,0,0,0.03)] border border-gray-100">
+<div class="bg-white/80 backdrop-blur-xl rounded-[32px] p-6 md:p-8 shadow-[0_10px_30px_rgba(0,0,0,0.03)] border border-white/50 mb-8">
     @php
         $role = $thread->user->role ?? 'user';
         $isAnon = $role === 'user';
@@ -96,6 +97,7 @@
     @foreach($replies as $reply)
         @include('forum.partials.reply', ['reply' => $reply, 'depth' => 0])
     @endforeach
+</div>
 </div>
 
 <!-- Delete Confirm Modal -->

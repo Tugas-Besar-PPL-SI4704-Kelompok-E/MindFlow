@@ -4,7 +4,7 @@
 
 @section('content')
 {{-- Action Panel & Filters --}}
-<div class="bg-white rounded-2xl border border-gray-100 p-6 mb-8">
+<div class="bg-white/80 backdrop-blur-xl rounded-[32px] shadow-[0_10px_30px_rgba(0,0,0,0.03)] border border-white/50 p-6 mb-8">
     <div class="flex flex-col md:flex-row md:items-center md:justify-between gap-4">
         <div class="flex-1">
             <form action="{{ route('admin.artikel.index') }}" method="GET" class="flex flex-col sm:flex-row gap-3">
@@ -29,7 +29,7 @@
                 @endif
             </form>
         </div>
-        <a href="{{ route('admin.artikel.create') }}" class="flex items-center justify-center gap-2 px-6 py-2.5 bg-[#A881C2] hover:bg-[#8A64A4] text-white rounded-xl font-bold text-sm transition-all shadow-md shadow-purple-200 flex-shrink-0">
+        <a href="{{ route('admin.artikel.create') }}" class="flex items-center justify-center gap-2 px-6 py-3 bg-[#A881C2] hover:bg-[#8A64A4] text-white rounded-2xl font-bold text-sm transition-all shadow-lg shadow-purple-200 flex-shrink-0 active:scale-95">
             <svg class="w-4 h-4" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2.5" d="M12 4v16m8-8H4"></path></svg>
             Tambah Artikel
         </a>
@@ -37,7 +37,7 @@
 </div>
 
 {{-- Table --}}
-<div class="bg-white rounded-2xl border border-gray-100 overflow-hidden">
+<div class="bg-white/80 backdrop-blur-xl rounded-[32px] shadow-[0_10px_30px_rgba(0,0,0,0.03)] border border-white/50 overflow-hidden">
     <div class="px-6 py-5 border-b border-gray-100 flex items-center justify-between">
         <div>
             <h3 class="text-base font-bold text-gray-800">Daftar Artikel</h3>

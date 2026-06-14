@@ -10,7 +10,7 @@
     </div>
     @auth
     <a href="{{ route('artikel.index') }}" class="flex items-center justify-center gap-2 bg-white hover:bg-purple-50 text-[#A881C2] border border-purple-100 px-5 py-2.5 rounded-xl font-bold text-sm shadow-[0_2px_8px_-2px_rgba(168,129,194,0.15)] transition-all group">
-        <svg class="w-4.5 h-4.5 group-hover:-translate-x-0.5 transition-transform" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.5">
+        <svg class="w-5 h-5 group-hover:-translate-x-0.5 transition-transform" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.5">
             <path stroke-linecap="round" stroke-linejoin="round" d="M15 19l-7-7 7-7"/>
         </svg>
         Semua Artikel
@@ -151,7 +151,7 @@
                         class="w-9 h-9 flex items-center justify-center transition-all group/bm {{ $artikel->isBookmarkedBy(Auth::id()) ? 'text-[#A881C2]' : 'text-gray-400 hover:text-[#A881C2] drop-shadow-sm' }}"
                         title="{{ $artikel->isBookmarkedBy(Auth::id()) ? 'Hapus Bookmark' : 'Bookmark' }}"
                     >
-                        <svg class="w-4.5 h-4.5" viewBox="0 0 24 24" fill="{{ $artikel->isBookmarkedBy(Auth::id()) ? 'currentColor' : 'none' }}" stroke="currentColor" stroke-width="2">
+                        <svg class="w-5 h-5" viewBox="0 0 24 24" fill="{{ $artikel->isBookmarkedBy(Auth::id()) ? 'currentColor' : 'none' }}" stroke="currentColor" stroke-width="2">
                             <path stroke-linecap="round" stroke-linejoin="round" d="M5 5a2 2 0 012-2h10a2 2 0 012 2v16l-7-3.5L5 21V5z"/>
                         </svg>
                     </button>

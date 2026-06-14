@@ -18,14 +18,14 @@
         <h3 class="text-lg font-bold text-gray-800">Daftar Kategori Spesialisasi</h3>
         <p class="text-xs text-gray-400 mt-0.5">Kelola kategori spesialisasi yang tersedia untuk konselor.</p>
     </div>
-    <button onclick="openModal('modal-tambah')" class="flex items-center gap-2 bg-purple-600 hover:bg-purple-700 text-white text-sm font-semibold px-5 py-2.5 rounded-xl transition">
+    <button onclick="openModal('modal-tambah')" class="flex items-center gap-2 bg-[#A881C2] hover:bg-[#8A64A4] text-white text-sm font-bold px-6 py-3 rounded-2xl transition-all shadow-lg shadow-purple-200 active:scale-95">
         <svg class="w-4 h-4" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M12 4v16m8-8H4"></path></svg>
         Tambah Spesialisasi
     </button>
 </div>
 
 {{-- Tabel --}}
-<div class="bg-white rounded-2xl border border-gray-100 overflow-hidden">
+<div class="bg-white/80 backdrop-blur-xl rounded-[32px] shadow-[0_10px_30px_rgba(0,0,0,0.03)] border border-white/50 overflow-hidden">
     <table class="w-full text-left text-sm">
         <thead class="bg-gray-50 text-xs text-gray-500 uppercase tracking-wider">
             <tr>
