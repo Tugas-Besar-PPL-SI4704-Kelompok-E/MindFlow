@@ -63,6 +63,7 @@
                             @php
                                 $statusColor = match($item->status) {
                                     'pending' => 'bg-amber-100 text-amber-800',
+                                    'approved' => 'bg-blue-100 text-blue-800',
                                     'change_requested' => 'bg-blue-100 text-blue-800',
                                     'rescheduled' => 'bg-blue-100 text-blue-800',
                                     'confirmed' => 'bg-emerald-100 text-emerald-800',
@@ -89,20 +90,27 @@
                         <td class="px-6 py-4 whitespace-nowrap text-sm font-medium">
                             @if(in_array($item->status, ['pending', 'change_requested']))
                                 <div class="flex space-x-2">
-                                    @if($item->payment_status === 'paid')
-                                        <form action="{{ route('konselor.jadwal.accept', $item->sesi_konseling_id) }}" method="POST">
-                                            @csrf
-                                            <button type="submit" class="text-white bg-emerald-500 hover:bg-emerald-600 focus:ring-4 focus:outline-none focus:ring-emerald-300 font-medium rounded-lg text-xs px-3 py-1.5 text-center inline-flex items-center transition-colors">
-                                                <svg class="w-3.5 h-3.5 mr-1" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M5 13l4 4L19 7"></path></svg>
-                                                Terima
-                                            </button>
-                                        </form>
-                                    @else
-                                        <button disabled class="text-gray-400 bg-gray-100 border border-gray-200 font-medium rounded-lg text-xs px-3 py-1.5 text-center inline-flex items-center cursor-not-allowed" title="Tunggu pembayaran pasien selesai">
-                                            <svg class="w-3.5 h-3.5 mr-1" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M12 8c-1.657 0-3 .895-3 2s1.343 2 3 2 3 .895 3 2-1.343 2-3 2m0-8c1.11 0 2.08.402 2.599 1M12 8V7m0 1v8m0 0v1m0-1c-1.11 0-2.08-.402-2.599-1M21 12a9 9 0 11-18 0 9 9 0 0118 0z"></path></svg>
-                                            Menunggu Pembayaran
+                                    <form action="{{ route('konselor.jadwal.accept', $item->sesi_konseling_id) }}" method="POST">
+                                        @csrf
+                                        <button type="submit" class="text-white bg-emerald-500 hover:bg-emerald-600 focus:ring-4 focus:outline-none focus:ring-emerald-300 font-medium rounded-lg text-xs px-3 py-1.5 text-center inline-flex items-center transition-colors">
+                                            <svg class="w-3.5 h-3.5 mr-1" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M5 13l4 4L19 7"></path></svg>
+                                            Terima
                                         </button>
-                                    @endif
+                                    </form>
+                                    <form action="{{ route('konselor.jadwal.reject', $item->sesi_konseling_id) }}" method="POST" onsubmit="return confirm('Apakah Anda yakin ingin menolak sesi ini?');">
+                                        @csrf
+                                        <button type="submit" class="text-white bg-red-500 hover:bg-red-600 focus:ring-4 focus:outline-none focus:ring-red-300 font-medium rounded-lg text-xs px-3 py-1.5 text-center inline-flex items-center transition-colors">
+                                            <svg class="w-3.5 h-3.5 mr-1" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M6 18L18 6M6 6l12 12"></path></svg>
+                                            Tolak
+                                        </button>
+                                    </form>
+                                </div>
+                            @elseif($item->status === 'approved')
+                                <div class="flex space-x-2">
+                                    <button disabled class="text-blue-400 bg-blue-50 border border-blue-200 font-medium rounded-lg text-xs px-3 py-1.5 text-center inline-flex items-center cursor-not-allowed" title="Menunggu pembayaran dari pasien">
+                                        <svg class="w-3.5 h-3.5 mr-1" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M12 8c-1.657 0-3 .895-3 2s1.343 2 3 2 3 .895 3 2-1.343 2-3 2m0-8c1.11 0 2.08.402 2.599 1M12 8V7m0 1v8m0 0v1m0-1c-1.11 0-2.08-.402-2.599-1M21 12a9 9 0 11-18 0 9 9 0 0118 0z"></path></svg>
+                                        Menunggu Pembayaran Pasien
+                                    </button>
                                     <form action="{{ route('konselor.jadwal.reject', $item->sesi_konseling_id) }}" method="POST" onsubmit="return confirm('Apakah Anda yakin ingin menolak sesi ini?');">
                                         @csrf
                                         <button type="submit" class="text-white bg-red-500 hover:bg-red-600 focus:ring-4 focus:outline-none focus:ring-red-300 font-medium rounded-lg text-xs px-3 py-1.5 text-center inline-flex items-center transition-colors">

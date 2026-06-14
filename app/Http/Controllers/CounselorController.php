@@ -85,23 +85,22 @@ class CounselorController extends Controller
             abort(403);
         }
 
-        // Validasi: Pembayaran harus sudah selesai sebelum konselor bisa accept
-        if ($sesi->payment_status !== 'paid') {
-            return redirect()->back()->with('error', 'Pasien belum menyelesaikan pembayaran. Tunggu hingga pembayaran dikonfirmasi.');
-        }
-
         if ($sesi->status === 'change_requested' && $sesi->requested_jadwal) {
             $sesi->update([
                 'jadwal' => $sesi->requested_jadwal,
                 'requested_jadwal' => null,
                 'request_reason' => null,
-                'status' => 'confirmed'
+                'status' => 'approved',
+                'approved_at' => now(),
             ]);
         } else {
-            $sesi->update(['status' => 'confirmed']);
+            $sesi->update([
+                'status' => 'approved',
+                'approved_at' => now(),
+            ]);
         }
 
-        return redirect()->back()->with('success', 'Perubahan jadwal berhasil dikonfirmasi.');
+        return redirect()->back()->with('success', 'Sesi berhasil disetujui. Menunggu pembayaran dari pasien.');
     }
 
     public function rejectSession($id)
@@ -119,13 +118,14 @@ class CounselorController extends Controller
                 'status' => 'rejected'
             ]);
         } else {
-            $sesi->update([
-                'status' => 'cancelled',
-                'payment_status' => 'refunded',
-            ]);
+            $updateData = ['status' => 'rejected'];
+            if ($sesi->payment_status === 'paid') {
+                $updateData['payment_status'] = 'refunded';
+            }
+            $sesi->update($updateData);
         }
 
-        return redirect()->back()->with('success', 'Pengajuan perubahan jadwal telah ditolak. Pembayaran akan dikembalikan jika sesi dibatalkan.');
+        return redirect()->back()->with('success', 'Sesi telah ditolak.' . ($sesi->payment_status === 'refunded' ? ' Pembayaran akan dikembalikan.' : ''));
     }
 
     public function submitEvaluasi(Request $request, $id)
