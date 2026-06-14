@@ -532,11 +532,22 @@
                                 </div>
                             </a>
                             
-                            @if(in_array($session->status, ['confirmed', 'rescheduled']))
+                            @if($session->canEnterRoom())
                                 <a href="{{ route('konseling.room', $session->sesi_konseling_id) }}" style="text-decoration: none; background: #388E3C; color: white; text-align: center; padding: 10px; border-radius: 12px; font-size: 12px; font-weight: 700; display: flex; align-items: center; justify-content: center; gap: 8px; transition: background 0.2s;" onmouseover="this.style.backgroundColor='#2E7D32'" onmouseout="this.style.backgroundColor='#388E3C'">
                                     <svg width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.5" stroke-linecap="round" stroke-linejoin="round"><path d="M15 10l4.553-2.276A1 1 0 0121 8.618v6.764a1 1 0 01-1.447.894L15 14M5 18h8a2 2 0 002-2V8a2 2 0 00-2-2H5a2 2 0 00-2 2v8a2 2 0 002 2z"></path></svg>
                                     Masuk Ruangan
                                 </a>
+                            @elseif(in_array($session->status, ['confirmed', 'rescheduled']))
+                                @php
+                                    $accessMessage = $session->getRoomAccessMessage();
+                                    $displayMessage = match(true) {
+                                        $session->payment_status !== 'paid' => 'Belum dibayar',
+                                        default => '15 Menit Sebelum Jadwal'
+                                    };
+                                @endphp
+                                <button disabled style="background: #E5E7EB; color: #9CA3AF; text-align: center; padding: 10px; border-radius: 12px; font-size: 12px; font-weight: 700; display: flex; align-items: center; justify-content: center; gap: 8px; border: none; cursor: not-allowed; width: 100%; transition: all 0.2s;" title="{{ $accessMessage }}">
+                                    {{ $displayMessage }}
+                                </button>
                             @endif
                         </div>
                     @endforeach
