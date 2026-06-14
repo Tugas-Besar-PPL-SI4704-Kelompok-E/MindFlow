@@ -138,10 +138,21 @@
                                             {{ $displayMessage }}
                                         </button>
                                     @endif
-                                    <button onclick="document.getElementById('modal-eval-{{ $item->sesi_konseling_id }}').classList.remove('hidden')" class="text-white bg-purple-500 hover:bg-purple-600 focus:ring-4 focus:outline-none focus:ring-purple-300 font-medium rounded-lg text-xs px-3 py-1.5 text-center inline-flex items-center transition-colors">
-                                        <svg class="w-3.5 h-3.5 mr-1" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M15.232 5.232l3.536 3.536m-2.036-5.036a2.5 2.5 0 113.536 3.536L6.5 21.036H3v-3.572L16.732 3.732z"></path></svg>
-                                        Beri Catatan
-                                    </button>
+                                    @php
+                                        $sesiSelesai = \Carbon\Carbon::parse($item->jadwal)->addMinutes(45);
+                                        $bisaBeriCatatan = now()->gte($sesiSelesai);
+                                    @endphp
+                                    @if($bisaBeriCatatan)
+                                        <button onclick="document.getElementById('modal-eval-{{ $item->sesi_konseling_id }}').classList.remove('hidden')" class="text-white bg-purple-500 hover:bg-purple-600 focus:ring-4 focus:outline-none focus:ring-purple-300 font-medium rounded-lg text-xs px-3 py-1.5 text-center inline-flex items-center transition-colors">
+                                            <svg class="w-3.5 h-3.5 mr-1" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M15.232 5.232l3.536 3.536m-2.036-5.036a2.5 2.5 0 113.536 3.536L6.5 21.036H3v-3.572L16.732 3.732z"></path></svg>
+                                            Beri Catatan
+                                        </button>
+                                    @else
+                                        <button disabled class="text-gray-400 bg-gray-100 border border-gray-200 font-medium rounded-lg text-xs px-3 py-1.5 text-center inline-flex items-center transition-colors cursor-not-allowed" title="Catatan baru dapat diberikan setelah sesi selesai ({{ $sesiSelesai->format('H:i') }} WIB)">
+                                            <svg class="w-3.5 h-3.5 mr-1" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M15.232 5.232l3.536 3.536m-2.036-5.036a2.5 2.5 0 113.536 3.536L6.5 21.036H3v-3.572L16.732 3.732z"></path></svg>
+                                            Beri Catatan
+                                        </button>
+                                    @endif
                                 </div>
                             @elseif($item->status === 'completed')
                                 <button onclick="document.getElementById('modal-view-{{ $item->sesi_konseling_id }}').classList.remove('hidden')" class="text-purple-600 bg-purple-50 border border-purple-200 hover:bg-purple-100 focus:ring-4 focus:outline-none focus:ring-purple-300 font-medium rounded-lg text-xs px-3 py-1.5 text-center inline-flex items-center transition-colors">
