@@ -147,12 +147,28 @@ class BookingController extends Controller
 
     public function clearExpiredNotification()
     {
+        $expired = session()->get('expired_cancelled_sessions', []);
+        $seenIds = session()->get('seen_cancelled_session_ids', []);
+        foreach ($expired as $detail) {
+            if (isset($detail['sesi_konseling_id'])) {
+                $seenIds[] = $detail['sesi_konseling_id'];
+            }
+        }
+        session()->put('seen_cancelled_session_ids', array_unique($seenIds));
         session()->forget('expired_cancelled_sessions');
         return response()->json(['success' => true]);
     }
 
     public function clearRefundNotification()
     {
+        $refunded = session()->get('refund_sessions', []);
+        $seenIds = session()->get('seen_cancelled_session_ids', []);
+        foreach ($refunded as $detail) {
+            if (isset($detail['sesi_konseling_id'])) {
+                $seenIds[] = $detail['sesi_konseling_id'];
+            }
+        }
+        session()->put('seen_cancelled_session_ids', array_unique($seenIds));
         session()->forget('refund_sessions');
         return response()->json(['success' => true]);
     }

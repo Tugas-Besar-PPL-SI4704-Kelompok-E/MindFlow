@@ -115,10 +115,6 @@ class SesiKonseling extends Model
         $cancelledCount = $allExpired->count();
 
         if ($cancelledCount > 0) {
-            $userId = \Illuminate\Support\Facades\Auth::id();
-            $timeoutCancelledDetails = [];
-            $refundDetails = [];
-
             foreach ($allExpired as $session) {
                 $isPaid = ($session->payment_status === 'paid');
                 $updateData = ['status' => 'system_cancelled'];
@@ -126,36 +122,6 @@ class SesiKonseling extends Model
                     $updateData['payment_status'] = 'refunded';
                 }
                 $session->update($updateData);
-
-                if ($userId && $session->user_id === $userId) {
-                    $counselorName = $session->profilKonselor ? $session->profilKonselor->nama : 'Konselor';
-                    $reason = $session->status === 'approved' 
-                        ? 'Pembayaran tidak dilakukan dalam 24 jam setelah disetujui.'
-                        : 'Tidak ada respons dari konselor selama 2 hari.';
-                        
-                    if ($isPaid) {
-                        $refundDetails[] = [
-                            'jadwal' => \Carbon\Carbon::parse($session->jadwal)->translatedFormat('d M Y, H:i'),
-                            'konselor' => $counselorName,
-                            'reason' => $reason,
-                        ];
-                    } else {
-                        $timeoutCancelledDetails[] = [
-                            'jadwal' => \Carbon\Carbon::parse($session->jadwal)->translatedFormat('d M Y, H:i'),
-                            'konselor' => $counselorName,
-                            'reason' => $reason,
-                        ];
-                    }
-                }
-            }
-
-            if (!empty($timeoutCancelledDetails)) {
-                $existing = session()->get('expired_cancelled_sessions', []);
-                session()->put('expired_cancelled_sessions', array_merge($existing, $timeoutCancelledDetails));
-            }
-            if (!empty($refundDetails)) {
-                $existingRefunds = session()->get('refund_sessions', []);
-                session()->put('refund_sessions', array_merge($existingRefunds, $refundDetails));
             }
         }
 
@@ -169,11 +135,7 @@ class SesiKonseling extends Model
                 ->get();
 
             if ($expiredSessions->isNotEmpty()) {
-                $cancelledDetails = [];
-                $refundDetails = [];
-                
                 foreach ($expiredSessions as $session) {
-                    $counselorName = $session->profilKonselor ? $session->profilKonselor->nama : 'Konselor';
                     $isPaid = ($session->payment_status === 'paid');
                     
                     $updateData = ['status' => 'cancelled'];
@@ -181,31 +143,6 @@ class SesiKonseling extends Model
                         $updateData['payment_status'] = 'refunded';
                     }
                     $session->update($updateData);
-
-                    $reason = 'Waktu jadwal telah terlampaui tanpa penyelesaian alur (Persetujuan/Pembayaran).';
-
-                    if ($isPaid) {
-                        $refundDetails[] = [
-                            'jadwal' => \Carbon\Carbon::parse($session->jadwal)->translatedFormat('d M Y, H:i'),
-                            'konselor' => $counselorName,
-                            'reason' => $reason,
-                        ];
-                    } else {
-                        $cancelledDetails[] = [
-                            'jadwal' => \Carbon\Carbon::parse($session->jadwal)->translatedFormat('d M Y, H:i'),
-                            'konselor' => $counselorName,
-                            'reason' => $reason,
-                        ];
-                    }
-                }
-
-                if (!empty($cancelledDetails)) {
-                    $existing = session()->get('expired_cancelled_sessions', []);
-                    session()->put('expired_cancelled_sessions', array_merge($existing, $cancelledDetails));
-                }
-                if (!empty($refundDetails)) {
-                    $existingRefunds = session()->get('refund_sessions', []);
-                    session()->put('refund_sessions', array_merge($existingRefunds, $refundDetails));
                 }
             }
         }
@@ -214,6 +151,74 @@ class SesiKonseling extends Model
         self::whereIn('status', ['pending', 'approved'])
             ->where('jadwal', '<', now())
             ->update(['status' => 'cancelled']);
+
+        // --- POPULATE NOTIFICATIONS FOR LOGGED IN USER (IMMUNE TO RACE CONDITIONS) ---
+        if ($userId) {
+            $seenSessionIds = session()->get('seen_cancelled_session_ids', []);
+
+            // 1. Dapatkan semua sesi system_cancelled milik user ini yang belum pernah dilihat
+            $unseenSystemCancelled = self::where('user_id', $userId)
+                ->where('status', 'system_cancelled')
+                ->whereNotIn('sesi_konseling_id', $seenSessionIds)
+                ->with('profilKonselor')
+                ->get();
+
+            // 2. Dapatkan semua sesi cancelled (yang jadwalnya sudah lewat) milik user ini yang belum pernah dilihat
+            $unseenCancelled = self::where('user_id', $userId)
+                ->where('status', 'cancelled')
+                ->where('jadwal', '<', now())
+                ->whereNotIn('sesi_konseling_id', $seenSessionIds)
+                ->with('profilKonselor')
+                ->get();
+
+            $allUnseen = $unseenSystemCancelled->concat($unseenCancelled);
+
+            if ($allUnseen->isNotEmpty()) {
+                $timeoutCancelledDetails = [];
+                $refundDetails = [];
+
+                foreach ($allUnseen as $session) {
+                    $counselorName = $session->profilKonselor ? $session->profilKonselor->nama : 'Konselor';
+                    $isPaid = ($session->payment_status === 'paid' || $session->payment_status === 'refunded');
+                    
+                    if ($session->status === 'system_cancelled') {
+                        $reason = 'Tidak ada respons dari konselor selama 2 hari.';
+                    } else {
+                        $reason = 'Waktu jadwal telah terlampaui tanpa penyelesaian alur (Persetujuan/Pembayaran).';
+                    }
+
+                    if ($isPaid) {
+                        $refundDetails[] = [
+                            'sesi_konseling_id' => $session->sesi_konseling_id,
+                            'jadwal' => \Carbon\Carbon::parse($session->jadwal)->translatedFormat('d M Y, H:i'),
+                            'konselor' => $counselorName,
+                            'reason' => $reason,
+                        ];
+                    } else {
+                        $timeoutCancelledDetails[] = [
+                            'sesi_konseling_id' => $session->sesi_konseling_id,
+                            'jadwal' => \Carbon\Carbon::parse($session->jadwal)->translatedFormat('d M Y, H:i'),
+                            'konselor' => $counselorName,
+                            'reason' => $reason,
+                        ];
+                    }
+                }
+
+                if (!empty($timeoutCancelledDetails)) {
+                    session()->put('expired_cancelled_sessions', $timeoutCancelledDetails);
+                } else {
+                    session()->forget('expired_cancelled_sessions');
+                }
+                if (!empty($refundDetails)) {
+                    session()->put('refund_sessions', $refundDetails);
+                } else {
+                    session()->forget('refund_sessions');
+                }
+            } else {
+                session()->forget('expired_cancelled_sessions');
+                session()->forget('refund_sessions');
+            }
+        }
 
         return $cancelledCount;
     }
