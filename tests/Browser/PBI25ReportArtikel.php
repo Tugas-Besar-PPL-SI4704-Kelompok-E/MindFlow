@@ -39,9 +39,15 @@ class PBI25ReportArtikel extends DuskTestCase
         $this->browse(function (Browser $browser) use ($user, $artikel) {
             $browser->loginAs($user)
                     ->visit('/home') 
-                    ->assertPathIs('/home')
+                    ->assertPathIs('/home');
+
+            // Tutup modal pembatalan otomatis jika muncul agar tidak menghalangi elemen lain
+            if (count($browser->elements('#expiredCancellationModal')) > 0) {
+                $browser->press('#btn-mengerti-pembatalan')
+                        ->pause(500);
+            }
                     
-                    ->visit('/artikel')
+            $browser->visit('/artikel')
                     ->assertPathIs('/artikel')
                     
                     ->waitFor("#artikel-card-{$artikel->artikel_id}", 5)
@@ -76,8 +82,15 @@ class PBI25ReportArtikel extends DuskTestCase
 
         $this->browse(function (Browser $browser) use ($user, $artikel) {
             $browser->loginAs($user)
-                    ->visit("/artikel/{$artikel->artikel_id}")
-                    ->waitFor('#btn-report-artikel', 5)
+                    ->visit("/artikel/{$artikel->artikel_id}");
+
+            // Tutup modal pembatalan otomatis jika muncul agar tidak menghalangi elemen lain
+            if (count($browser->elements('#expiredCancellationModal')) > 0) {
+                $browser->press('#btn-mengerti-pembatalan')
+                        ->pause(500);
+            }
+
+            $browser->waitFor('#btn-report-artikel', 5)
                     ->click('#btn-report-artikel')
                     
                     ->waitFor('#reportModal', 5)
