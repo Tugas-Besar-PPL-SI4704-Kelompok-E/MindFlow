@@ -167,7 +167,7 @@ class AdminFinanceTest extends TestCase
         ]);
         $profil = ProfilKonselor::factory()->create([
             'user_id' => $counselorUser->id,
-            'saldo' => 100000, // already decremented when requested
+            'saldo' => 100000, 
         ]);
 
         $tx = Transaction::create([
@@ -200,7 +200,7 @@ class AdminFinanceTest extends TestCase
         ]);
         $profil = ProfilKonselor::factory()->create([
             'user_id' => $counselorUser->id,
-            'saldo' => 100000, // already decremented when requested
+            'saldo' => 100000, 
         ]);
 
         $tx = Transaction::create([
@@ -272,7 +272,7 @@ class AdminFinanceTest extends TestCase
             'xendit_invoice_id' => 'inv_test_123',
         ]);
 
-        // 1. Panggil simulasi
+        
         $responseSim = $this->actingAs($user)->post(route('booking.xendit.simulate-invoice', $sesi->sesi_konseling_id));
         $responseSim->assertRedirect();
         
@@ -282,7 +282,7 @@ class AdminFinanceTest extends TestCase
             'payment_channel' => 'MANDIRI_MOCK',
         ]);
 
-        // 2. Klik Konfirmasi Pembayaran (pay)
+        
         $responsePay = $this->actingAs($user)->post(route('booking.pay', $sesi->sesi_konseling_id));
         $responsePay->assertRedirect(route('konseling.show', $sesi->profil_konselor_id));
     }

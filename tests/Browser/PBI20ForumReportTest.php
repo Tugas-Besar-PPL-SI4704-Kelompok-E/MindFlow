@@ -40,7 +40,7 @@ class PBI20ForumReportTest extends DuskTestCase
         );
     }
 
-    /** Test Laporan Postingan Forum (Positif - Anonim) */
+    
     public function test_report_forum_positif_anonim(): void
     {
         $user     = User::where('email', 'asep@example.com')->first();
@@ -68,7 +68,7 @@ class PBI20ForumReportTest extends DuskTestCase
         });
     }
 
-    /** Test Laporan Postingan Forum (Negatif - Anonim) */
+    
     public function test_report_forum_negatif_anonim(): void
     {
         $user     = User::where('email', 'asep@example.com')->first();

@@ -10,22 +10,22 @@ use Illuminate\Support\Facades\Hash;
 use Laravel\Dusk\Browser;
 use Tests\DuskTestCase;
 
-/**
- * PBI #62 – Setting untuk Admin dan Konselor
- *
- * Skenario:
- *  A. Admin dapat mengakses menu pengaturan akun dan memperbarui nama serta password.
- *  B. Konselor dapat mengakses menu pengaturan profil dan memperbarui informasi profesional.
- */
+
+
+
+
+
+
+
 class PBI62SettingsTest extends DuskTestCase
 {
     use DatabaseMigrations;
 
-    // ─────────────────────────────────────────────────────────────────
-    // Helpers
-    // ─────────────────────────────────────────────────────────────────
+    
+    
+    
 
-    /** Login sebagai user tertentu lalu ambil screenshot konfirmasi. */
+    
     private function loginAs(Browser $browser, User $user, string $password): void
     {
         $browser->visit('/login')
@@ -36,7 +36,7 @@ class PBI62SettingsTest extends DuskTestCase
                 ->pause(2000);
     }
 
-    /** Logout melalui halaman /home (ada tombol profil & logout). */
+    
     private function logout(Browser $browser): void
     {
         $browser->visit('/home')
@@ -47,14 +47,14 @@ class PBI62SettingsTest extends DuskTestCase
                 ->pause(1500);
     }
 
-    // ─────────────────────────────────────────────────────────────────
-    // Skenario A: Admin Settings
-    // ─────────────────────────────────────────────────────────────────
+    
+    
+    
 
-    /**
-     * @test
-     * PBI-62-A: Admin dapat membuka halaman pengaturan.
-     */
+    
+
+
+
     public function test_admin_dapat_membuka_halaman_settings(): void
     {
         $admin = User::factory()->create([
@@ -76,10 +76,10 @@ class PBI62SettingsTest extends DuskTestCase
         });
     }
 
-    /**
-     * @test
-     * PBI-62-A: Admin dapat mengubah nama asli & nama samaran.
-     */
+    
+
+
+
     public function test_admin_dapat_update_nama(): void
     {
         $admin = User::factory()->create([
@@ -97,7 +97,7 @@ class PBI62SettingsTest extends DuskTestCase
                     ->waitFor('input[name="nama_asli"]', 5)
                     ->screenshot('PBI-62-A2-Admin-Sebelum-Update');
 
-            // Bersihkan field lalu isi nilai baru
+            
             $browser->clear('input[name="nama_asli"]')
                     ->type('input[name="nama_asli"]', 'Admin Baru')
                     ->clear('input[name="nama_samaran"]')
@@ -106,16 +106,16 @@ class PBI62SettingsTest extends DuskTestCase
                     ->press('Simpan Perubahan')
                     ->pause(2000);
 
-            // Setelah submit harus muncul notifikasi sukses
+            
             $browser->assertSee('berhasil')
                     ->screenshot('PBI-62-A2-Admin-Setelah-Update');
         });
     }
 
-    /**
-     * @test
-     * PBI-62-A: Admin dapat mengubah password.
-     */
+    
+
+
+
     public function test_admin_dapat_update_password(): void
     {
         $admin = User::factory()->create([
@@ -141,10 +141,10 @@ class PBI62SettingsTest extends DuskTestCase
         });
     }
 
-    /**
-     * @test
-     * PBI-62-A: Admin mendapat error jika password konfirmasi tidak cocok.
-     */
+    
+
+
+
     public function test_admin_error_password_tidak_cocok(): void
     {
         $admin = User::factory()->create([
@@ -164,22 +164,22 @@ class PBI62SettingsTest extends DuskTestCase
                     ->type('input[name="password_confirmation"]', 'salah_konfirmasi')
                     ->press('Simpan Perubahan')
                     ->pause(2000)
-                    ->assertSee('confirmation')  // pesan error Laravel mengandung kata 'confirmation'
+                    ->assertSee('confirmation')  
                     ->screenshot('PBI-62-A4-Admin-Error-Password');
         });
     }
 
-    // ─────────────────────────────────────────────────────────────────
-    // Skenario B: Konselor Settings
-    // ─────────────────────────────────────────────────────────────────
+    
+    
+    
 
-    /**
-     * @test
-     * PBI-62-B: Konselor dapat membuka halaman pengaturan profil.
-     */
+    
+
+
+
     public function test_konselor_dapat_membuka_halaman_settings(): void
     {
-        // Buat spesialisasi aktif agar select dropdown tidak kosong
+        
         $sp = Spesialisasi::create(['nama' => 'Psikologi Klinis', 'is_active' => true]);
 
         $konselor = User::factory()->create([
@@ -191,7 +191,7 @@ class PBI62SettingsTest extends DuskTestCase
             'nama_samaran' => 'konselor_testing_62a',
         ]);
 
-        // Buat profil konselor agar halaman settings tidak crash
+        
         ProfilKonselor::create([
             'user_id'        => $konselor->id,
             'nama'           => 'Konselor Testing',
@@ -212,10 +212,10 @@ class PBI62SettingsTest extends DuskTestCase
         });
     }
 
-    /**
-     * @test
-     * PBI-62-B: Konselor dapat mengubah informasi profil profesional.
-     */
+    
+
+
+
     public function test_konselor_dapat_update_profil_profesional(): void
     {
         $sp = Spesialisasi::create(['nama' => 'Terapi Keluarga', 'is_active' => true]);
@@ -245,15 +245,12 @@ class PBI62SettingsTest extends DuskTestCase
             $browser->visit('/konselor/settings')
                     ->waitFor('input[name="nama_asli"]', 5)
                     ->screenshot('PBI-62-B2-Konselor-Sebelum-Update')
-                    // Update nama
+                    
                     ->clear('input[name="nama_asli"]')
                     ->type('input[name="nama_asli"]', 'Konselor Baru')
                     ->clear('input[name="nama_samaran"]')
                     ->type('input[name="nama_samaran"]', 'konselor_baru_62b')
-                    // Update nomor WA
-                    ->clear('input[name="nomor_whatsapp"]')
-                    ->type('input[name="nomor_whatsapp"]', '089999999999')
-                    // Update biografi
+                    
                     ->clear('textarea[name="biografi"]')
                     ->type('textarea[name="biografi"]', 'Biografi yang sudah diperbarui.')
                     ->screenshot('PBI-62-B2-Konselor-Form-Terisi')
@@ -264,10 +261,10 @@ class PBI62SettingsTest extends DuskTestCase
         });
     }
 
-    /**
-     * @test
-     * PBI-62-B: User biasa tidak bisa mengakses halaman settings konselor (redirect/403).
-     */
+    
+
+
+
     public function test_user_biasa_tidak_bisa_akses_settings_konselor(): void
     {
         $user = User::factory()->create([
@@ -281,11 +278,11 @@ class PBI62SettingsTest extends DuskTestCase
         $this->browse(function (Browser $browser) use ($user) {
             $this->loginAs($browser, $user, 'password123');
 
-            // Akses langsung, harus di-redirect atau dapat 403
+            
             $browser->visit('/konselor/settings')
                     ->pause(1500);
 
-            // Memastikan tidak berada di halaman settings konselor
+            
             $browser->assertDontSee('Profil Profesional')
                     ->screenshot('PBI-62-B3-User-Ditolak-Settings-Konselor');
         });

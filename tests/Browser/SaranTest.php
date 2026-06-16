@@ -45,7 +45,7 @@ class SaranTest extends DuskTestCase
                  ->press('Simpan Aktivitas')
                  ->pause(1500);
 
-            // Simulasikan menolak pop-up Bercerita Lebih Lanjut
+            
             $browser->waitFor('#badMoodModal')
                  ->click('#btnSkipModal')
                  ->pause(1500)

@@ -10,9 +10,9 @@ class RegisterTest extends DuskTestCase
 {
     use DatabaseMigrations;
 
-    /**
-     * TC.Reg.001: Menguji registrasi berhasil (Positive)
-     */
+    
+
+
     public function test_tc_reg_001_successful_registration(): void
     {
         $this->browse(function (Browser $browser) {
@@ -29,9 +29,9 @@ class RegisterTest extends DuskTestCase
         });
     }
 
-    /**
-     * TC.Reg.002: Menguji validasi form wajib isi (Negative)
-     */
+    
+
+
     public function test_tc_reg_002_mandatory_fields_validation(): void
     {
         $this->browse(function (Browser $browser) {
@@ -43,9 +43,9 @@ class RegisterTest extends DuskTestCase
         });
     }
 
-    /**
-     * TC.Reg.003: Menguji validasi format email (Negative)
-     */
+    
+
+
     public function test_tc_reg_003_email_format_validation(): void
     {
         $this->browse(function (Browser $browser) {
@@ -63,9 +63,9 @@ class RegisterTest extends DuskTestCase
         });
     }
 
-    /**
-     * TC.Reg.004: Menguji validasi panjang minimum password (Negative)
-     */
+    
+
+
     public function test_tc_reg_004_password_minimum_length_validation(): void
     {
         $this->browse(function (Browser $browser) {
@@ -83,9 +83,9 @@ class RegisterTest extends DuskTestCase
         });
     }
 
-    /**
-     * TC.Reg.005: Menguji kecocokan konfirmasi password (Negative)
-     */
+    
+
+
     public function test_tc_reg_005_password_confirmation_mismatch_validation(): void
     {
         $this->browse(function (Browser $browser) {

@@ -28,7 +28,7 @@ class PBI18ForumDokterTest extends DuskTestCase
         );
     }
 
-    /** Test PBI-18: Posting Forum (Positif - Dokter/Konselor) */
+    
     public function test_posting_forum_positif_dokter(): void
     {
         $user = User::where('email', 'rania@example.com')->first();
@@ -45,7 +45,7 @@ class PBI18ForumDokterTest extends DuskTestCase
         });
     }
 
-    /** Test PBI-18: Posting Forum (Negatif - Dokter/Konselor) */
+    
     public function test_posting_forum_negatif_dokter(): void
     {
         $user = User::where('email', 'rania@example.com')->first();

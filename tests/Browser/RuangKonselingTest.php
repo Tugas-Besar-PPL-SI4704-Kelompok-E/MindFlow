@@ -51,7 +51,7 @@ class RuangKonselingTest extends DuskTestCase
             ]
         );
 
-        // Sesi confirmed + paid + jadwal now (bisa masuk room langsung)
+        
         SesiKonseling::create([
             'user_id'            => $user->id,
             'profil_konselor_id' => $profil->profil_konselor_id,
@@ -64,7 +64,7 @@ class RuangKonselingTest extends DuskTestCase
             'approved_at'        => now()->subHour(),
         ]);
 
-        // Sesi cancelled + paid (agar muncul di riwayat)
+        
         SesiKonseling::create([
             'user_id'            => $user->id,
             'profil_konselor_id' => $profil->profil_konselor_id,
@@ -77,9 +77,9 @@ class RuangKonselingTest extends DuskTestCase
         ]);
     }
 
-    /**
-     * TC.RuangKonseling.001 - User berhasil memasuki antarmuka ruang konseling
-     */
+    
+
+
     public function testAksesRuangKonselingNormal(): void
     {
         $user = User::where('email', 'asep@example.com')->first();
@@ -91,15 +91,15 @@ class RuangKonselingTest extends DuskTestCase
             $browser->loginAs($user)
                  ->visit('/sesi-konseling/' . $sesi->sesi_konseling_id . '/room')
                  ->pause(2000)
-                 // Ruang konseling memuat informasi konselor dan fitur chat/video
+                 
                  ->assertSee('Dr. Konselor')
                  ->screenshot('TC_RuangKonseling_001_Pass');
         });
     }
 
-    /**
-     * TC.RuangKonseling.002 - User ditolak masuk room jika sesi cancelled
-     */
+    
+
+
     public function testAksesDitolakPadaSesiBatal(): void
     {
         $user = User::where('email', 'asep@example.com')->first();
@@ -108,11 +108,11 @@ class RuangKonselingTest extends DuskTestCase
                         ->first();
 
         $this->browse(function (Browser $browser) use ($user, $sesiBatal) {
-            // Coba paksa masuk via URL langsung ke room sesi yang dibatalkan
+            
             $browser->loginAs($user)
                  ->visit('/sesi-konseling/' . $sesiBatal->sesi_konseling_id . '/room')
                  ->pause(1500)
-                 // Sistem harus mencegah akses (redirect ke halaman lain / tidak menampilkan room)
+                 
                  ->assertPathIsNot('/sesi-konseling/' . $sesiBatal->sesi_konseling_id . '/room')
                  ->screenshot('TC_RuangKonseling_002_Pass');
         });

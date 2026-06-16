@@ -19,7 +19,7 @@ class DashboardSesiTest extends DuskTestCase
     {
         parent::setUp();
 
-        // User yang sudah punya sesi konseling
+        
         $user = User::firstOrCreate(
             ['email' => 'asep@example.com'],
             [
@@ -31,7 +31,7 @@ class DashboardSesiTest extends DuskTestCase
             ]
         );
 
-        // User baru tanpa riwayat apapun
+        
         User::firstOrCreate(
             ['email' => 'akunbaru@example.com'],
             [
@@ -43,7 +43,7 @@ class DashboardSesiTest extends DuskTestCase
             ]
         );
 
-        // Buat konselor
+        
         $konselorUser = User::firstOrCreate(
             ['email' => 'konselor@example.com'],
             [
@@ -66,7 +66,7 @@ class DashboardSesiTest extends DuskTestCase
             ]
         );
 
-        // Buat sesi konseling confirmed + paid untuk user Asep
+        
         SesiKonseling::create([
             'user_id'            => $user->id,
             'profil_konselor_id' => $profil->profil_konselor_id,
@@ -80,9 +80,9 @@ class DashboardSesiTest extends DuskTestCase
         ]);
     }
 
-    /**
-     * TC.Dashboard.001 - Data sesi konseling terupdate secara akurat di Dashboard
-     */
+    
+
+
     public function testSinkronisasiSesiDashboard(): void
     {
         $user = User::where('email', 'asep@example.com')->first();
@@ -92,17 +92,17 @@ class DashboardSesiTest extends DuskTestCase
                  ->visit('/home')
                  ->pause(1000)
                  ->assertPathIs('/home')
-                 // Homepage menampilkan banner welcome dan data statistik
+                 
                  ->assertSee('Asep')
-                 // Pastikan riwayat catatan konselor section ada
+                 
                  ->assertSee('Riwayat Catatan Konselor')
                  ->screenshot('TC_Dashboard_001_Pass');
         });
     }
 
-    /**
-     * TC.Dashboard.002 - Dashboard tidak error saat pengguna belum memiliki riwayat apapun
-     */
+    
+
+
     public function testDashboardAkunBaruTanpaRiwayat(): void
     {
         $user = User::where('email', 'akunbaru@example.com')->first();
@@ -112,9 +112,9 @@ class DashboardSesiTest extends DuskTestCase
                  ->visit('/home')
                  ->pause(1000)
                  ->assertPathIs('/home')
-                 // Halaman tetap load tanpa error
+                 
                  ->assertSee('Akun Baru')
-                 // Melihat pesan empty state pada bagian riwayat sesi
+                 
                  ->assertSee('Belum ada riwayat sesi konseling selesai')
                  ->screenshot('TC_Dashboard_002_Pass');
         });

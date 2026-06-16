@@ -20,9 +20,9 @@ class PBI43CounselorHonorariumTest extends TestCase
         $this->withoutMiddleware(\Illuminate\Foundation\Http\Middleware\PreventRequestForgery::class);
     }
 
-    /**
-     * Admin dapat melihat halaman rekap transaksi dan honorarium konselor.
-     */
+    
+
+
     public function test_admin_can_access_transactions_and_honorarium_page(): void
     {
         $admin = User::factory()->create(['role' => 'admin']);
@@ -33,26 +33,26 @@ class PBI43CounselorHonorariumTest extends TestCase
         $response->assertSee('Kelola Transaksi');
     }
 
-    /**
-     * User reguler dan Konselor tidak boleh mengakses halaman rekap transaksi admin.
-     */
+    
+
+
     public function test_regular_user_and_counselor_cannot_access_transactions_page(): void
     {
         $user = User::factory()->create(['role' => 'user']);
         $counselor = User::factory()->create(['role' => 'konselor', 'status' => 'approved']);
 
-        // User mencoba masuk -> status 403
+        
         $responseUser = $this->actingAs($user)->get('/admin/transaksi');
         $responseUser->assertStatus(403);
 
-        // Konselor mencoba masuk -> status 403
+        
         $responseCounselor = $this->actingAs($counselor)->get('/admin/transaksi');
         $responseCounselor->assertStatus(403);
     }
 
-    /**
-     * Honorarium konselor dicatat otomatis ketika sesi konseling diselesaikan.
-     */
+    
+
+
     public function test_honorarium_is_recorded_automatically_when_session_completed(): void
     {
         $counselorUser = User::factory()->create([
@@ -72,20 +72,20 @@ class PBI43CounselorHonorariumTest extends TestCase
             'status' => 'confirmed',
         ]);
 
-        // Sesi diselesaikan dengan mengisi evaluasi oleh konselor
+        
         $response = $this->actingAs($counselorUser)->post(route('konselor.jadwal.evaluasi', $sesi->sesi_konseling_id), [
             'catatan_konselor' => 'Sesi berjalan lancar, pasien menunjukkan perbaikan.',
         ]);
 
         $response->assertRedirect();
         
-        // Assert status sesi berubah menjadi completed
+        
         $this->assertDatabaseHas('sesi_konselings', [
             'sesi_konseling_id' => $sesi->sesi_konseling_id,
             'status' => 'completed',
         ]);
 
-        // Assert transaksi deposit (honorarium) masuk secara otomatis
+        
         $this->assertDatabaseHas('transactions', [
             'profil_konselor_id' => $profil->profil_konselor_id,
             'sesi_konseling_id' => $sesi->sesi_konseling_id,
@@ -94,7 +94,7 @@ class PBI43CounselorHonorariumTest extends TestCase
             'status' => 'approved',
         ]);
 
-        // Assert saldo konselor bertambah otomatis
+        
         $this->assertEquals(150000, $profil->fresh()->saldo);
     }
 }

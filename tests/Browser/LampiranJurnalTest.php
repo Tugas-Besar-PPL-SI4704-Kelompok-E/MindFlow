@@ -19,7 +19,7 @@ class LampiranJurnalTest extends DuskTestCase
     {
         parent::setUp();
 
-        // User yang sudah punya jurnal
+        
         $userWithJournal = User::firstOrCreate(
             ['email' => 'asep@example.com'],
             [
@@ -31,7 +31,7 @@ class LampiranJurnalTest extends DuskTestCase
             ]
         );
 
-        // User baru tanpa jurnal
+        
         User::firstOrCreate(
             ['email' => 'asepbaru@example.com'],
             [
@@ -43,7 +43,7 @@ class LampiranJurnalTest extends DuskTestCase
             ]
         );
 
-        // Buat user konselor
+        
         $konselorUser = User::firstOrCreate(
             ['email' => 'konselor@example.com'],
             [
@@ -55,7 +55,7 @@ class LampiranJurnalTest extends DuskTestCase
             ]
         );
 
-        // Buat profil konselor
+        
         $profil = ProfilKonselor::firstOrCreate(
             ['user_id' => $konselorUser->id],
             [
@@ -67,7 +67,7 @@ class LampiranJurnalTest extends DuskTestCase
             ]
         );
 
-        // Buat jadwal konselor
+        
         CounselorSchedule::firstOrCreate(
             ['profil_konselor_id' => $profil->profil_konselor_id, 'hari' => 'senin'],
             [
@@ -76,7 +76,7 @@ class LampiranJurnalTest extends DuskTestCase
             ]
         );
 
-        // Buat 2 jurnal untuk user Asep
+        
         Journal::create([
             'user_id' => $userWithJournal->id,
             'content' => 'Hari ini saya merasa cemas tentang ujian semester.',
@@ -87,9 +87,9 @@ class LampiranJurnalTest extends DuskTestCase
         ]);
     }
 
-    /**
-     * TC.LampiranJurnal.001 - User berhasil membuka dropdown, menyeleksi 2 jurnal
-     */
+    
+
+
     public function testLampiranJurnalDenganData(): void
     {
         $user = User::where('email', 'asep@example.com')->first();
@@ -99,20 +99,20 @@ class LampiranJurnalTest extends DuskTestCase
                  ->visit('/konseling')
                  ->pause(1000)
                  ->assertSee('Pilih Konselor')
-                 // Klik "Pilih Sesi" pada konselor pertama (bukan sidebar link)
+                 
                  ->clickLink('Pilih Sesi')
                  ->pause(1000)
                  ->assertSee('Booking Sesi')
-                 // Scroll ke bagian jurnal yang ada di bawah form
+                 
                  ->script("document.querySelector('#journals')?.closest('.space-y-2')?.scrollIntoView();");
 
             $browser->pause(500)
-                 // Pastikan elemen dropdown jurnal ada di halaman
+                 
                  ->assertPresent('#journals')
-                 // Klik dropdown Choices.js untuk jurnal
+                 
                  ->click('.choices__inner')
                  ->pause(500)
-                 // Pilih jurnal pertama dari dropdown
+                 
                  ->script("
                     let items = document.querySelectorAll('.choices__list--dropdown .choices__item--selectable');
                     if(items.length >= 1) {
@@ -123,7 +123,7 @@ class LampiranJurnalTest extends DuskTestCase
             $browser->pause(300)
                  ->click('.choices__inner')
                  ->pause(300)
-                 // Pilih jurnal kedua
+                 
                  ->script("
                     let items = document.querySelectorAll('.choices__list--dropdown .choices__item--selectable');
                     if(items.length >= 1) {
@@ -136,9 +136,9 @@ class LampiranJurnalTest extends DuskTestCase
         });
     }
 
-    /**
-     * TC.LampiranJurnal.002 - Sistem memunculkan info bahwa user belum pernah menulis jurnal
-     */
+    
+
+
     public function testLampiranJurnalKosong(): void
     {
         $user = User::where('email', 'asepbaru@example.com')->first();
@@ -157,16 +157,16 @@ class LampiranJurnalTest extends DuskTestCase
         });
     }
 
-    /**
-     * TC.LampiranJurnal.003 - Konselor membaca jurnal di Ruang Konseling via modal
-     */
+    
+
+
     public function testBacaJurnalDiRuangKonseling(): void
     {
         $user = User::where('email', 'asep@example.com')->first();
         $konselor = User::where('email', 'konselor@example.com')->first();
         $profil = ProfilKonselor::where('user_id', $konselor->id)->first();
 
-        // Buat sesi konseling yang confirmed + paid + jadwalnya sekarang agar bisa masuk room
+        
         $sesi = \App\Models\SesiKonseling::create([
             'user_id'            => $user->id,
             'profil_konselor_id' => $profil->profil_konselor_id,
@@ -179,22 +179,22 @@ class LampiranJurnalTest extends DuskTestCase
             'approved_at'        => now()->subHour(),
         ]);
 
-        // Lampirkan jurnal ke sesi
+        
         $journals = Journal::where('user_id', $user->id)->pluck('journal_id');
         $sesi->journals()->attach($journals);
 
-        // Login sebagai konselor untuk melihat jurnal
+        
         $this->browse(function (Browser $browser) use ($konselor, $sesi) {
             $browser->loginAs($konselor)
                  ->visit('/sesi-konseling/' . $sesi->sesi_konseling_id . '/room')
                  ->pause(1500)
                  ->assertSee('Lihat Jurnal')
-                 // Klik tombol Lihat Jurnal
+                 
                  ->click('button[onclick*="journal-modal"]')
                  ->pause(500)
                  ->assertVisible('#journal-modal')
                  ->assertSee('Jurnal Pasien')
-                 // Klik tombol Tutup
+                 
                  ->click('#journal-modal button[onclick*="hidden"]')
                  ->pause(500)
                  ->screenshot('TC_LampiranJurnal_003_Pass');
