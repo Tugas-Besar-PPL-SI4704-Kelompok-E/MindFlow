@@ -29,7 +29,7 @@ class PBI19ForumReplyTest extends DuskTestCase
         );
     }
 
-    /** Test Komentar/Reply Forum (Positif - Anonim) */
+    
     public function test_reply_forum_positif_anonim(): void
     {
         $user = User::where('email', 'asep@example.com')->first();
@@ -53,7 +53,7 @@ class PBI19ForumReplyTest extends DuskTestCase
         });
     }
 
-    /** Test Komentar/Reply Forum (Negatif - Anonim) */
+    
     public function test_reply_forum_negatif_anonim(): void
     {
         $user = User::where('email', 'asep@example.com')->first();

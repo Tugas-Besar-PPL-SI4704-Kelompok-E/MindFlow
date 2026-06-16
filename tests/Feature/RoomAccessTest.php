@@ -16,11 +16,11 @@ class RoomAccessTest extends TestCase
     protected function setUp(): void
     {
         parent::setUp();
-        // Set waktu sekarang ke tanggal tertentu untuk testing
+        
         Carbon::setTestNow(Carbon::parse('2026-06-13 10:00:00'));
     }
 
-    /** @test */
+    
     public function cannot_enter_room_if_status_is_pending()
     {
         $sesi = SesiKonseling::factory()->create([
@@ -33,7 +33,7 @@ class RoomAccessTest extends TestCase
         $this->assertStringContainsString('belum dikonfirmasi', $sesi->getRoomAccessMessage());
     }
 
-    /** @test */
+    
     public function cannot_enter_room_if_payment_not_paid()
     {
         $sesi = SesiKonseling::factory()->create([
@@ -46,7 +46,7 @@ class RoomAccessTest extends TestCase
         $this->assertStringContainsString('Pembayaran belum selesai', $sesi->getRoomAccessMessage());
     }
 
-    /** @test */
+    
     public function cannot_enter_room_if_not_within_15_minutes_window()
     {
         $sesi = SesiKonseling::factory()->create([
@@ -59,7 +59,7 @@ class RoomAccessTest extends TestCase
         $this->assertStringContainsString('15 menit sebelum', $sesi->getRoomAccessMessage());
     }
 
-    /** @test */
+    
     public function can_enter_room_if_all_conditions_met()
     {
         $sesi = SesiKonseling::factory()->create([
@@ -71,7 +71,7 @@ class RoomAccessTest extends TestCase
         $this->assertTrue($sesi->canEnterRoom());
     }
 
-    /** @test */
+    
     public function can_enter_room_exactly_15_minutes_before()
     {
         $sesi = SesiKonseling::factory()->create([
@@ -83,7 +83,7 @@ class RoomAccessTest extends TestCase
         $this->assertTrue($sesi->canEnterRoom());
     }
 
-    /** @test */
+    
     public function cannot_enter_room_1_second_before_15_minutes()
     {
         $sesi = SesiKonseling::factory()->create([
@@ -95,7 +95,7 @@ class RoomAccessTest extends TestCase
         $this->assertFalse($sesi->canEnterRoom());
     }
 
-    /** @test */
+    
     public function can_enter_room_with_rescheduled_status()
     {
         $sesi = SesiKonseling::factory()->create([
@@ -107,7 +107,7 @@ class RoomAccessTest extends TestCase
         $this->assertTrue($sesi->canEnterRoom());
     }
 
-    /** @test */
+    
     public function patient_cannot_enter_room_without_payment()
     {
         $user = User::factory()->create(['role' => 'user']);
@@ -126,7 +126,7 @@ class RoomAccessTest extends TestCase
         $response->assertSessionHas('error');
     }
 
-    /** @test */
+    
     public function patient_can_enter_room_with_valid_conditions()
     {
         $user = User::factory()->create(['role' => 'user']);
@@ -145,7 +145,7 @@ class RoomAccessTest extends TestCase
         $response->assertViewIs('konseling.room');
     }
 
-    /** @test */
+    
     public function counselor_cannot_accept_unpaid_session()
     {
         $user = User::factory()->create(['role' => 'user']);
@@ -168,7 +168,7 @@ class RoomAccessTest extends TestCase
         $this->assertNotEquals('confirmed', $sesi->status);
     }
 
-    /** @test */
+    
     public function counselor_can_accept_paid_session()
     {
         $user = User::factory()->create(['role' => 'user']);

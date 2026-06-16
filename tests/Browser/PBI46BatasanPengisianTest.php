@@ -14,36 +14,34 @@ class PBI46BatasanPengisianTest extends DuskTestCase
 {
     use DatabaseMigrations;
 
-    /**
-     * TC_Counseling_006: Menguji pemesanan sesi konseling yang mendadak.
-     */
+    
+
+
     public function test_pemesanan_sesi_konseling_mendadak_ditolak()
     {
         $this->browse(function (Browser $browser) {
             $user = User::factory()->create();
             $konselor = ProfilKonselor::factory()->create();
 
-            // Setup counselor schedule so that slots are generated in the detail page
+            $bookingTime = now()->addHour();
             $indonesianDays = ['minggu', 'senin', 'selasa', 'rabu', 'kamis', 'jumat', 'sabtu'];
-            $currentDay = $indonesianDays[now()->dayOfWeek];
+            $bookingDayName = $indonesianDays[$bookingTime->dayOfWeek];
             
             CounselorSchedule::create([
                 'profil_konselor_id' => $konselor->profil_konselor_id,
-                'hari' => $currentDay,
-                'jam_mulai' => '08:00:00',
-                'jam_selesai' => '22:00:00',
+                'hari' => $bookingDayName,
+                'jam_mulai' => '00:00:00',
+                'jam_selesai' => '23:59:59',
                 'is_active' => true,
             ]);
 
             $browser->loginAs($user)
-                    ->visit("/konseling/{$konselor->profil_konselor_id}")
-                    ->pause(1000)
-                    ->assertSee('Konfirmasi Pembayaran')
-                    ->screenshot('pbi46-counselor-booking-page');
+                     ->visit("/konseling/{$konselor->profil_konselor_id}")
+                     ->pause(1000)
+                     ->assertSee('Konfirmasi Pembayaran')
+                     ->screenshot('pbi46-counselor-booking-page');
 
-            // Kita mensimulasikan injeksi opsi jadwal mendadak (< 3 jam) ke select element,
-            // dan set radio buttons agar form valid untuk disubmit
-            $suddenTime = now()->addHour()->format('Y-m-d H:i');
+            $suddenTime = $bookingTime->format('Y-m-d H:i');
             $browser->script([
                 "let select = document.getElementById('jadwal-select');
                  if (select) {
@@ -75,7 +73,7 @@ class PBI46BatasanPengisianTest extends DuskTestCase
                     ->pause(1500)
                     ->screenshot('pbi46-booking-mendadak-error');
 
-            // Harus memunculkan pesan error dan tidak masuk ke DB
+            
             $browser->assertSee('Jadwal tidak valid. Pemesanan tidak boleh mendadak, silakan pilih jadwal minimal 3 jam dari sekarang.');
             
             $this->assertDatabaseMissing('sesi_konselings', [
@@ -86,32 +84,33 @@ class PBI46BatasanPengisianTest extends DuskTestCase
         });
     }
 
-    /**
-     * TC_Counseling_007: Menguji pemesanan sesi konseling dengan jadwal valid.
-     */
+    
+
+
     public function test_pemesanan_sesi_konseling_dengan_jadwal_valid_berhasil()
     {
         $this->browse(function (Browser $browser) {
             $user = User::factory()->create();
             $konselor = ProfilKonselor::factory()->create();
 
+            $bookingTime = now()->addDays(5)->setTime(10, 0, 0);
             $indonesianDays = ['minggu', 'senin', 'selasa', 'rabu', 'kamis', 'jumat', 'sabtu'];
-            $currentDay = $indonesianDays[now()->dayOfWeek];
+            $bookingDayName = $indonesianDays[$bookingTime->dayOfWeek];
             
             CounselorSchedule::create([
                 'profil_konselor_id' => $konselor->profil_konselor_id,
-                'hari' => $currentDay,
+                'hari' => $bookingDayName,
                 'jam_mulai' => '08:00:00',
                 'jam_selesai' => '22:00:00',
                 'is_active' => true,
             ]);
 
             $browser->loginAs($user)
-                    ->visit("/konseling/{$konselor->profil_konselor_id}")
-                    ->pause(1000);
+                     ->visit("/konseling/{$konselor->profil_konselor_id}")
+                     ->pause(1000);
 
-            // Pilih jadwal valid (contoh: H+5 jam)
-            $validTime = now()->addHours(5)->format('Y-m-d H:i');
+            
+            $validTime = $bookingTime->format('Y-m-d H:i');
             $browser->script([
                 "let select = document.getElementById('jadwal-select');
                  if (select) {
@@ -143,7 +142,7 @@ class PBI46BatasanPengisianTest extends DuskTestCase
                     ->pause(1500)
                     ->screenshot('pbi46-booking-valid-success');
 
-            // Sukses redirect dan pesan sukses muncul
+            
             $browser->assertSee('Sesi konsultasi berhasil diajukan. Menunggu persetujuan dari konselor');
 
             $this->assertDatabaseHas('sesi_konselings', [
@@ -155,9 +154,9 @@ class PBI46BatasanPengisianTest extends DuskTestCase
         });
     }
 
-    /**
-     * TC_Counseling_008: Menguji perubahan jadwal aktif menjadi mendadak.
-     */
+    
+
+
     public function test_perubahan_jadwal_aktif_menjadi_mendadak_ditolak()
     {
         $this->browse(function (Browser $browser) {
@@ -175,7 +174,7 @@ class PBI46BatasanPengisianTest extends DuskTestCase
                     ->waitFor('input[name="jadwal"]', 5)
                     ->screenshot('pbi46-edit-page');
 
-            // Ubah jadwal menjadi mendadak (contoh: 1 jam dari sekarang), hapus attribute 'min' agar bisa disubmit
+            
             $suddenEditTime = now()->addHour()->format('Y-m-d\TH:i');
             $browser->script([
                 "let input = document.querySelector('input[name=\"jadwal\"]');
@@ -188,10 +187,10 @@ class PBI46BatasanPengisianTest extends DuskTestCase
                     ->pause(1500)
                     ->screenshot('pbi46-edit-mendadak-error');
 
-            // Verifikasi server memunculkan error message
+            
             $browser->assertSee('Perubahan jadwal tidak valid. Jadwal baru harus minimal 3 jam dari sekarang.');
 
-            // Pastikan database tidak terupdate ke jadwal mendadak tersebut
+            
             $this->assertDatabaseHas('sesi_konselings', [
                 'sesi_konseling_id' => $sesi->sesi_konseling_id,
                 'status' => 'pending',

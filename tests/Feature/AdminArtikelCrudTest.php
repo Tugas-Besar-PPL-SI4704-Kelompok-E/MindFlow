@@ -65,23 +65,23 @@ class AdminArtikelCrudTest extends TestCase
             'status' => 'draft',
         ]);
 
-        // Access index as admin
+        
         $response = $this->actingAs($this->admin)->get(route('admin.artikel.index'));
         $response->assertStatus(200);
         $response->assertSee('Stres Akademik');
         $response->assertSee('Tips Meditasi Pagi');
 
-        // Search check
+        
         $responseSearch = $this->actingAs($this->admin)->get(route('admin.artikel.index', ['search' => 'Stres']));
         $responseSearch->assertSee('Stres Akademik');
         $responseSearch->assertDontSee('Tips Meditasi Pagi');
 
-        // Category filter check
+        
         $responseCategory = $this->actingAs($this->admin)->get(route('admin.artikel.index', ['kategori' => 'Tips & Trik']));
         $responseCategory->assertSee('Tips Meditasi Pagi');
         $responseCategory->assertDontSee('Stres Akademik');
 
-        // Status filter check
+        
         $responseStatus = $this->actingAs($this->admin)->get(route('admin.artikel.index', ['status' => 'draft']));
         $responseStatus->assertSee('Tips Meditasi Pagi');
         $responseStatus->assertDontSee('Stres Akademik');
@@ -128,7 +128,7 @@ class AdminArtikelCrudTest extends TestCase
 
         $response->assertRedirect(route('admin.artikel.index'));
 
-        // Retrieve the stored article to check the cover image path
+        
         $artikel = Artikel::where('judul', 'Artikel Kustom Lengkap')->firstOrFail();
         
         $this->assertNotNull($artikel->gambar_cover);
@@ -146,7 +146,7 @@ class AdminArtikelCrudTest extends TestCase
         $oldFile = UploadedFile::fake()->create('old_cover.jpg', 100, 'image/jpeg');
         $newFile = UploadedFile::fake()->create('new_cover.png', 100, 'image/png');
 
-        // Create initial article
+        
         $artikel = Artikel::create([
             'admin_id' => $this->admin->id,
             'judul' => 'Artikel Edit',
@@ -160,7 +160,7 @@ class AdminArtikelCrudTest extends TestCase
         Storage::disk('public')->assertExists($artikel->gambar_cover);
         $oldPath = $artikel->gambar_cover;
 
-        // Perform edit
+        
         $response = $this->actingAs($this->admin)->put(route('admin.artikel.update', $artikel->artikel_id), [
             'judul' => 'Artikel Berhasil Diedit',
             'konten' => 'Konten setelah diedit.',
@@ -183,7 +183,7 @@ class AdminArtikelCrudTest extends TestCase
         $this->assertEquals('published', $artikel->status);
         $this->assertEquals(Carbon::parse('2026-06-05 15:30:00')->format('Y-m-d H:i:s'), $artikel->created_at->format('Y-m-d H:i:s'));
 
-        // Check file storage: old cover is deleted, new cover exists
+        
         Storage::disk('public')->assertMissing($oldPath);
         Storage::disk('public')->assertExists($artikel->gambar_cover);
     }
@@ -214,7 +214,7 @@ class AdminArtikelCrudTest extends TestCase
             'artikel_id' => $artikel->artikel_id,
         ]);
 
-        // Check cover image deleted
+        
         Storage::disk('public')->assertMissing($coverPath);
     }
 
@@ -236,22 +236,22 @@ class AdminArtikelCrudTest extends TestCase
             'kategori' => 'Motivasi'
         ]);
 
-        // Admin can view published
+        
         $response = $this->actingAs($this->admin)->get(route('artikel.show', $publishedArtikel->artikel_id));
         $response->assertStatus(200);
         $response->assertSee('Published Article');
 
-        // Admin can view draft
+        
         $response = $this->actingAs($this->admin)->get(route('artikel.show', $draftArtikel->artikel_id));
         $response->assertStatus(200);
         $response->assertSee('Draft Article');
 
-        // Regular user can view published
+        
         $response = $this->actingAs($this->user)->get(route('artikel.show', $publishedArtikel->artikel_id));
         $response->assertStatus(200);
         $response->assertSee('Published Article');
 
-        // Regular user cannot view draft
+        
         $response = $this->actingAs($this->user)->get(route('artikel.show', $draftArtikel->artikel_id));
         $response->assertStatus(404);
     }

@@ -26,10 +26,10 @@ class PBI25ReportArtikel extends DuskTestCase
         );
     }
 
-    /**
-     * TC.RPTA.001: Menguji Fungsionalitas Report Artikel (Positive)
-     * User Melakukan Report Artikel
-     */
+    
+
+
+
     public function test_tc_rpta_001_report_artikel_positif(): void
     {
         $user = User::where('email', 'asep@example.com')->first();
@@ -65,10 +65,10 @@ class PBI25ReportArtikel extends DuskTestCase
         });
     }
 
-    /**
-     * TC.RPTA.002: Menguji Fungsionalitas Report Artikel (Negative)
-     * User Mengirim Laporan Kosong
-     */
+    
+
+
+
     public function test_tc_rpta_002_report_artikel_negatif_kosong(): void
     {
         $user = User::where('email', 'asep@example.com')->first();

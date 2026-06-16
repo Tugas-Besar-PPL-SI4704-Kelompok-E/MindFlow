@@ -19,11 +19,11 @@ class ArtikelReportTest extends TestCase
     protected function setUp(): void
     {
         parent::setUp();
-        // Seed an admin user to make articles
+        
         $this->admin = User::factory()->create(['role' => 'admin']);
         $this->user = User::factory()->create(['role' => 'user']);
         
-        // Create an article
+        
         $this->artikel = Artikel::create([
             'admin_id' => $this->admin->id,
             'judul' => 'Judul Artikel Test',
@@ -63,7 +63,7 @@ class ArtikelReportTest extends TestCase
 
     public function test_admin_can_view_reports_list()
     {
-        // Create a report
+        
         ArtikelReport::create([
             'artikel_id' => $this->artikel->artikel_id,
             'user_id' => $this->user->id,
@@ -106,6 +106,6 @@ class ArtikelReportTest extends TestCase
 
         $response->assertRedirect();
         $this->assertDatabaseMissing('artikels', ['artikel_id' => $this->artikel->artikel_id]);
-        $this->assertDatabaseMissing('artikel_reports', ['id' => $report->id]); // should cascade delete
+        $this->assertDatabaseMissing('artikel_reports', ['id' => $report->id]); 
     }
 }

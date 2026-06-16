@@ -11,9 +11,9 @@ use PHPUnit\Framework\Attributes\BeforeClass;
 
 abstract class DuskTestCase extends BaseTestCase
 {
-    /**
-     * Prepare for Dusk test execution.
-     */
+    
+
+
     #[BeforeClass]
     public static function prepare(): void
     {
@@ -22,9 +22,9 @@ abstract class DuskTestCase extends BaseTestCase
         }
     }
 
-    /**
-     * Create the RemoteWebDriver instance.
-     */
+    
+
+
     protected function driver(): RemoteWebDriver
     {
         $options = (new ChromeOptions)->addArguments(collect([
@@ -35,8 +35,8 @@ abstract class DuskTestCase extends BaseTestCase
             return $items->merge([
                 '--disable-gpu',
                 '--headless=new',
-                // '--no-sandbox',
-                // '--disable-dev-shm-usage',
+                
+                
             ]);
         })->all());
 

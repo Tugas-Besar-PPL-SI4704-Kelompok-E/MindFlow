@@ -8,9 +8,9 @@ use Tests\DuskTestCase;
 
 class PBI41Hukuman extends DuskTestCase
 {
-    /**
-     * TC.RPA.001: Menguji fungsionalitas hukuman bagi user pelanggar aturan (Positive)
-     */
+    
+
+
     public function test_tc_rpa_001_punish_user_positif(): void
     {
         $admin = User::where('email', 'admin@mindflow.id')->firstOrFail();
@@ -61,9 +61,9 @@ class PBI41Hukuman extends DuskTestCase
         });
     }
 
-    /**
-     * TC.RPA.002: Menguji validasi sistem saat input hukuman dikosongkan (Negative)
-     */
+    
+
+
     public function test_tc_rpa_002_punish_user_negatif_kosong(): void
     {
         $admin = User::where('email', 'admin@mindflow.id')->firstOrFail();

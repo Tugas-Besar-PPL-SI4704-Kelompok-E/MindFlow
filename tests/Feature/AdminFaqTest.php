@@ -19,7 +19,7 @@ class AdminFaqTest extends TestCase
 
     public function test_guest_can_view_public_faq_page()
     {
-        // Ensure default seeded FAQs aren't here yet, let's create a fresh FAQ
+        
         $faq = Faq::create([
             'question' => 'Bagaimana cara mendaftar?',
             'answer' => 'Anda bisa menekan tombol Sign Up.'

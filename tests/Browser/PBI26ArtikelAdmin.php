@@ -9,9 +9,9 @@ use Tests\DuskTestCase;
 
 class PBI26ArtikelAdmin extends DuskTestCase
 {
-    /**
-     * TC.ADM.001: Menguji fungsionalitas membaca (Read) Artikel (Positive)
-     */
+    
+
+
     public function test_tc_adm_001_read_artikel(): void
     {
         $admin = User::where('email', 'admin@mindflow.id')->firstOrFail();
@@ -28,9 +28,9 @@ class PBI26ArtikelAdmin extends DuskTestCase
         });
     }
 
-    /**
-     * TC.ADM.002: Menguji fungsionalitas membuat artikel (Positive)
-     */
+    
+
+
     public function test_tc_adm_002_create_artikel_positif(): void
     {
         $admin = User::where('email', 'admin@mindflow.id')->firstOrFail();
@@ -65,9 +65,9 @@ class PBI26ArtikelAdmin extends DuskTestCase
         });
     }
 
-    /**
-     * TC.ADM.003: Menguji fungsionalitas membuat artikel - Konten Kosong (Negative)
-     */
+    
+
+
     public function test_tc_adm_003_create_artikel_negatif_kosong(): void
     {
         $admin = User::where('email', 'admin@mindflow.id')->firstOrFail();
@@ -90,9 +90,9 @@ class PBI26ArtikelAdmin extends DuskTestCase
         });
     }
 
-    /**
-     * TC.ADM.004: Menguji fungsionalitas mengubah (update) artikel (Positive)
-     */
+    
+
+
     public function test_tc_adm_004_update_artikel(): void
     {
         $admin = User::where('email', 'admin@mindflow.id')->firstOrFail();
@@ -125,9 +125,9 @@ class PBI26ArtikelAdmin extends DuskTestCase
         });
     }
 
-    /**
-     * TC.ADM.005: Menguji fungsionalitas menghapus (Delete) Artikel (Positive)
-     */
+    
+
+
     public function test_tc_adm_005_delete_artikel(): void
     {
         $admin = User::where('email', 'admin@mindflow.id')->firstOrFail();

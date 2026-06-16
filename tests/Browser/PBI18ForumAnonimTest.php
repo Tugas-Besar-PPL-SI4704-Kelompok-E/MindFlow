@@ -40,7 +40,7 @@ class PBI18ForumAnonimTest extends DuskTestCase
         );
     }
 
-    /** Test PBI-18: Posting Forum (Positif - Anonim) */
+    
     public function test_posting_forum_positif_anonim(): void
     {
         $user = User::where('email', 'asep@example.com')->first();
@@ -57,7 +57,7 @@ class PBI18ForumAnonimTest extends DuskTestCase
         });
     }
 
-    /** Test PBI-18: Posting Forum (Negatif - Anonim, konten kosong) */
+    
     public function test_posting_forum_negatif_anonim(): void
     {
         $user = User::where('email', 'asep@example.com')->first();
@@ -73,7 +73,7 @@ class PBI18ForumAnonimTest extends DuskTestCase
         });
     }
 
-    /** Test PBI-18: Hapus Postingan Forum (Positif - Anonim) */
+    
     public function test_hapus_postingan_positif_anonim(): void
     {
         $user   = User::where('email', 'asep@example.com')->first();
@@ -98,8 +98,11 @@ class PBI18ForumAnonimTest extends DuskTestCase
                     ->scrollIntoView("#dropdown-{$threadId}");
 
             $browser->script("
-                var form = document.querySelector('#dropdown-{$threadId} form');
-                if (form) { form.submit(); }
+                var form = document.getElementById('deleteConfirmForm');
+                if (form) {
+                    form.action = '/forum/" . $threadId . "';
+                    form.submit();
+                }
             ");
 
             $browser->pause(2500)
@@ -109,7 +112,7 @@ class PBI18ForumAnonimTest extends DuskTestCase
         $this->assertNull(Thread::find($threadId));
     }
 
-    /** Test PBI-18: Hapus Postingan Forum (Negatif - Anonim) */
+    
     public function test_hapus_postingan_negatif_anonim(): void
     {
         $user     = User::where('email', 'asep@example.com')->first();

@@ -28,7 +28,7 @@ class PBI18ForumAdminTest extends DuskTestCase
         );
     }
 
-    /** Test PBI-18: Posting Forum (Positif - Admin) */
+    
     public function test_posting_forum_positif_admin(): void
     {
         $user = User::where('email', 'admin@mindflow.id')->first();
@@ -45,7 +45,7 @@ class PBI18ForumAdminTest extends DuskTestCase
         });
     }
 
-    /** Test PBI-18: Posting Forum (Negatif - Admin) */
+    
     public function test_posting_forum_negatif_admin(): void
     {
         $user = User::where('email', 'admin@mindflow.id')->first();

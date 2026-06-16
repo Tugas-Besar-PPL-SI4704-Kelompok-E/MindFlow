@@ -14,9 +14,9 @@ class CounselingTest extends TestCase
 {
     use RefreshDatabase;
 
-    /**
-     * PBI 27: Filter pencarian konselor berdasarkan kategori spesialisasi
-     */
+    
+
+
     public function test_pbi_27_menampilkan_konselor_berdasarkan_spesialisasi_yang_dipilih()
     {
         $user = User::factory()->create();
@@ -32,9 +32,9 @@ class CounselingTest extends TestCase
         $response->assertDontSee($konselor3->nama);
     }
 
-    /**
-     * PBI 64: Search konselor berdasarkan nama, keahlian, atau gejala
-     */
+    
+
+
     public function test_pbi_64_mencari_konselor_berdasarkan_keyword_search()
     {
         $user = User::factory()->create();
@@ -48,9 +48,9 @@ class CounselingTest extends TestCase
         $response->assertDontSee($konselor2->nama);
     }
 
-    /**
-     * PBI 64: Filter konselor berdasarkan ketersediaan sesi
-     */
+    
+
+
     public function test_pbi_64_filter_konselor_tersedia_hanya_menampilkan_konselor_dengan_sesi_tersedia()
     {
         $user = User::factory()->create();
@@ -74,9 +74,9 @@ class CounselingTest extends TestCase
         $response->assertDontSee($konselor2->nama);
     }
 
-    /**
-     * PBI 28: Halaman profil detail konselor (biografi & keahlian)
-     */
+    
+
+
     public function test_pbi_28_menampilkan_profil_detail_konselor_dengan_biografi_dan_keahlian()
     {
         $user = User::factory()->create();
@@ -93,9 +93,9 @@ class CounselingTest extends TestCase
         $response->assertSee($konselor->keahlian);
     }
 
-    /**
-     * PBI 29: Logika dan alur pemesanan konselor
-     */
+    
+
+
     public function test_pbi_29_menyimpan_data_pemesanan_sesi_konseling_ke_database()
     {
         $user = User::factory()->create();
@@ -118,9 +118,9 @@ class CounselingTest extends TestCase
         ]);
     }
 
-    /**
-     * PBI 35: Pembayaran sesi konseling dicatat dengan metode dan status yang benar
-     */
+    
+
+
     public function test_pbi_35_menyimpan_metode_dan_status_pembayaran_saat_membooking_sesi()
     {
         $user = User::factory()->create();
@@ -144,9 +144,9 @@ class CounselingTest extends TestCase
         ]);
     }
 
-    /**
-     * PBI 35: Pembayaran dikembalikan ketika sesi pending kedaluwarsa
-     */
+    
+
+
     public function test_pbi_35_payment_status_refunded_when_pending_session_expires()
     {
         $user = User::factory()->create();
@@ -169,9 +169,9 @@ class CounselingTest extends TestCase
         ]);
     }
 
-    /**
-     * PBI 30: Sistem notifikasi reservasi
-     */
+    
+
+
     public function test_pbi_30_menampilkan_notifikasi_sukses_setelah_reservasi()
     {
         $user = User::factory()->create();
@@ -189,9 +189,9 @@ class CounselingTest extends TestCase
         $response->assertSessionHas('success');
     }
 
-    /**
-     * PBI 30: Sistem notifikasi perubahan jadwal
-     */
+    
+
+
     public function test_pbi_30_menampilkan_notifikasi_info_setelah_perubahan_jadwal()
     {
         $user = User::factory()->create();
@@ -210,9 +210,9 @@ class CounselingTest extends TestCase
         $response->assertSessionHas('success');
     }
 
-    /**
-     * PBI 30: Sistem notifikasi pembatalan
-     */
+    
+
+
     public function test_pbi_30_menampilkan_notifikasi_error_setelah_pembatalan()
     {
         $user = User::factory()->create();
@@ -228,9 +228,9 @@ class CounselingTest extends TestCase
         $response->assertSessionHas('success');
     }
 
-    /**
-     * PBI 31: Alur pengajuan perubahan jadwal sesi
-     */
+    
+
+
     public function test_pbi_31_memperbarui_jadwal_sesi_konseling_di_database()
     {
         $user = User::factory()->create();
@@ -256,9 +256,9 @@ class CounselingTest extends TestCase
         ]);
     }
 
-    /**
-     * PBI 31 (Tambahan): Membatalkan sesi konseling
-     */
+    
+
+
     public function test_pbi_31_membatalkan_sesi_konseling_dengan_status_cancelled()
     {
         $user = User::factory()->create();
@@ -323,32 +323,32 @@ class CounselingTest extends TestCase
     }
 
 
-    /**
-     * PBI 45: Pembatalan otomatis sesi yang kadaluarsa
-     */
+    
+
+
     public function test_pbi_45_pembatalan_otomatis_sesi_kadaluarsa()
     {
         $user = User::factory()->create();
         $konselor = ProfilKonselor::factory()->create();
         
-        // Membuat sesi pending di masa lampau (kadaluarsa)
+        
         $sesi = SesiKonseling::factory()->create([
             'user_id' => $user->id,
             'profil_konselor_id' => $konselor->profil_konselor_id,
-            'jadwal' => now()->subDay(), // Kemarin
+            'jadwal' => now()->subDay(), 
             'status' => 'pending'
         ]);
 
-        // Akses halaman home
+        
         $response = $this->actingAs($user)->get('/home');
 
-        // Sesi harusnya berubah menjadi cancelled
+        
         $this->assertDatabaseHas('sesi_konselings', [
             'sesi_konseling_id' => $sesi->sesi_konseling_id,
             'status' => 'cancelled'
         ]);
 
-        // Dan session harus memiliki data expired_cancelled_sessions
+        
         $response->assertSessionHas('expired_cancelled_sessions');
     }
 }

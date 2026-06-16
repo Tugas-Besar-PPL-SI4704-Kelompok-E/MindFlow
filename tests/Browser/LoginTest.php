@@ -16,7 +16,7 @@ class LoginTest extends DuskTestCase
     {
         parent::setUp();
 
-        // Pastikan user test selalu ada di database dusk
+        
         User::firstOrCreate(
             ['email' => 'test@example.com'],
             [
@@ -29,9 +29,9 @@ class LoginTest extends DuskTestCase
         );
     }
 
-    /**
-     * TC.Log.001: Menguji fungsionalitas login dengan kredensial valid (Positive)
-     */
+    
+
+
     public function test_tc_log_001_successful_login(): void
     {
         $this->browse(function (Browser $browser) {
@@ -45,9 +45,9 @@ class LoginTest extends DuskTestCase
         });
     }
 
-    /**
-     * TC.Log.002: Menguji validasi form wajib isi (Negative - HTML5)
-     */
+    
+
+
     public function test_tc_log_002_mandatory_fields_validation(): void
     {
         $this->browse(function (Browser $browser) {
@@ -59,9 +59,9 @@ class LoginTest extends DuskTestCase
         });
     }
 
-    /**
-     * TC.Log.003: Menguji login dengan format email tidak valid (Negative - HTML5)
-     */
+    
+
+
     public function test_tc_log_003_invalid_email_format(): void
     {
         $this->browse(function (Browser $browser) {
@@ -77,9 +77,9 @@ class LoginTest extends DuskTestCase
         });
     }
 
-    /**
-     * TC.Log.004: Menguji login dengan email yang belum terdaftar (Negative - Backend)
-     */
+    
+
+
     public function test_tc_log_004_unregistered_email(): void
     {
         $this->browse(function (Browser $browser) {
@@ -94,9 +94,9 @@ class LoginTest extends DuskTestCase
         });
     }
 
-    /**
-     * TC.Log.005: Menguji login dengan password yang salah (Negative - Backend)
-     */
+    
+
+
     public function test_tc_log_005_wrong_password(): void
     {
         $this->browse(function (Browser $browser) {

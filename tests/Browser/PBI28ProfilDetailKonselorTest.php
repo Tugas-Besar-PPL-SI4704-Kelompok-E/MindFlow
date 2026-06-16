@@ -12,9 +12,9 @@ class PBI28ProfilDetailKonselorTest extends DuskTestCase
 {
     use DatabaseMigrations;
 
-    /**
-     * PBI 28: Halaman profil detail konselor (biografi & keahlian)
-     */
+    
+
+
     public function test_menampilkan_profil_detail_konselor_dengan_biografi_dan_keahlian()
     {
         $this->browse(function (Browser $browser) {
@@ -28,7 +28,7 @@ class PBI28ProfilDetailKonselorTest extends DuskTestCase
                     ->visit('/konseling')
                     ->pause(1000)
                     ->assertSee($konselor->nama)
-                    // Click on the counselor card / button
+                    
                     ->clickLink('Pilih Sesi')
                     ->pause(1000)
                     ->assertPathIs("/konseling/{$konselor->profil_konselor_id}")
@@ -39,8 +39,8 @@ class PBI28ProfilDetailKonselorTest extends DuskTestCase
                 $browser->assertSee(trim($keahlian));
             }
             
-            // Verify booking button is visible and active
-            $browser->assertSee('Konfirmasi Reservasi');
+            
+            $browser->assertSee('Konfirmasi Pembayaran');
         });
     }
 
@@ -60,10 +60,10 @@ class PBI28ProfilDetailKonselorTest extends DuskTestCase
                     ->pause(1000)
                     ->assertPathIs("/konseling/{$konselor->profil_konselor_id}")
                     ->assertSee($konselor->nama)
-                    // Verify empty sections show placeholder message instead of error
+                    
                     ->assertSee('Informasi belum tersedia')
-                    // Verify booking button is still active
-                    ->assertSee('Konfirmasi Reservasi');
+                    
+                    ->assertSee('Konfirmasi Pembayaran');
         });
     }
 }
